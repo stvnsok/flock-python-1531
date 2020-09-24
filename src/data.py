@@ -10,13 +10,13 @@ data = {
         },
     ],
     'channels': [
-        {
+        '''{
             'id': 1000,
             'name' : 'channel1',
         },
         {
             'id': 2000,
             'name' : 'channel2',
-        },
+        },'''
     ],
 }
