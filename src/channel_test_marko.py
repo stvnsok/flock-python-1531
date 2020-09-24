@@ -3,4 +3,5 @@
 # Purpore to test functions in channel.py
 import pytest
 from channel import *
-def test_invite():
+def test_channel_create():
+    assert channel_create("token", "name", "is_public T/F") == 1
