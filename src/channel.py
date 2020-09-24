@@ -74,5 +74,9 @@ def channel_lisall(token):
     }
 
 def channel_create(token, name, is_public):
+    # token is ignored for now as not implemented yet
+    ''' if token == invalid:
+            return "invalid token" '''
+    
     return { # Creates a new channel with that name that is either a public or private channel
     }
