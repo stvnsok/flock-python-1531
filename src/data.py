@@ -1,5 +1,5 @@
 data = {
-    'users': [
+    'users': ['''
         {
             'id': 1,
             'name' : 'user1',
@@ -7,7 +7,7 @@ data = {
         {
             'id': 2,
             'name' : 'user2',
-        },
+        },'''
     ],
     'channels': [
         '''{
