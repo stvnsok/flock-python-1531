@@ -15,5 +15,5 @@ def test_channel_create_multiple():
     for channels_id in range(1000,1006):
         assert channel_create("token", "name" + str(channels_id), True) == channels_id
     
+# May need to test for valid tokens but tokens not implemented yet
 
-# May need to test for valid tokens but not should as of now

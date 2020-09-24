@@ -1,3 +1,4 @@
+import data
 def channel_invite(token, channel_id, u_id):
     return {
     } #Invites a user (with user id u_id) to join a channel with ID channel_id.
@@ -74,6 +75,8 @@ def channel_lisall(token):
     }
 
 def channel_create(token, name, is_public):
-    
+    # Have not check token for validity as token not implemented yet
+
+
     return { # Creates a new channel with that name that is either a public or private channel
     }
