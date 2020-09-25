@@ -1,16 +1,36 @@
 data = {
     'users': ['''
         {
-            'id': 1,
-            'name' : 'user1',
+            'u_id': 1,
+            'email': "z55555@ad.unsw.edu.au",
+            'name_first' : 'Jay',
+            'name_last': 'Anand',
+            'handle_str: 'JayAnand',
         },
         {
-            'id': 2,
-            'name' : 'user2',
+            'u_id': 2,
+            'email': "z3333333@ad.unsw.edu.au",
+            'name_first': 'Marko',
+            'name_last': 'Wong',
+            'handle_str: 'MarkoWong',
         },'''
     ],
-    'channels': [
-        '''{
+    'messages': ['''
+        {
+            'message_id': 1,
+            'u_id': 1 <- Means it from jay
+            'message': "yo good m8?"
+            'time_created': '10:24'
+        },
+        {
+            'message_id': 2,
+            'u_id': 2 <- Means it from Marko
+            'message': "Nah I so confused!!"
+            'time_created': '10:25'
+        },'''
+    ],
+    'channels': ['''
+        {
             'id': 1000,
             'name' : 'channel1',
         },
@@ -18,5 +38,17 @@ data = {
             'id': 2000,
             'name' : 'channel2',
         },'''
+    ],
+    'members': ['''
+        {
+            'u_id': 1
+            'name_first': 'jay'
+            'name_last': 'Anand'
+        }
+        {
+            'u_id': 2
+            'name_first': 'Marko'
+            'name_last': 'Wong'
+        }'''
     ],
 }
