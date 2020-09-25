@@ -64,19 +64,3 @@ def channel_addowner(token, channel_id, u_id):
 def channel_removeowner(token, channel_id, u_id):
     return { # Remove user with user id u_id an owner of this channel
     }
-
-def channel_list(token):
-    return { # a list of all channels (and their associated details) that is 
-    #authorised by the user
-    }
-
-def channel_lisall(token):
-    return { # a list of all channels (and their associated details) no matter what
-    }
-
-def channel_create(token, name, is_public):
-    # Have not check token for validity as token not implemented yet
-
-
-    return { # Creates a new channel with that name that is either a public or private channel
-    }
