@@ -1,91 +1,111 @@
-from data import data
+from data import *
 import re
 import pytest
+from error import InputError
 
 # The following regex and def check(email) function was from geek for greek website
 # https://www.geeksforgeeks.org/check-if-email-address-valid-or-not-in-python/
-# Make a regular expression 
-# for validating an Email 
-regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-# Define a function for 
-# for validating an Email 
-def check(email):  
-    # pass the regular expression 
-    # and the string in search() method 
-    if(re.search(regex,email) != 0):  
-        # print("Valid Email")
-        return 1
-          
-    else:  
-        # print("Invalid Email")  
-        return 0
+# Make a regular expression
+# for validating an Email
+regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+
+
+def create_token(email):
+    # creates a hash using in built python hash function
+    return str(hash(email))
+
+
+def check(email):
+    # pass the regular expression
+    # and checks format of email
+    # return True is correct else False
+    if(re.search(regex, email)):
+        return True
+    else:
+        return False
+
 
 def auth_login(email, password):
-    return {
-        'u_id': 1,
-        'token': '12345',
-    }
+
+    # Check email is valid format
+    if (check(email)) is not True:
+        raise InputError('Invalided email')
+
+    # Get users from data
+    users = data['users']
+
+    # Check that email and password are correct and valid
+    for user in users:
+        if (user['email'] != email):
+            raise InputError('Incorrect email')
+        if (user['email'] == email and user['password'] != password):
+            raise InputError('Incorrect password')
+        if (user['email'] == email and user['password'] == password):
+            return {
+                'u_id': user['u_id'],
+                'token': user['token']
+            }
+
 
 def auth_logout(token):
-    return {
-        'is_success': True,
-    }
+
+    # Get users from data
+    users = data['users']
+
+    # Check that token exists
+    for user in users:
+        if (user['token'] == token):
+            return {
+                'is_success': True,
+            }
+
+    return {'is_success': False}
+
 
 def auth_register(email, password, name_first, name_last):
+
     # checks for valid email
-    if check(email) == 0:
-        raise NameError("Invalid email")
+    if check(email) is not True:
+        raise InputError('Invalid email')
 
-    # Checks for repeated email
-    user = data['users'] # user is now the list of dictonary of users
-    #print(user)
+    # Grabs all users from data
+    users = data['users']
 
-    existing_emails = [ email_list['email'] for email_list in user] # creates a list of existing emails
-    # above line from https://www.geeksforgeeks.org/python-get-values-of-particular-key-in-list-of-dictionaries/
-    #print (existing_emails)
+    # Cycles through all users to check if given email already exists
+    for user in users:
+        if user['email'] == email:
+            raise InputError('Email already registered')
 
-    for old_emails in existing_emails:
-        #print(old_emails)
-        if email == old_emails: 
-            raise NameError("Email already registered")
-    
+    # Check password is greater than 6 characters
     if len(password) < 6:
-        raise NameError("Password too short")
+        raise InputError('Password too short')
 
+    # Check name is within 1 and 50 characters
     if len(name_first) < 1 or len(name_first) > 50:
-        raise NameError("First Name too long or short")
+        raise InputError('First Name too long or short')
 
+    # Check name is within 1 and 50 characters
     if len(name_last) < 1 or len(name_last) > 50:
-        #try:
-        raise NameError("Last Name too long or short")
-        #except NameError:
-        #    print("Last_name exception ignored")
-        #    raise
-        #these commented out sections are for if you wasnt to ingore the errors
+        raise InputError('Last Name too long or short')
 
+    # Create Handle
     handle = name_first + name_last
-    if len(handle) > 20: # keeping the handle under 20 chars
+    if len(handle) > 20:  # keeping the handle under 20 chars
         handle = handle[0:20]
-    # creating a new dictionary for new user
+
+    # Creating a new dictionary for new user
     new_user = {
-        'u_id': len(user),
+        'u_id': len(users),
         'email': email,
         'password': password,
         'name_first': name_first,
         'name_last': name_last,
         'handle_str': handle,
-    }
-    user.append(new_user)
-    print(f"{new_user}")
-
-    return {
-        'u_id': len(user),
-        'token': '12345', # NEED TO IMPLEMENT
+        'token': create_token(email)
     }
 
-auth_register('johdsn@gmail.com', 'qwe123!@#', 'John0', 'Smith')
+    # Adding user to dictionary
+    users.append(new_user)
 
-auth_register('jwqegfgaohn@gmail.com', 'qwe1236!@#', 'John13', 'Smith')
-auth_register('jwqegvcxvohn@gmail.com', 'qwe1236!@#', 'John14', 'Smith')
-auth_register('johdsadsn@gmail.com', '1234567', 'asasfgasgsadf', '123456789101112dasdf')
-
+    # Return new user
+    return new_user

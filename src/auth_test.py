@@ -1,15 +1,19 @@
+
 '''
 Tests for auth.py
+
+All tests are written assuming that the pretend database will be the same database used by all functions.
+For example, in the first test 'test_valid_email()', john is registered. For all other tests, john 
+will exist in the pretend databse. If john tries to register again it will raise an error
 '''
 
 import pytest
 import auth
-from testing_variables import *
+from error import InputError
 
 
 def test_valid_email():
-    result = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    assert result['token'] == '12345'
+    auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
 
 
 def test_invalid_email():
@@ -30,81 +34,75 @@ def test_email_already_registered():
 
 
 def test_valid_password():
-    result = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    assert result['token'] == '12345'
+    auth.auth_register('bob1@gmail.com', 'qwe123!@#', 'Bob', 'Smith')
 
 
 def test_invalid_password():
     with pytest.raises(InputError) as e:
-        auth.auth_register('john@gmail.com', 'ddd', 'John', 'Smith')
-    assert 'Invalid password' == str(e.value)
+        auth.auth_register('john1@gmail.com', 'ddd', 'John', 'Smith')
+    assert 'Password too short' == str(e.value)
 
     with pytest.raises(InputError) as e:
-        auth.auth_register('john@gmail.com', '', 'John', 'Smith')
-    assert 'Invalid password' == str(e.value)
+        auth.auth_register('john2@gmail.com', '', 'John', 'Smith')
+    assert 'Password too short' == str(e.value)
 
 
 def test_valid_name_first():
-    result = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    assert result['token'] == '12345'
+    auth.auth_register('john3@gmail.com', 'qwe123!@#', 'John', 'Smith')
 
 
 def test_invalid_name_first():
     with pytest.raises(InputError) as e:
-        auth.auth_register('john@gmail.com', 'qwe123!@#',
+        auth.auth_register('john4@gmail.com', 'qwe123!@#',
                            'adsfkhsafhasklfhsklajfhsklajfhklsahfklashfklashfjklshaklfhasdklfhsadkljfhsadklfhasklhfklsahfklsadhfklasdhfklasdhfkljs', 'Smith')
-    assert 'Invalid first name' == str(e.value)
+    assert 'First Name too long or short' == str(e.value)
 
     with pytest.raises(InputError) as e:
-        auth.auth_register('john@gmail.com', 'qwe123!@#',
+        auth.auth_register('john4@gmail.com', 'qwe123!@#',
                            '', 'Smith')
-    assert 'Invalid first name' == str(e.value)
+    assert 'First Name too long or short' == str(e.value)
 
 
 def test_valid_name_last():
-    result = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    assert result['token'] == '12345'
+    auth.auth_register('john5@gmail.com', 'qwe123!@#', 'John', 'Smith')
 
 
 def test_invalid_name_last():
     with pytest.raises(InputError) as e:
-        auth.auth_register('john@gmail.com', 'qwe123!@#',
+        auth.auth_register('john6@gmail.com', 'qwe123!@#',
                            'John', 'adsfkhsafhasklfhsklajfhsklajfhklsahfklashfklashfjklshaklfhasdklfhsadkljfhsadklfhasklhfklsahfklsadhfklasdhfklasdhfkljs')
-    assert 'Invalid last name' == str(e.value)
+    assert 'Last Name too long or short' == str(e.value)
 
     with pytest.raises(InputError) as e:
-        auth.auth_register('john@gmail.com', 'qwe123!@#',
+        auth.auth_register('john6@gmail.com', 'qwe123!@#',
                            'John', '')
-    assert 'Invalid last name' == str(e.value)
+    assert 'Last Name too long or short' == str(e.value)
 
 
 def test_registered_login():
-    result = auth.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
     auth.auth_login('john@gmail.com', 'qwe123!@#')
-    assert result['token'] == '12345'
 
 
 def test_incorrect_email_login():
-    auth.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
     with pytest.raises(InputError) as e:
-        auth.auth_login('bob@gmail.com', 'qwe123!@#')
+        auth.auth_login('bob99@gmail.com', 'qwe123!@#')
     assert 'Incorrect email' == str(e.value)
 
 
 def test_incorrect_password_login():
-    auth.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+
     with pytest.raises(InputError) as e:
         auth.auth_login('john@gmail.com', 'dfdfdf!@#')
-    assert 'Incorrect email' == str(e.value)
+    assert 'Incorrect password' == str(e.value)
 
 
-def test_logout():
-    auth.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+def test_logout_success():
     login = auth.auth_login('john@gmail.com', 'qwe123!@#')
     logout = auth.auth_logout(login['token'])
-
     assert logout['is_success'] == True
+
+
+def test_logout_fail():
+    login = auth.auth_login('john@gmail.com', 'qwe123!@#')
+    logout = auth.auth_logout(login['token'] + 'avc')
+    assert logout['is_success'] == False
