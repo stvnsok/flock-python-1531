@@ -80,7 +80,7 @@ def auth_register(email, password, name_first, name_last):
 
     return {
         'u_id': len(user),
-        'token': '12345',
+        'token': '12345', # NEED TO IMPLEMENT
     }
 
 auth_register('johdsn@gmail.com', 'qwe123!@#', 'John0', 'Smith')
