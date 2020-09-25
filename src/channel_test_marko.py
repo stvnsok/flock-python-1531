@@ -3,7 +3,7 @@
 # Purpose to test functions in channel.py
 import pytest
 from channel import *
-def test_channel_create_public():
+'''def test_channel_create_public():
     channel_id = channel_create("token", "name", True)
     assert channel_id >= 1000 and channel_id <= 1999
 
@@ -15,5 +15,7 @@ def test_channel_create_multiple():
     for channels_id in range(1000,1006):
         assert channel_create("token", "name" + str(channels_id), True) == channels_id
     
-# May need to test for valid tokens but tokens not implemented yet
+# May need to test for valid tokens but tokens not implemented yet '''
+
+
 
