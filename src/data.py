@@ -1,19 +1,21 @@
 data = {
-    'users': ['''
-        {
-            'u_id': 1,
-            'email': "z55555@ad.unsw.edu.au",
-            'name_first' : 'Jay',
-            'name_last': 'Anand',
-            'handle_str: 'JayAnand',
-        },
-        {
-            'u_id': 2,
-            'email': "z3333333@ad.unsw.edu.au",
-            'name_first': 'Marko',
-            'name_last': 'Wong',
-            'handle_str: 'MarkoWong',
-        },'''
+    'users': [
+        #{
+        #    'u_id': 1,
+        #    'email': "z55555@ad.unsw.edu.au",
+        #    'password': "password123",
+        #    'name_first': 'Jay',
+        #    'name_last': 'Anand',
+        #    'handle_str': 'JayAnand',
+        #},
+        #{
+        #    'u_id': 2,
+        #    'email': "z3333333@ad.unsw.edu.au",
+        #    'password': "password123",
+        #    'name_first': 'Marko',
+        #    'name_last': 'Wong',
+        #    'handle_str': 'MarkoWong',
+        #},
     ],
     'messages': ['''
         {
