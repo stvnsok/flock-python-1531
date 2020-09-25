@@ -79,7 +79,7 @@ def auth_register(email, password, name_first, name_last):
     print(f"{new_user}")
 
     return {
-        'u_id': 1,
+        'u_id': len(user),
         'token': '12345',
     }
 
