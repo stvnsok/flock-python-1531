@@ -111,5 +111,8 @@ def auth_register(email, password, name_first, name_last):
     # Adding user to dictionary
     users.append(new_user)
 
-    # Return new user
-    return new_user
+    # Return new user id and token
+    return {
+        'u_id': new_user['u_id'],
+        'token': new_user['token']
+    }
