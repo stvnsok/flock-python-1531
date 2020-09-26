@@ -9,6 +9,10 @@ from error import InputError
 # for validating an Email
 regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
+'''
+We should consider using user.py to create user instead of dictionary with register function
+'''
+
 
 def create_token(email):
     # creates a hash using in built python hash function
