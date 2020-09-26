@@ -76,7 +76,3 @@ def channels_create(token, name, is_public):
         'name': new_channel['name'],
     }
 
-channels_create("token", "channel_1", True)
-channels_create("token", "channel_2", False)
-channels_create("token", "channel_3", False)
-channels_create("token", "channel_4", True)
