@@ -2,7 +2,9 @@
 # By Marko Wong (z5309371)
 # Purpose to test functions in channel.py
 import pytest
-from channel import *
+import channel
+import channels
+from error import InputError
 '''def test_channel_create_public():
     channel_id = channel_create("token", "name", True)
     assert channel_id >= 1000 and channel_id <= 1999
@@ -17,5 +19,7 @@ def test_channel_create_multiple():
     
 # May need to test for valid tokens but tokens not implemented yet '''
 
-
+def test_invite_to_invalid_channel():
+    channels.channels_create(login['token'], "channel_1", True)
+    
 
