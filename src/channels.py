@@ -20,7 +20,11 @@ def channels_listall(token):
 
 def channels_create(token, name, is_public):
 
-    
+    new_channel = {
+        'channel_id': len(channels)
+        ''
+    }
+
     return {
         'channel_id': 1,
     }
