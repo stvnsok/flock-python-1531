@@ -69,8 +69,6 @@ def channels_create(token, name, is_public):
     # Adding user to dictionary
     channels.append(new_channel)
 
-    print(channels)
-
     return {
         'channel_id': new_channel['channel_id'],
         'name': new_channel['name'],
