@@ -1,3 +1,9 @@
+from data import *
+import copy
+
+def clear():
+    data = copy.deepcopy(data_reset)
+    
 def users_all(token):
     return {
         'users': [
