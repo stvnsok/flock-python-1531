@@ -4,14 +4,21 @@ import pytest
 from error import InputError
 
 def channels_list(token):
-    return {
-        'channels': [
-        	{
-        		'channel_id': 1,
-        		'name': 'My Channel',
-        	}
-        ],
-    }
+    # Get users from data
+    users = data['users']
+
+    # Check that token exists
+    valid_token = 0
+    for user in users:
+        if (user['token'] == token):
+            valid_token = 1
+            break
+    
+    # raise error for invalid token
+    if valid_token == 0 and len(users) is not 0:
+        raise InputError('invalid token')
+        
+    #to do: finish channels list
 
 def channels_listall(token):
     # Get users from data
