@@ -16,11 +16,11 @@ def test_channels_list():
         'channels': [
         	{
         		'channel_id': 1000,
-        		'name': 'Channel1',
+        		'name': 'channel1',
         	},
             {
                 'channel_id': 2000,
-                'name': 'Channel2',
+                'name': 'channel2',
             } 
         ]
     }
@@ -30,11 +30,11 @@ def test_channels_list():
             'channels': [
         	{
         		'channel_id': 1000,
-        		'name': 'Channel1',
+        		'name': 'channel1',
         	},
             {
                 'channel_id': 3000,
-                'name': 'Channel3',
+                'name': 'channel3',
             } 
         ]
     }    
@@ -48,24 +48,29 @@ def test_channels_listall():
         'channels': [
         	{
         		'channel_id': 1000,
-        		'name': 'Channel1',
+        		'name': 'channel1',
         	},
             {
                 'channel_id': 2000,
-                'name': 'Channel2',
+                'name': 'channel2',
             },
             {
                 'channel_id': 3000,
-                'name': 'Channel3',
+                'name': 'channel3',
             } 
         ]
     }
     
-'''
+
 def test_channels_create():
-
-
-#test no channels joined
-def test_channels_none():
-
-'''
+    clear()
+    result = channels.channels_create(1, channel1, True)
+    assert result == {
+        'channel_id': 1000
+    }
+    
+    result = channels.channels_create(2, channel2, False)
+    assert result == {
+        'channel_id':2000
+    }
+    
