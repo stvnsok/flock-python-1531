@@ -19,6 +19,7 @@ def channels_list(token):
         raise InputError('invalid token')
         
     #to do: finish channels list
+    #phillip says hi to steven
 
 def channels_listall(token):
     # Get users from data
