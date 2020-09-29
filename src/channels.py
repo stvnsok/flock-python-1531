@@ -20,6 +20,8 @@ def channels_list(token):
         
     #to do: finish channels list
     #phillip says hi to steven
+    #steven says hi
+    
 
 def channels_listall(token):
     # Get users from data
