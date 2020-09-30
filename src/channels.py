@@ -1,7 +1,8 @@
-from data import *
+from data import data
 import re
 import pytest
 from error import InputError
+from channel import channel_addowner
 
 def channels_list(token):
     # Get users from data
@@ -36,7 +37,7 @@ def channels_listall(token):
     
     # raise error for invalid token
     if valid_token == 0 and len(users) is not 0:
-        raise InputError('invalid token')
+        raise InputError('invalid token or no registered users')
 
     return data['channels']
 
@@ -82,10 +83,17 @@ def channels_create(token, name, is_public):
         'name': name,
     }
 
-    # Adding user to dictionary
+    # Adding channel to dictionary
     channels.append(new_channel)
+
+    # Adding the whoever called this function as the owner of the channel
+    for user in users:
+        if (user['token'] == token):
+            channel_addowner(token, channel_id, user['u_id'])
+            break
 
     return {
         'channel_id': new_channel['channel_id'],
         'name': new_channel['name'],
     }
+
