@@ -10,7 +10,8 @@ from error import InputError
 
 #all channels that user is part of
 def test_channels_list():
-    clear()
+
+    ''''
     result = channels.channels_list(1)
     assert result == {
         'channels': [
@@ -38,11 +39,18 @@ def test_channels_list():
             } 
         ]
     }    
+    '''
     
-
+    result = channels.channels_list(1)
+    assert result == {}
+    clear()
+    
+# user is not part of any channels?    
+def test_no_channels():
 #all channels
 def test_channels_listall():
-    clear()
+
+    '''
     result = channels.channels_listall(1)
     assert result == {
         'channels': [
@@ -60,17 +68,21 @@ def test_channels_listall():
             } 
         ]
     }
-    
-
-def test_channels_create():
+    '''
+    result = channels.channels_listall(1)
+    assert result == {}
     clear()
-    result = channels.channels_create(1, channel1, True)
-    assert result == {
-        'channel_id': 1000
-    }
     
-    result = channels.channels_create(2, channel2, False)
-    assert result == {
-        'channel_id':2000
-    }
     
+    clear()
+    
+def test_channels_create():
+
+    with pytest.raises(InputError) as e:
+        channel_id = channel_create(1, channel1, True)
+    assert channel_id >= 1000 and channel_id <= 1999
+    with pytest.raises(InputError) as e:
+        channel_id = channels_creat(2, channel2, False)
+    assert channel_id >= 9000
+    
+    clear()
