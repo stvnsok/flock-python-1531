@@ -1,4 +1,3 @@
-from data import data
 
 
 class InputError(Exception):
@@ -7,8 +6,3 @@ class InputError(Exception):
 
 class AccessError(Exception):
     pass
-
-
-def clear():
-    data['users'] = []
-    data['channels'] = []

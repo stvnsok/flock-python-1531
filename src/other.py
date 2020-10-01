@@ -1,9 +1,11 @@
-from data import *
+from data import data, data_reset
 import copy
+
 
 def clear():
     data = copy.deepcopy(data_reset)
-    
+
+
 def users_all(token):
     return {
         'users': [
@@ -16,6 +18,7 @@ def users_all(token):
             },
         ],
     }
+
 
 def search(token, query_str):
     return {
