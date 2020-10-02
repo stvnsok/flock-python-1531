@@ -31,7 +31,7 @@ def channel_invite(token, channel_id, u_id):
         raise InputError('U_id does not exist')
 
     # Check if authorised user is a member of the channel
-    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['all_members']):
+    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
         raise AccessError(
             'Authorised user is not a member of the channel')
 
@@ -40,8 +40,8 @@ def channel_invite(token, channel_id, u_id):
         'u_id': user['u_id'],
         'name_first': user['name_first'],
         'name_last': user['name_last'],
+        'is_owner': False
     }
-    # channel['all_members'].append(new_member)
 
     channel['members'].append(new_member)
     return {}
@@ -69,24 +69,29 @@ def channel_details(token, channel_id):
         raise InputError('Channel_id does not exist')
 
     # Check if authorised user is a member of the channel
-    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['all_members']):
+    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
         raise AccessError(
             'Authorised user is not a member of the channel')
 
+    # Get all the owner members of the channel
+    owner_members = [member for member in channel['members'] if member['is_owner']]
+
     return {
         'name': channel['name'],
-        'owner_members': channel['owner_members'],
-        'all_members': channel['all_members'],  
+        'owner_members': owner_members,
+        'all_members': channel['members'],  
     }
 
 
 def channel_messages(token, channel_id, start):
-    '''Given a Channel with ID channel_id that the authorised user is part of, 
+    '''
+    Given a Channel with ID channel_id that the authorised user is part of, 
     return up to 50 messages between index "start" and "start + 50". Message with 
     index 0 is the most recent message in the channel. This function returns a new 
     index "end" which is the value of "start + 50", or, if this function has returned 
     the least recent messages in the channel, returns -1 in "end" to indicate there are
-    no more messages to load after this return.'''
+    no more messages to load after this return.
+    '''
 
     channels = data['channels']
     users = data['users']
@@ -104,7 +109,7 @@ def channel_messages(token, channel_id, start):
         raise InputError('Channel_id does not exist')
 
     # Check if authorised user is a member of the channel
-    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['all_members']):
+    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
         raise AccessError(
             'Authorised user is not a member of the channel')
 
@@ -142,46 +147,26 @@ def channel_leave(token, channel_id):
     channel = next(
         (channel for channel in channels if channel['id'] == channel_id), None)
 
+    # Check if channel exists
+    if (channel == None):
+        raise InputError('Channel_id does not exist')
+    
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
 
-    # Check if channel exists
-    if (channel == None):
-        raise InputError('Channel_id does not exist')
+    # Find the authorised user from the channel
+    member = next(member for member in channel['members'] if authorised_user['u_id'] == member['u_id'], None)
 
     # Check if authorised user is a member of the channel
-    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['all_members']):
+    if member == None:
         raise AccessError(
             'Authorised user is not a member of this channel')
-
-
-    # member_number = 0
-    # # Removal users from member -> make it more 'pythonic'?
-    # for member in channel['all_members']:
-    #     if authorised_user['u_id'] == member['u_id']:
-    #         break
-    #     member_number += 1
-
-    # channel['all_members'].pop(member_number)
     
-
-    # # Remove the user from owners
-    # for member in channel['owner_members']:
-    #     if authorised_user['u_id'] == member['u_id']:
-    #         break
-    #     member_number += 1
-
-    # channel['owner_members'].pop(member_number)
-    
-    # Find the authorised user and remove them from the channel
-    member = next(for member in channel['members'] if authorised_user['u_id'] == member['u_id'], None)
-
+    # If member remove them from channel
     channel['members'].pop(member)
     
     return {}
-
-
 
 
 def channel_join(token, channel_id):
@@ -197,19 +182,14 @@ def channel_join(token, channel_id):
     channel = next(
         (channel for channel in channels if channel['id'] == channel_id), None)
 
+    # Check if channel exists
+    if (channel == None):
+        raise InputError('Channel_id does not exist')
+  
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
 
-    # Check if channel exists
-    if (channel == None):
-        raise InputError('Channel_id does not exist')
-
-    # if (channel['id'] >= 9000):
-    #     raise AccessError(
-    #         'Authorised member is not owner of selected private channel')
-    
-    # channel['all_members'].append(authorised_user)
 
     # Determine whether channel is public or private
     # If channel is public, add them to the channel
@@ -229,8 +209,6 @@ def channel_join(token, channel_id):
     return {}
 
 def channel_addowner(token, channel_id, u_id):
-    #NOTES -> is the user exists but is not an 'owner' we make them an owner?
-
     '''
     Make user with user id u_id an owner of this channel
     '''
@@ -241,47 +219,39 @@ def channel_addowner(token, channel_id, u_id):
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
         (channel for channel in channels if channel['id'] == channel_id), None)
-
-    # Finds the user, if it doesn't exists assigns None
-    user = next(
-        (user for user in users if user['u_id'] == u_id), None)
+    
+    # Check if channel exists
+    if (channel == None):
+        raise InputError('Channel_id does not exist')
 
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
-
-    # if any(user['u_id'] == member['u_id'] for member in channel['owner_members']):
-    #     raise InputError(
-    #         'User is already an owner of the channel')
-
-    # if any(user['u_id'] == member['u_id'] for member in channel['members']):
-    #     raise InputError(
-    #         'User is already an owner of the channel')
     
-    # Check if user to be add is not already an owner of the channel
-    if any(user['u_id'] == member['u_id'] and member['is_owner'] for member in channel['members']):
-        raise InputError(
-            'User is already an owner of the channel')
-
-    if (channel == None):
-        raise InputError('Channel_id does not exist')
-
-    # if not any(authorised_user['u_id'] == member['u_id'] for member in channel['owner_members']):
-    #     raise AccessError(
-    #         'Authorised user is not an owner of the channel')
-
     # Check if authorisated user is an owner of the channel
     if not any(authorised_user['u_id'] == member['u_id'] and member['is_owner'] for member in channel['members']):
         raise AccessError(
             'Authorised user is not an owner of the channel')
+    
+    # Find the user from the selected channel, if user does not exists assigns None
+    user = next(member for member in channel['members'] if user['u_id'] == member['u_id'], None)
 
-    member = {
+    # If user does not exists creates a new member and addes it as an owner to the channel
+    if user == None:
+        new_owner = {
             'u_id': user['u_id'],
             'name_first': user['name_first'],
             'name_last': user['name_last'],
             'is_owner': True
-    }
-    channel['members'].append(member)
+        }
+        channel['members'].append(new_owner)
+    # Else check if the user is an owner, if they are throw and exception, otherwise make them an owner
+    else:
+        if user['is_owner']:
+            raise InputError(
+            'User is already an owner of the channel')
+        else:
+            user['is_owner'] = True
 
     return {}
 
@@ -297,6 +267,10 @@ def channel_removeowner(token, channel_id, u_id):
     channel = next(
         (channel for channel in channels if channel['id'] == channel_id), None)
 
+    # If channel does not exist throw exception
+    if (channel == None):
+        raise InputError('Channel_id does not exist')
+
     # Finds the user, if it doesn't exists assigns None
     user = next(
         (user for user in users if user['u_id'] == u_id), None)
@@ -305,39 +279,21 @@ def channel_removeowner(token, channel_id, u_id):
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
 
-    # If channel does not exist throw exception
-    if (channel == None):
-        raise InputError('Channel_id does not exist')
-
-    # If user is not an owner throw an exception
-    if not any(user['u_id'] == member['u_id'] and member['is_owner'] for member in channel['members']):
-        raise InputError(
-            'User is not an owner of the channel')
-
     # Check if authorisated user is an owner of the channel
     if not any(authorised_user['u_id'] == member['u_id'] and member['is_owner'] for member in channel['members']):
         raise AccessError(
             'Authorised user is not an owner of the channel')
 
-    # Find the member object for a given user from the members list in the channel object 
-    member = next(member for member in channel['members'] if user['u_id'] == member['u_id'] and member['is_owner'], None)
-    
+    # Find the user from the selected channel, if user does not exists assigns None
+    owner = next(member for member in channel['members'] if user['u_id'] == member['u_id'] and member['is_owner'], None)
+
     # If user is not an owner of the channel throw exception
-    if member == None:
+    if owner == None:
         raise AccessError(
             'User with u_id is not an owner of the channel')
-
-    # member_number = 0
-    # for member in channel['owner_members']:
-    #     if user['u_id'] == member['u_id']:
-    #         break
-    #     member_number += 1
-    
-    # Remove member 
-    channel['members'].pop(member)
-    
-    # # Or this
-    # member['is_owner'] = False
+    # Else remove the owner as an owner of channel
+    else:
+        owner['is_owner'] = False
 
     return {}
     

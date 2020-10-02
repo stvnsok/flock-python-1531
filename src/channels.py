@@ -16,6 +16,7 @@ def channels_list(token):
 
     # Get users from data
     users = data['users']
+   
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
@@ -84,7 +85,7 @@ def channels_create(token, name, is_public):
         raise InputError('Name too long')
 
     new_channel = {}
-
+    new_channel['name'] = name
     # Method for assigning the channel id.
     # Will auto-increment from the last element u_id
     if len(channels) == 0:
@@ -96,7 +97,7 @@ def channels_create(token, name, is_public):
         new_channel['is_public'] = True
     else:
         new_channel['is_public'] = False
-
+    
     # Add new channel to channels
     channels.append(new_channel)
 
@@ -106,3 +107,4 @@ def channels_create(token, name, is_public):
 
     # Return new channel
     return {'channel_id': new_channel['channel_id']}
+
