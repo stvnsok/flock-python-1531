@@ -1,91 +1,110 @@
 from data import data
-import re
+import channel
+from error import InputError, AccessError
 import pytest
-from error import InputError
-from channel import channel_addowner
+import re
+
 
 def channels_list(token):
+    '''
+    channels_list
+    Provide a list of all channels (and their associated details) that the authorised user is part of
+    Parameters: (token)
+    Return type: {channels}
+    Exceptions: N/A
+    '''
+
     # Get users from data
     users = data['users']
+   
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
 
-    # Check that token exists
-    valid_token = 0
-    for user in users:
-        if (user['token'] == token):
-            valid_token = 1
-            break
-    
-    # raise error for invalid token
-    if valid_token == 0 and len(users) is not 0:
-        raise InputError('invalid token')
-        
-    #to do: finish channels list
-    #phillip says hi to steven
-    #steven says hi
-    
+    # Check if user exists/ token is correct
+    if authorised_user == None:
+        # Need to fix this later
+        raise AccessError('Token is incorrect/user does not exist')
+
+    # Find all the channels where the authorised user is a member        
+    channels = [channel for channel in data['channels'] for member in channel['members'] if authorised_user['u_id'] == member['u_id']];
+
+    # Return channels
+    return {'channels' : channels}
+
 
 def channels_listall(token):
+    '''
+    channels_listall
+    Provide a list of all channels (and their associated details)
+    Parameters: (token)
+    Return type: {channels}
+    Exceptions: N/A
+    '''
+
     # Get users from data
     users = data['users']
-
-    # Check that token exists
-    valid_token = 0
-    for user in users:
-        if (user['token'] == token):
-            valid_token = 1
-            break
     
-    # raise error for invalid token
-    if valid_token == 0 and len(users) is not 0:
-        raise InputError('invalid token or no registered users')
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
 
-    return data['channels']
+    # Check if user exists/ token is correct
+    if authorised_user == None:
+        # Need to fix this later
+        raise AccessError('Token is incorrect/user does not exist')
+
+    # Return channels
+    return {'channels': data['channels']}
+
 
 def channels_create(token, name, is_public):
+    '''    
+    channels_create
+    Creates a new channel with that name that is either a public or private channel
+    Parameters: (token, name, is_public)
+    Return type: {channel_id}
+    Exceptions: InputError when the name of the channel exceeds 20 characters
+    '''
+
     # Get users from data
     users = data['users']
+    channels = data['channels']
 
-    # Check that token exists
-    valid_token = 0
-    for user in users:
-        if (user['token'] == token):
-            valid_token = 1
-            break
-    
-    # raise error for invalid token
-    if valid_token == 0 and len(users) is not 0:
-        raise InputError('invalid token')
-    
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+
+    # Check if user exists/ token is correct
+    if authorised_user == None:
+        # Need to fix this later
+        raise AccessError('Token is incorrect/user does not exist')
+
     # raise error for name being too long
     if len(name) > 20:
         raise InputError('Name too long')
 
-    # Grabs all channels from data
-    channels = data['channels']
+    new_channel = {}
+    new_channel['name'] = name
+    # Method for assigning the channel id.
+    # Will auto-increment from the last element u_id
+    if len(channels) == 0:
+        new_channel['channel_id'] = 1
+    else:
+        new_channel['channel_id'] = channels[-1]['channel_id'] + 1
 
-    # Generate channel id based on the number of exisiting channels
-    channel_id = 0
-    for channel in channels:
-        channel_id += 1
-
-    # Creating a new dictornary for new channel
-    new_channel = {
-        'channel_id': channel_id,
-        'name': name,
-        'is_public': is_public,
-    }
-
-    # Adding channel to dictionary
+    if is_public:
+        new_channel['is_public'] = True
+    else:
+        new_channel['is_public'] = False
+    
+    # Add new channel to channels
     channels.append(new_channel)
 
-    # Adding the whoever called this function as the owner of the channel
-    for user in users:
-        if (user['token'] == token):
-            channel_addowner(token, channel_id, user['u_id'])
-            break
+    # Add creator of channel to channel
+    channel.channel_addowner(
+        token, new_channel['channel_id'], authorised_user['u_id'])
 
-    return {
-        'channel_id': new_channel['channel_id'],
-        'name': new_channel['name'],
-    }
+    # Return new channel
+    return {'channel_id': new_channel['channel_id']}
 

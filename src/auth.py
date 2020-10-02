@@ -1,18 +1,7 @@
-from data import *
+from data import data
 import re
 import pytest
 from error import InputError
-
-# The following regex and def check(email) function was from geek for greek website
-# https://www.geeksforgeeks.org/check-if-email-address-valid-or-not-in-python/
-# Make a regular expression
-# for validating an Email
-regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-
-'''
-We should consider using user.py to create user instead of dictionary with register function
-'''
-
 
 def create_token(email):
     # creates a hash using in built python hash function
@@ -20,9 +9,9 @@ def create_token(email):
 
 
 def check(email):
-    # pass the regular expression
-    # and checks format of email
-    # return True is correct else False
+    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+    
+    # Make a regular expression for validating an Email
     if(re.search(regex, email)):
         return True
     else:
@@ -38,18 +27,23 @@ def auth_login(email, password):
     # Get users from data
     users = data['users']
 
-    # Check that email and password are correct and valid
-    for user in users:
-        if (user['email'] != email):
-            raise InputError('Incorrect email')
-        if (user['email'] == email and user['password'] != password):
-            raise InputError('Incorrect password')
-        if (user['email'] == email and user['password'] == password):
-            return {
-                'u_id': user['u_id'],
-                'token': user['token']
-            }
+    # Check that email and password are correct and valid    
+    user = next((user for user in users if user['email'] == email), None)
 
+    # If the was not found based on email, throw exception
+    if user == None:
+        raise InputError('Incorrect email')
+    
+    # If password matches send back u_id and token
+    # Else throw exception
+    if user['password'] == password:
+        return {
+            'u_id': user['u_id'],
+            'token': user['token']
+        }
+    else:
+        raise InputError('Incorrect password')
+    
 
 def auth_logout(token):
 
@@ -57,13 +51,10 @@ def auth_logout(token):
     users = data['users']
 
     # Check that token exists
-    for user in users:
-        if (user['token'] == token):
-            return {
-                'is_success': True,
-            }
-
-    return {'is_success': False}
+    if any(user['token'] == token for user in users):
+        return {'is_success' : True}
+    else:
+        return {'is_success': False}
 
 
 def auth_register(email, password, name_first, name_last):
@@ -97,6 +88,7 @@ def auth_register(email, password, name_first, name_last):
     if len(handle) > 20:  # keeping the handle under 20 chars
         handle = handle[0:20]
 
+
     # Creating a new dictionary for new user
     new_user = {
         'u_id': len(users),
@@ -108,6 +100,12 @@ def auth_register(email, password, name_first, name_last):
         'token': create_token(email)
     }
 
+    # Auto Increment the next user
+    if len(users) == 0:
+        new_user['u_id'] = 1
+    else:
+        new_user['u_id'] = users[-1]['u_id'] + 1
+    
     # Adding user to dictionary
     users.append(new_user)
 
