@@ -131,3 +131,4 @@ from other import clear
 #     with pytest.raises(AccessError) as e:
 #         channel.channel_details(3, 1000)
 #     assert 'Authorised user is not a member of the channel' == str(e.value)
+

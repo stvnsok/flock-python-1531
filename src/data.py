@@ -18,6 +18,7 @@ User 0bject :  {
 Channel Object : {
                     'channel_id' : integer,
                     'name' : string,
+                    'is_public' : boolean
                     'messages' : [
                                     {
                                         'message_id' : integer,
@@ -32,7 +33,7 @@ Channel Object : {
                                         'u_id': integer,
                                         'name_first': string,
                                         'name_last': string,
-                                        'owner_member': bool
+                                        'is_owner': boolean
                                     }
 
                                 ]
@@ -40,6 +41,11 @@ Channel Object : {
 
 '''
 data = {
+    'users': [],
+    'channels': [],
+}
+
+data_reset = {
     'users': [],
     'channels': [],
 }
