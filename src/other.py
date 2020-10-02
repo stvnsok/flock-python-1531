@@ -1,9 +1,10 @@
-from data import data, data_reset
+from data import data
 import copy
 
 
 def clear():
-    data = copy.deepcopy(data_reset)
+    data['users'].clear()
+    data['channels'].clear()
 
 
 def users_all(token):

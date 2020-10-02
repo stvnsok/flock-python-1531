@@ -34,7 +34,7 @@ def auth_login(email, password):
     if user == None:
         raise InputError('Incorrect email')
     
-    # If password matches send back u_id and token
+    # If password matches send back id and token
     # Else throw exception
     if user['password'] == password:
         return {

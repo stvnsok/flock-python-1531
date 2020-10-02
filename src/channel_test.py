@@ -3,8 +3,62 @@
 import pytest
 import channel
 import channels
+import auth
 from error import InputError, AccessError
 from other import clear
+
+def test_channel_1():
+    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
+    cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
+
+    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+    assert ch_details['name'] == 'cool_channel'
+    assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
+
+    with pytest.raises(InputError) as e:
+        channel.channel_invite(john['token'], 9999, bob['u_id'])
+    assert str(e.value) == 'Channel_id does not exist'
+
+    with pytest.raises(InputError) as e:
+        channel.channel_invite(john['token'], cool_channel['channel_id'], 9999)
+    assert str(e.value) == 'U_id does not exist'
+
+    with pytest.raises(AccessError) as e:
+        channel.channel_invite(bob['token'], cool_channel['channel_id'], john['u_id'])
+    assert str(e.value) == 'Authorised user is not a member of the channel'
+
+    channel.channel_invite(john['token'], cool_channel['channel_id'], bob['u_id'])
+    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+
+    assert ch_details['name'] == 'cool_channel'
+    assert len(ch_details['owner_members']) == 1
+    assert len(ch_details['all_members']) == 2
+    
+    channel.channel_leave(bob['token'], cool_channel['channel_id'])
+    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+    assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
+
+    channel.channel_addowner(john['token'], cool_channel['channel_id'], bob['u_id'])
+    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+    assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 2
+
+    channel.channel_removeowner(john['token'], cool_channel['channel_id'], bob['u_id'])
+    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+    assert len(ch_details['owner_members']) == 1
+    assert len(ch_details['all_members']) == 2
+
+    clear()
+
+# def test_channel_details():
+#     john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+#     cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
+    
+#     ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+#     assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
+
+#     clear()
+
 
 # def test_invite_to_invalid_channel():
 #     channels.channels_create(login['token'], "channel_1", True)
