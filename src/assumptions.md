@@ -18,4 +18,3 @@ Related to Channels.py
     - the argument of is_public is an true or false so 1 or 0
     - channel names can have no characters ''
     - channel names don't need to be unique
-    - channels can be created with no registered users
