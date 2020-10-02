@@ -63,25 +63,16 @@ def channels_create(token, name, is_public):
     # Grabs all channels from data
     channels = data['channels']
 
-    # Counting the number of private and public channels
-    private_channel_count = 0
-    public_channel_count = 0
+    # Generate channel id based on the number of exisiting channels
+    channel_id = 0
     for channel in channels:
-        if channel['channel_id'] >= 9000 and  channel['channel_id'] < 10000:
-            private_channel_count += 1
-        elif channel['channel_id'] >= 1000 and channel['channel_id'] < 2000:
-            public_channel_count += 1
-    # Generate channel id
-    if is_public is True:
-        channel_id = 1000 + public_channel_count
-    else:
-        channel_id = 9000 + private_channel_count
-
+        channel_id += 1
 
     # Creating a new dictornary for new channel
     new_channel = {
         'channel_id': channel_id,
         'name': name,
+        'is_public': is_public,
     }
 
     # Adding channel to dictionary
