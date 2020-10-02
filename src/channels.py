@@ -83,7 +83,7 @@ def channels_create(token, name, is_public):
 
     # raise error for name being too long
     if len(name) > 20:
-        raise InputError('Name too long')
+        raise InputError('Input Channel Name too long')
 
     new_channel = {}
     new_channel['name'] = name
