@@ -13,7 +13,7 @@ def channel_invite(token, channel_id, u_id):
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
-        (channel for channel in channels if channel['id'] == channel_id), None)
+        (channel for channel in channels if channel['channel_id'] == channel_id), None)
 
     # Finds the user, if it doesn't exists assigns None
     user = next((user for user in users if user['u_id'] == u_id), None)
@@ -58,7 +58,7 @@ def channel_details(token, channel_id):
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
-        (channel for channel in channels if channel['id'] == channel_id), None)
+        (channel for channel in channels if channel['channel_id'] == channel_id), None)
 
     # Get the user that is sending the request
     authorised_user = next(
@@ -98,7 +98,7 @@ def channel_messages(token, channel_id, start):
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
-        (channel for channel in channels if channel['id'] == channel_id), None)
+        (channel for channel in channels if channel['channel_id'] == channel_id), None)
 
     # Get the user that is sending the request
     authorised_user = next(
@@ -145,7 +145,7 @@ def channel_leave(token, channel_id):
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
-        (channel for channel in channels if channel['id'] == channel_id), None)
+        (channel for channel in channels if channel['channel_id'] == channel_id), None)
 
     # Check if channel exists
     if (channel == None):
@@ -156,15 +156,15 @@ def channel_leave(token, channel_id):
         (user for user in users if user['token'] == token), None)
 
     # Find the authorised user from the channel
-    member = next((member for member in channel['members'] if authorised_user['u_id'] == member['u_id']), None)
+    user = next((member for member in channel['members'] if authorised_user['u_id'] == member['u_id']), None)
 
     # Check if authorised user is a member of the channel
-    if member == None:
+    if user == None:
         raise AccessError(
             'Authorised user is not a member of this channel')
     
     # If member remove them from channel
-    channel['members'].pop(member)
+    channel['members'] = [member for member in channel['members'] if member['u_id'] != user['u_id']]
     
     return {}
 
@@ -180,7 +180,7 @@ def channel_join(token, channel_id):
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
-        (channel for channel in channels if channel['id'] == channel_id), None)
+        (channel for channel in channels if channel['channel_id'] == channel_id), None)
 
     # Check if channel exists
     if (channel == None):
@@ -196,10 +196,10 @@ def channel_join(token, channel_id):
     # Otherwise throw an exception
     if channel['is_public']:
         member = {
-            'u_id': authorised_user['u_id'],
-            'name_first': authorised_user['name_first'],
-            'name_last': authorised_user['name_last'],
-            'owner_member': False
+        'u_id': authorised_user['u_id'],
+        'name_first': authorised_user['name_first'],
+        'name_last': authorised_user['name_last'],
+        'owner_member': False
         }
         channel['members'].append(member)
     else:
@@ -234,10 +234,11 @@ def channel_addowner(token, channel_id, u_id):
             'Authorised user is not an owner of the channel')
     
     # Find the user from the selected channel, if user does not exists assigns None
-    user = next((member for member in channel['members'] if user['u_id'] == member['u_id']), None)
+    user = next((member for member in channel['members'] if member['u_id'] == u_id), None)
 
     # If user does not exists creates a new member and addes it as an owner to the channel
     if user == None:
+        user = next((user for user in users if user['u_id'] == u_id), None)
         new_owner = {
             'u_id': user['u_id'],
             'name_first': user['name_first'],
@@ -265,7 +266,7 @@ def channel_removeowner(token, channel_id, u_id):
     
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
-        (channel for channel in channels if channel['id'] == channel_id), None)
+        (channel for channel in channels if channel['channel_id'] == channel_id), None)
 
     # If channel does not exist throw exception
     if (channel == None):

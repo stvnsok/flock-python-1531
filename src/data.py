@@ -45,7 +45,3 @@ data = {
     'channels': [],
 }
 
-data_reset = {
-    'users': [],
-    'channels': [],
-}

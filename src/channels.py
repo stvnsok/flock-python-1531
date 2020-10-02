@@ -28,7 +28,7 @@ def channels_list(token):
 
     # Find all the channels where the authorised user is a member        
     channels = [channel for channel in data['channels'] 
-        for member in channel['members'] if authorised_user['u_id'] == member['u_id']]
+                    for member in channel['members'] if authorised_user['u_id'] == member['u_id']];
 
     # Return channels
     return {'channels' : channels}
@@ -87,30 +87,30 @@ def channels_create(token, name, is_public):
 
     new_channel = {}
     new_channel['name'] = name
+    new_channel['members'] = []
+    new_channel['messages'] = []
     # Method for assigning the channel id.
-    # Will auto-increment from the last element u_id
+    # Will auto-increment from the last element id
     if len(channels) == 0:
         new_channel['channel_id'] = 1
     else:
         new_channel['channel_id'] = channels[-1]['channel_id'] + 1
 
-    # giving the channel the status of public or private
     if is_public:
         new_channel['is_public'] = True
     else:
         new_channel['is_public'] = False
-
-    # Adding the creator of channel to owner
+    
     owner = {
-        'u_id': authorised_user['u_id'],
+        'u_id' : authorised_user['u_id'],
         'name_first': authorised_user['name_first'],
         'name_last': authorised_user['name_last'],
-        'owner_member': True
+        'is_owner': True
     }
     
     # Add creator of channel to channel
     new_channel['members'].append(owner)
-    
+
     # Add new channel to channels
     channels.append(new_channel)
 
