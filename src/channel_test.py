@@ -50,139 +50,77 @@ def test_channel_1():
 
     clear()
 
-# def test_channel_details():
-#     john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-#     cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
+def test_channel_details():
+    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
     
-#     ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
-#     assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
+    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+    assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
 
-#     clear()
-
-
-# def test_invite_to_invalid_channel():
-#     channels.channels_create(login['token'], "channel_1", True)
-
-# Test that channel invite works correctly
+    clear()
 
 
-# def test_channel_invite():
-#     clear()
-#     result = channel.channel_invite(1, 1000, 3)
-#     assert result == {}
+# Test invalid channel exception
+def test_channel_invite_invalid_channel():
+    with pytest.raises(InputError) as e:
+         channel.channel_invite(fried['token'], food_channel['channel_id'], chicken['u_id'])
+    assert 'Channel_id does not exist' == str(e.value)
+    clear()
 
-# # Test invalid channel exception
-
-
-# def test_channel_invite_invalid_channel():
-#     clear()
-#     with pytest.raises(InputError) as e:
-#         channel.channel_invite(1, 99, 3)
-#     assert 'Channel_id does not exist' == str(e.value)
-
-# # Test invalid u_id exception
-
-
-# def test_channel_invite_invalid_user():
-#     clear()
-#     with pytest.raises(InputError) as e:
-#         channel.channel_invite(1, 1000, 30)
-#     assert 'U_id does not exist' == str(e.value)
-
-# # Test unauthorised user exception
+# Test invalid u_id exception
+def test_channel_invite_invalid_user():
+    with pytest.raises(InputError) as e:
+        channels.channel_invite(john['token'], cool_channel['channel_id'], bob['u_id'])
+    assert 'The u_id is invalid' == str(e.value)
+    clear()
+    
+# Test unauthorised user exception
+def test_channel_invite_unauthorised_user():
+    with pytest.raises(AccessError) as e:
+        channel.channel_invite(fried['token'], food_channel['channel_id'], chicken['u_id'])
+    assert 'Authorised user is not a member of the channel' == str(e.value) 
+    clear()
 
 
-# def test_channel_invite_unauthorised_user():
-#     clear()
-#     with pytest.raises(AccessError) as e:
-#         channel.channel_invite(3, 1000, 1)
-#     assert 'Authorised user is not a member of the channel' == str(e.value)
+# Test channel details
+def test_channel_details():
+    user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
+    token = user['token']
+    assert channel.channel_details(token) == { 
+        'name': 'channel_1',
+        'owner_members': [{
+            'u_id': 1,
+            'name_first': 'Chicken',
+            'name_last': 'Nugget'}],
+        'all_members': [{
+            'u_id': 1,
+            'name_first': 'Chicken',
+            'name_last': 'Nugget',
+            'u_id': 2,
+            'name_first': 'Zinger',
+            'name_last': 'Box',
+            'u_id': 3,
+            'name_first': 'Wicked',
+            'name_last': 'Wings'}]   
+    }
+    clear()
 
-# # Test channel details
+# Test invalid channel
+def test_channel_details_invalid_channel():
+    user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
+    token = user['token']
+    with pytest.raises(InputError) as e:
+        channels.channel_details(token, "999" )
+    assert 'Channel is invalid/does not exist' == str(e.value)
+    clear()
 
-
-# def test_channel_details():
-#     clear()
-
-#     result = channel.channel_details(1, 2000)
-#     assert result == {
-#         'name': 'channel2',
-#         'owner_members': [
-#                 {
-#                     'u_id': 1,
-#                     'name_first': 'Jay',
-#                     'name_last': 'Anand',
-#                 },
-#             {
-#                     'u_id': 2,
-#                     'name_first': 'Marko',
-#                     'name_last': 'Wong',
-#             }
-#         ],
-#         'all_members': [
-#             {
-#                 'u_id': 1,
-#                 'name_first': 'Jay',
-#                 'name_last': 'Anand',
-#             },
-#             {
-#                 'u_id': 2,
-#                 'name_first': 'Marko',
-#                 'name_last': 'Wong',
-#             }
-#         ],
-#     }
-
-#     result = channel.channel_details(1, 1000)
-#     channel.channel_invite(1, 1000, 3)
-#     assert result == {
-#         'name': 'channel1',
-#         'owner_members': [
-#                 {
-#                     'u_id': 1,
-#                     'name_first': 'Jay',
-#                     'name_last': 'Anand',
-#                 },
-#             {
-#                     'u_id': 2,
-#                     'name_first': 'Marko',
-#                     'name_last': 'Wong',
-#             },
-
-#         ],
-#         'all_members': [
-#             {
-#                 'u_id': 1,
-#                 'name_first': 'Jay',
-#                 'name_last': 'Anand',
-#             },
-#             {
-#                 'u_id': 2,
-#                 'name_first': 'Marko',
-#                 'name_last': 'Wong',
-#             },
-#             {
-#                 'u_id': 3,
-#                 'name_first': 'Bob',
-#                 'name_last': 'Cool',
-#             }
-#         ],
-#     }
+# Test an unauthorised member
+def test_channel_details_unauthorised_user():
+    with pytest.raises(AccessError) as e:
+        channel.channel_details((fried['token'], food_channel['channel_id'], chicken['u_id'])
+    assert 'Authorised user is not a member of the channel' == str(e.value)
+    clear()
 
 
-# # Test an invalid channel id
-# def test_channel_details_invalid_channel():
-#     clear()
-#     with pytest.raises(InputError) as e:
-#         channel.channel_details(1, 900000)
-#     assert 'Channel_id does not exist' == str(e.value)
-
-# # Test an unauthorised member
-
-
-# def test_channel_details_unauthorised_user():
-#     clear()
-#     with pytest.raises(AccessError) as e:
-#         channel.channel_details(3, 1000)
-#     assert 'Authorised user is not a member of the channel' == str(e.value)
+    
 
