@@ -52,7 +52,7 @@ def test_channel_1():
 
 def test_channel_details():
     john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
+    cool_channel = channel.channel_create(john['token'], 'cool_channel', True)
     
     ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
     assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
@@ -60,6 +60,14 @@ def test_channel_details():
     clear()
 
 
+# Test invalid token for channel_invite
+    user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
+    token = user['token']
+    with pytest.raises(AccessError) as e:
+        channel.channel_invite("invalid_token")
+    assert 'Token is incorrect/user does not exist' == str(e.value)
+    
+    
 # Test invalid channel exception
 def test_channel_invite_invalid_channel():
     with pytest.raises(InputError) as e:
@@ -70,7 +78,7 @@ def test_channel_invite_invalid_channel():
 # Test invalid u_id exception
 def test_channel_invite_invalid_user():
     with pytest.raises(InputError) as e:
-        channels.channel_invite(john['token'], cool_channel['channel_id'], bob['u_id'])
+        channel.channel_invite(john['token'], cool_channel['channel_id'], bob['u_id'])
     assert 'The u_id is invalid' == str(e.value)
     clear()
     
@@ -81,7 +89,16 @@ def test_channel_invite_unauthorised_user():
     assert 'Authorised user is not a member of the channel' == str(e.value) 
     clear()
 
-
+# Test invalid token for channel_details
+def test_channel_details_invalid():
+    user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
+    token = user['token']
+    with pytest.raises(AccessError) as e:
+        channel.channel_details("invalid_token")
+    assert 'Token is incorrect/user does not exist' == str(e.value)
+    
+    clear()
+    
 # Test channel details
 def test_channel_details():
     user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
@@ -104,23 +121,60 @@ def test_channel_details():
             'name_last': 'Wings'}]   
     }
     clear()
-
+    
+# Test no channel details
+def test_channel_details_none():
+    user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
+    token = user['token']
+    assert channel.channel_details(token) == {
+        'name': [],
+        'owner_members': [],
+        'all_members': []
+    }
+    clear()           
+    
 # Test invalid channel
 def test_channel_details_invalid_channel():
     user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
     token = user['token']
     with pytest.raises(InputError) as e:
-        channels.channel_details(token, "999" )
+        channel.channel_details(token, "999" )
     assert 'Channel is invalid/does not exist' == str(e.value)
     clear()
 
 # Test an unauthorised member
 def test_channel_details_unauthorised_user():
     with pytest.raises(AccessError) as e:
-        channel.channel_details((fried['token'], food_channel['channel_id'], chicken['u_id'])
+        channel.channel_details(fried['token'], food_channel['channel_id'], chicken['u_id'])
     assert 'Authorised user is not a member of the channel' == str(e.value)
     clear()
-
-
     
+# Test invalid token for channel_join
+def test_channel_removeowner_invalid_token():
+    user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
+    with pytest.raises(AccessError) as e:
+        channel.channel_join("invalid_token")
+    assert 'Token is incorrect/user does not exist' == str(e.value)
+    clear()
+# Test invalid token for channel_leave
+def test_channel_removeowner_invalid_token():
+    user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
+    with pytest.raises(AccessError) as e:
+        channel.channel_leave("invalid_token")
+    assert 'Token is incorrect/user does not exist' == str(e.value)
+    clear()
+# Test invalid token for channel_addowner
+def test_channel_removeowner_invalid_token():
+    user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
+    with pytest.raises(AccessError) as e:
+        channel.channel_addowner("invalid_token")
+    assert 'Token is incorrect/user does not exist' == str(e.value)
+    clear()
+# Test invalid token for channel_removeowner
+def test_channel_removeowner_invalid_token():
+    user = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
+    with pytest.raises(AccessError) as e:
+        channel.channel_removeowner("invalid_token")
+    assert 'Token is incorrect/user does not exist' == str(e.value)
+    clear()
 
