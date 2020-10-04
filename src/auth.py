@@ -22,7 +22,7 @@ def auth_login(email, password):
 
     # Check email is valid format
     if (check(email)) is not True:
-        raise InputError('Invalided email')
+        raise InputError('Invalid email')
 
     # Get users from data
     users = data['users']

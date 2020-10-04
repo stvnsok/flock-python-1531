@@ -7,6 +7,7 @@ import pytest
 import auth
 from error import InputError
 from other import clear
+from data import data
 
 
 def test_successful_registration():
@@ -23,7 +24,7 @@ def test_invalid_email():
     assert 'Invalid email' == str(e.value)
 
     with pytest.raises(InputError) as e:
-        auth.auth_register('', 'qwe123!@#', 'John', 'Smith')
+        auth.auth_login('animeanime.com', "password")
     assert 'Invalid email' == str(e.value)
     clear()
 
@@ -91,3 +92,11 @@ def test_logout_fail():
     logout = auth.auth_logout(login['token'] + 'avc')
     assert logout['is_success'] == False
     clear()
+
+def test_handle_too_long():
+    auth.auth_register('john@gmail.com', 'qwe123!@#', '1234567890', 'yoyoy123456789')
+    users = data['users']
+    handle = users[0]['handle_str']
+    assert handle == "1234567890yoyoy12345"
+    clear()
+    

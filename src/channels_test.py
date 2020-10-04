@@ -262,7 +262,7 @@ def test_channels_create_invalid_token():
     user = auth.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith')
     token = user['token']
     with pytest.raises(AccessError) as e:
-        channels.channels_list("invalid_token")
+        channels.channels_create("invalid_token", "name", True)
     assert 'Token is incorrect/user does not exist' == str(e.value)
     clear()
 
