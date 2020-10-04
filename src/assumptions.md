@@ -30,3 +30,7 @@ Related to Channels.py
 
 General:
     - when token incorrect give error stating: "Token is incorrect/user does not exist"
+    - the argument of is_public is an true or false so 1 or 0
+
+    - If a user that is to be added as an owner to a channel that isn't already a member
+      is added as a member and made an owner

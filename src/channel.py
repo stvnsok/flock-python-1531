@@ -117,10 +117,13 @@ def channel_messages(token, channel_id, start):
     end = start + 50
     messages = channel['messages']
 
+    if (len(messages) < start):
+        raise InputError('Start is greater than total number of messages')
+
     # if this index is greater than the amount of messages then
     # the amount of remaining messages after the start index
     # is less than 50
-    if (len(channel['messages']) < end):
+    if (len(messages) < end):
         end = -1
         messages = messages[start:]
     # send back messages between the start and end range
@@ -161,7 +164,7 @@ def channel_leave(token, channel_id):
     # Check if authorised user is a member of the channel
     if user == None:
         raise AccessError(
-            'Authorised user is not a member of this channel')
+            'Authorised user is not a member of the channel')
     
     # If member remove them from channel
     channel['members'] = [member for member in channel['members'] if member['u_id'] != user['u_id']]
@@ -199,7 +202,7 @@ def channel_join(token, channel_id):
         'u_id': authorised_user['u_id'],
         'name_first': authorised_user['name_first'],
         'name_last': authorised_user['name_last'],
-        'owner_member': False
+        'is_owner': False
         }
         channel['members'].append(member)
     else:
@@ -290,7 +293,7 @@ def channel_removeowner(token, channel_id, u_id):
 
     # If user is not an owner of the channel throw exception
     if owner == None:
-        raise AccessError(
+        raise InputError(
             'User with u_id is not an owner of the channel')
     # Else remove the owner as an owner of channel
     else:
