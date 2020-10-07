@@ -1,8 +1,9 @@
+from werkzeug.exceptions import HTTPException
 
+class AccessError(HTTPException):
+    code = 400
+    message = 'No message specified'
 
-class InputError(Exception):
-    pass
-
-
-class AccessError(Exception):
-    pass
+class InputError(HTTPException):
+    code = 400
+    message = 'No message specified'
