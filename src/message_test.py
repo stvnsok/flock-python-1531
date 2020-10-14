@@ -30,6 +30,16 @@ def test_message_1():
     message_sent_john = message_send(john['token'], john_channel['channel_id'], valid_message)
 
     assert message_sent_john['message_id'] == valid_message
+    
+def test_edit_message():
+    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
+    john_channel = channels.channels_create(john['token'], 'john_channel', True)
+    bob_channel = channels.channels_create(bob['token'], 'bob_channel', True) 
 
+    old_message == "This is the old message"
+    message_sent_john = message_send(john['token'], john_channel['channel_id'], old_message)
     
-    
+    new_message == "This is the new message"
+    message_edit_john = message_edit(john['token'], message_sent_john['message_id'], new_message)
+    assert message_edit_john['message_id'] == new_message
