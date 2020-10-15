@@ -1,14 +1,15 @@
+'''
+import data dictionary from data.py
+'''
 from data import data
-import channel
 from error import InputError, AccessError
-import pytest
-import re
 
 
 def channels_list(token):
     '''
     channels_list
-    Provide a list of all channels (and their associated details) that the authorised user is part of
+    Provide a list of all channels (and their associated details)
+    that the authorised user is part of
     Parameters: (token)
     Return type: {channels}
     Exceptions: N/A
@@ -16,22 +17,22 @@ def channels_list(token):
 
     # Get users from data
     users = data['users']
-   
+
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
 
     # Check if user exists/ token is correct
-    if authorised_user == None:
+    if authorised_user is None:
         # Need to fix this later
         raise AccessError('Token is incorrect/user does not exist')
 
-    # Find all the channels where the authorised user is a member        
-    channels = [channel for channel in data['channels'] 
-                    for member in channel['members'] if authorised_user['u_id'] == member['u_id']];
+    # Find all the channels where the authorised user is a member
+    channels = [channel for channel in data['channels']
+                for member in channel['members'] if authorised_user['u_id'] == member['u_id']]
 
     # Return channels
-    return {'channels' : channels}
+    return {'channels': channels}
 
 
 def channels_listall(token):
@@ -45,13 +46,13 @@ def channels_listall(token):
 
     # Get users from data
     users = data['users']
-    
+
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
 
     # Check if user exists/ token is correct
-    if authorised_user == None:
+    if authorised_user is None:
         # Need to fix this later
         raise AccessError('Token is incorrect/user does not exist')
 
@@ -60,7 +61,7 @@ def channels_listall(token):
 
 
 def channels_create(token, name, is_public):
-    '''    
+    '''
     channels_create
     Creates a new channel with that name that is either a public or private channel
     Parameters: (token, name, is_public)
@@ -77,7 +78,7 @@ def channels_create(token, name, is_public):
         (user for user in users if user['token'] == token), None)
 
     # Check if user exists/ token is correct
-    if authorised_user == None:
+    if authorised_user is None:
         # Need to fix this later
         raise AccessError('Token is incorrect/user does not exist')
 
@@ -100,14 +101,14 @@ def channels_create(token, name, is_public):
         new_channel['is_public'] = True
     else:
         new_channel['is_public'] = False
-    
+
     owner = {
-        'u_id' : authorised_user['u_id'],
+        'u_id': authorised_user['u_id'],
         'name_first': authorised_user['name_first'],
         'name_last': authorised_user['name_last'],
         'is_owner': True
     }
-    
+
     # Add creator of channel to channel
     new_channel['members'].append(owner)
 
@@ -116,4 +117,3 @@ def channels_create(token, name, is_public):
 
     # Return new channel
     return {'channel_id': new_channel['channel_id']}
-
