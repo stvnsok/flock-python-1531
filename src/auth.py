@@ -2,10 +2,11 @@
 import regex library
 '''
 import re
+from flask import Flask, request
 from data import data
 from error import InputError
 
-
+app = Flask(__name__)
 def create_token(email):
     '''
     Creates a token for each user
@@ -26,11 +27,14 @@ def check(email):
 
     return False
 
-
-def auth_login(email, password):
+@app.route("/auth/login", methods=['POST'])
+def auth_login():
     '''
     Login and authenticate existing user
     '''
+    payload = request.get_json()
+    email = payload['email']
+    password = payload['password']
 
     # Check email is valid format
     if (check(email)) is not True:
@@ -55,13 +59,13 @@ def auth_login(email, password):
         }
 
     raise InputError('Incorrect password')
-
-
-def auth_logout(token):
+@app.route("/auth/logout", methods=['POST'])
+def auth_logout():
     '''
     Logout authenticated user
     '''
-
+    payload = request.get_json()
+    token = payload['token']
     # Get users from data
     users = data['users']
 
@@ -71,12 +75,16 @@ def auth_logout(token):
 
     return {'is_success': False}
 
-
-def auth_register(email, password, name_first, name_last):
+@app.route("/auth/register", methods=['POST'])
+def auth_register():
     '''
     Register a new user
     '''
-
+    payload = request.get_json()
+    email = payload['email']
+    password = payload['password']
+    name_first = payload['name_first']
+    name_last = payload['name_last']
     # checks for valid email
     if check(email) is not True:
         raise InputError('Invalid email')
