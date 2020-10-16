@@ -90,4 +90,4 @@ def removeowener():
     return(channel.channel_removeowner())
 
 if __name__ == "__main__":
-    APP.run(port=3939) # Do not edit this port CHANGE BACK TO 0 LATER CHANGE BACK TO 0 LATER CHANGE BACK TO 0 LATER
+    APP.run(port=0) # Do not edit this port 
