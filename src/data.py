@@ -1,7 +1,7 @@
 '''
 This acts as a 'database'. It will be initialised whenever a test is run (does not persist).
 
-Dictionary layout 
+Dictionary layout
 
 This is just to help build iteration 1 features and keep some consistency
 
@@ -18,16 +18,7 @@ User 0bject :  {
 Channel Object : {
                     'channel_id' : integer,
                     'name' : string,
-                    'is_public' : boolean
-                    'messages' : [
-                                    {
-                                        'message_id' : integer,
-                                        'u_id' : integer,
-                                        'message' : string,
-                                        'time_created' : integer (unix timestamp),
-                                    }
-
-                    ]
+                    'is_public' : boolean,
                     'members' : [
                                     {
                                         'u_id': integer,
@@ -37,12 +28,17 @@ Channel Object : {
                                     }
 
                                 ]
-                 }   
+                 }
 
+Message Object : {
+                    'message_id' : integer,
+                    'u_id' : integer,
+                    'message' : string,
+                    'time_created' : integer (unix timestamp),
+                  }
 '''
 data = {
     'users': [],
     'channels': [],
+    'messages': [],
 }
-
-

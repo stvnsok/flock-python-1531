@@ -1,14 +1,19 @@
 '''
-imports
+Tests for user.py
+
 '''
+
+import user
+from error import InputError
+from other import clear
+from data import data
 import re
 from subprocess import Popen, PIPE
 import signal
 from time import sleep
-import json
 import requests
+import json
 import pytest
-
 
 # Use this fixture to get the URL of the server. It starts the server for you,
 # so you don't need to.
@@ -32,9 +37,34 @@ def url():
         server.kill()
         raise Exception("Couldn't get URL from local server")
 
-def test_echo(url):
-    '''
-    A simple test to check echo
-    '''
-    resp = requests.get(url + 'echo', params={'data': 'hello'})
-    assert json.loads(resp.text) == {'data': 'hello'}
+'''
+Tests for user/profile
+'''
+def test_profile_invalid_user_token(url):
+    pass
+
+def test_profile_invalid_user_unregistered(url):
+    pass
+
+def test_profile_display_correct_info(url):
+    pass
+
+'''
+Tests for user/profile/sethandle
+'''
+def test_profile_handle_invalid_user_token(url):
+    pass
+
+def test_profile_handle_too_short(url):
+    pass
+
+def test_profile_handle_too_long(url):
+    pass
+
+def test_profile_handle_exisiting():
+    pass
+
+def test_profile_handle_correct_update():
+    pass
+
+
