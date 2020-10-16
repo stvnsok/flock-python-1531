@@ -12,14 +12,6 @@ def user_profile(token, u_id):
         },
     }
 
-def user_profile_setname(token, name_first, name_last):
-    return {
-    }
-
-def user_profile_setemail(token, email):
-    return {
-    }
-
 def user_profile_sethandle(token, handle_str):
     return {
     }

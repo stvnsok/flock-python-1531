@@ -1,3 +1,6 @@
+from data import data
+from error import InputError, AccessError
+
 def user_profile(token, u_id):
     return {
         'user': {
