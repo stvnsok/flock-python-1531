@@ -1,6 +1,7 @@
 from data import data
 import copy
-
+from datetime import timezone
+import calendar
 
 def clear():
     data['users'].clear()
@@ -34,3 +35,7 @@ def search(token, query_str):
             }
         ],
     }
+
+def get_timestamp():
+    d = datetime.utcnow()
+    return calendar.timegm(d.utctimetuple())
