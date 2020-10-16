@@ -3,13 +3,18 @@ import data dictionary from data.py
 '''
 from data import data
 from error import InputError, AccessError
+from flask import request
 
 
-def channel_invite(token, channel_id, u_id):
+def channel_invite():
     '''
     Invites a user (with user id u_id) to join a channel with ID channel_id.
     Once invited the user is added to the channel immediately
     '''
+    payload = request.get_json()
+    token = payload['token']
+    channel_id = payload['channel_id']
+    u_id = payload['u_id']
 
     channels = data['channels']
     users = data['users']
@@ -50,11 +55,13 @@ def channel_invite(token, channel_id, u_id):
     return {}
 
 
-def channel_details(token, channel_id):
+def channel_details():
     '''
     Given a Channel with ID channel_id that the authorised user is part of,
     provide basic details about the channel
     '''
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
 
     channels = data['channels']
     users = data['users']
@@ -87,7 +94,7 @@ def channel_details(token, channel_id):
     }
 
 
-def channel_messages(token, channel_id, start):
+def channel_messages():
     '''
     Given a Channel with ID channel_id that the authorised user is part of,
     return up to 50 messages between index "start" and "start + 50". Message with
@@ -96,6 +103,9 @@ def channel_messages(token, channel_id, start):
     the least recent messages in the channel, returns -1 in "end" to indicate there are
     no more messages to load after this return.
     '''
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    start = request.args.get('start')
 
     channels = data['channels']
     users = data['users']
@@ -146,10 +156,13 @@ def channel_messages(token, channel_id, start):
     }
 
 
-def channel_leave(token, channel_id):
+def channel_leave():
     '''
     Given a channel ID, the user removed as a member of this channel
     '''
+    payload = request.get_json()
+    token = payload['token']
+    channel_id = payload['channel_id']
 
     channels = data['channels']
     users = data['users']
@@ -182,11 +195,14 @@ def channel_leave(token, channel_id):
     return {}
 
 
-def channel_join(token, channel_id):
+def channel_join():
     '''
     Given a channel_id of a channel that the authorised user can join,
     adds them to that channel
     '''
+    payload = request.get_json()
+    token = payload['token']
+    channel_id = payload['channel_id']
 
     channels = data['channels']
     users = data['users']
@@ -221,10 +237,14 @@ def channel_join(token, channel_id):
     return {}
 
 
-def channel_addowner(token, channel_id, u_id):
+def channel_addowner():
     '''
     Make user with user id u_id an owner of this channel
     '''
+    payload = request.get_json()
+    token = payload['token']
+    channel_id = payload['channel_id']
+    u_id = payload['u_id']
 
     channels = data['channels']
     users = data['users']
@@ -273,10 +293,14 @@ def channel_addowner(token, channel_id, u_id):
     return {}
 
 
-def channel_removeowner(token, channel_id, u_id):
+def channel_removeowner():
     '''
     Remove user with user id u_id an owner of this channel
     '''
+    payload = request.get_json()
+    token = payload['token']
+    channel_id = payload['channel_id']
+    u_id = payload['u_id']
 
     channels = data['channels']
     users = data['users']

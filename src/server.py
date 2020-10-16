@@ -7,6 +7,9 @@ from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
 import auth
+import channels
+import channel
+
 def defaultHandler(err):
     response = err.get_response()
     print('response', err, err.get_response())
@@ -46,5 +49,45 @@ def logout():
 def register():
     return(auth.auth_register())
 
+@APP.route("/channels/create", methods=['POST'])
+def create():
+    return(channels.channels_create())
+
+@APP.route("/channels/listall", methods=['GET'])
+def listall():
+    return(dumps(channels.channels_listall()))
+
+@APP.route("/channels/list", methods=['GET'])
+def lists():
+    return(dumps(channels.channels_list()))
+
+@APP.route("/channel/invite", methods=['POST'])
+def invite():
+    return(channel.channel_invite())
+
+@APP.route("/channel/details", methods=['GET'])
+def details():
+    return(dumps(channel.channel_details()))
+
+@APP.route("/channel/messages", methods=['GET'])
+def messages():
+    return(dumps(channel.channel_messages()))
+
+@APP.route("/channel/leave", methods=['POST'])
+def leave():
+    return(channel.channel_leave())
+
+@APP.route("/channel/join", methods=['POST'])
+def join():
+    return(channel.channel_join())
+
+@APP.route("/channel/addowner", methods=['POST'])
+def addowener():
+    return(channel.channel_addowner())
+
+@APP.route("/channel/removeowner", methods=['POST'])
+def removeowener():
+    return(channel.channel_removeowner())
+
 if __name__ == "__main__":
-    APP.run(port=0) # Do not edit this port
+    APP.run(port=3939) # Do not edit this port CHANGE BACK TO 0 LATER CHANGE BACK TO 0 LATER CHANGE BACK TO 0 LATER
