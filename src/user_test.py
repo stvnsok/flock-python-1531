@@ -7,14 +7,13 @@ import user
 from error import InputError
 from other import clear
 from data import data
-import pytest
 import re
 from subprocess import Popen, PIPE
 import signal
 from time import sleep
 import requests
 import json
-
+import pytest
 
 # Use this fixture to get the URL of the server. It starts the server for you,
 # so you don't need to.

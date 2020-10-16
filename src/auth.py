@@ -2,10 +2,10 @@
 import regex library
 '''
 import re
-from flask import Flask, request
+from flask import request
 from data import data
 from error import InputError
-from server import APP
+#from server import APP
 
 def create_token(email):
     '''
@@ -27,7 +27,7 @@ def check(email):
 
     return False
 
-@APP.route("/auth/login", methods=['POST'])
+#@APP.route("/auth/login", methods=['POST'])
 def auth_login():
     '''
     Login and authenticate existing user
@@ -59,7 +59,7 @@ def auth_login():
         }
 
     raise InputError('Incorrect password')
-@APP.route("/auth/logout", methods=['POST'])
+#@APP.route("/auth/logout", methods=['POST'])
 def auth_logout():
     '''
     Logout authenticated user
@@ -75,7 +75,7 @@ def auth_logout():
 
     return {'is_success': False}
 
-@APP.route("/auth/register", methods=['POST'])
+#@APP.route("/auth/register", methods=['POST'])
 def auth_register():
     '''
     Register a new user
