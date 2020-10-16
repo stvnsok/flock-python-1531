@@ -5,8 +5,8 @@ import re
 from flask import Flask, request
 from data import data
 from error import InputError
+from server import APP
 
-app = Flask(__name__)
 def create_token(email):
     '''
     Creates a token for each user
@@ -27,7 +27,7 @@ def check(email):
 
     return False
 
-@app.route("/auth/login", methods=['POST'])
+@APP.route("/auth/login", methods=['POST'])
 def auth_login():
     '''
     Login and authenticate existing user
@@ -59,7 +59,7 @@ def auth_login():
         }
 
     raise InputError('Incorrect password')
-@app.route("/auth/logout", methods=['POST'])
+@APP.route("/auth/logout", methods=['POST'])
 def auth_logout():
     '''
     Logout authenticated user
@@ -75,7 +75,7 @@ def auth_logout():
 
     return {'is_success': False}
 
-@app.route("/auth/register", methods=['POST'])
+@APP.route("/auth/register", methods=['POST'])
 def auth_register():
     '''
     Register a new user
