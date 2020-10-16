@@ -41,9 +41,13 @@ def url():
 Tests for user/profile
 '''
 def test_profile_invalid_user_token(url):
-    pass
+    resp = requests.get(url + 'user', params={'data': 'hello'})
+    assert json.loads(resp.text) == {'data': 'hello'}
 
 def test_profile_invalid_user_unregistered(url):
+    pass
+
+def test_profile_U_id_not_found(url):
     pass
 
 def test_profile_display_correct_info(url):
