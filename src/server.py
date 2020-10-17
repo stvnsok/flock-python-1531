@@ -9,6 +9,7 @@ from error import InputError
 import auth
 import channels
 import channel
+import user_marko
 
 def defaultHandler(err):
     response = err.get_response()
@@ -88,6 +89,14 @@ def addowener():
 @APP.route("/channel/removeowner", methods=['POST'])
 def removeowener():
     return(channel.channel_removeowner())
+
+@APP.route("/user/profile", methods=['GET'])
+def profile():
+    return(user_marko.user_profile())
+
+@APP.route("/user/profile/sethandle", methods=['PUT'])
+def sethandle():
+    return(user_marko.user_profile_sethandle())
 
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port 

@@ -1,25 +1,81 @@
 from data import data
 from error import InputError, AccessError
+from flask import request
 
-def user_profile(token, u_id):
+
+def user_profile():
+
+    token = request.args.get('token')
+    u_id_str = request.args.get('u_id')
+    u_id = int(u_id_str)
+    # Get users from data
+    users = data['users']
+
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+
+    #Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect/user does not exist')
+
+    # Searches for the user with the u_id
+    usersChecked = 0
+    for user_id in users:
+        if user_id['u_id'] == u_id:
+            profile = user_id
+        else:
+            usersChecked += 1
+
+    # If list reaches end then raise error for no user found
+    print(usersChecked)
+    if usersChecked == len(users):
+        raise InputError('No users with the entered u_id was found')
+        
     return {
-        'user': {
-        	'u_id': 1,
-        	'email': 'cs1531@cse.unsw.edu.au',
-        	'name_first': 'Hayden',
-        	'name_last': 'Jacobs',
-        	'handle_str': 'hjacobs',
-        },
+        'u_id': profile['u_id'],
+        'email': profile['email'],
+        'name_first': profile['name_first'],
+        'name_last': profile['name_last'],
+        'handle_str': profile['handle_str'],
     }
 
+def user_profile_sethandle():
+
+    payload = request.get_json()
+    token = payload['token']
+    handle_str = payload['handle_str']
+
+    # Grabs all users from data
+    users = data['users']
+    
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+
+    # Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect/user does not exist')
+
+    # checking if length of handle_str is between 3 and 20 inclusive
+    if len(handle_str) < 3 or len(handle_str) > 20:
+        raise InputError("Handle length needs to be between 3 and 20")
+    
+    # Cycles through all users to check if given handle already exists
+    for user_handle in users:
+        if user_handle['handle_str'] == handle_str:
+            raise InputError('Handle already in use by another user')
+
+    # Update the handle_str of user
+    for curr_user in users:
+        if curr_user['token'] == token:
+            curr_user['handle_str'] = handle_str
+    
+    return {}
 def user_profile_setname(token, name_first, name_last):
     return {
     }
 
 def user_profile_setemail(token, email):
-    return {
-    }
-
-def user_profile_sethandle(token, handle_str):
     return {
     }

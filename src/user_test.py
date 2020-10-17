@@ -41,7 +41,7 @@ def url():
 Tests for user/profile
 '''
 def test_profile_invalid_user_token(url):
-    resp = requests.get(url + 'user', params={'data': 'hello'})
+    resp = requests.get(url + 'user/profile', params={'token': 'hello'})
     assert json.loads(resp.text) == {'data': 'hello'}
 
 def test_profile_invalid_user_unregistered(url):

@@ -2,11 +2,12 @@ from data import data
 from error import InputError, AccessError
 from flask import request
 
+
 def user_profile():
 
     token = request.args.get('token')
-    u_id = request.args.get('u_id')
-
+    u_id_str = request.args.get('u_id')
+    u_id = int(u_id_str)
     # Get users from data
     users = data['users']
 
@@ -14,18 +15,22 @@ def user_profile():
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
 
-    # Check if user exists/ token is correct
+    #Check if user exists/ token is correct
     if authorised_user is None:
         # Need to fix this later
         raise AccessError('Token is incorrect/user does not exist')
 
     # Searches for the user with the u_id
-    for i, user_id in enumerate(users):
+    usersChecked = 0
+    for user_id in users:
         if user_id['u_id'] == u_id:
             profile = user_id
+        else:
+            usersChecked += 1
 
     # If list reaches end then raise error for no user found
-    if i == len(users):
+    print(usersChecked)
+    if usersChecked == len(users):
         raise InputError('No users with the entered u_id was found')
         
     return {
@@ -37,12 +42,10 @@ def user_profile():
     }
 
 def user_profile_sethandle():
-    token = request.args.get('token')
-    handle_str = request.args.get('handle_str')
 
-    # checking if length of handle_str is between 3 and 20 inclusive
-    if len(handle_str) <= 3 or len(handle_str) >= 20:
-        raise InputError("Handle length needs to be between 3 and 2-")
+    payload = request.get_json()
+    token = payload['token']
+    handle_str = payload['handle_str']
 
     # Grabs all users from data
     users = data['users']
@@ -56,6 +59,10 @@ def user_profile_sethandle():
         # Need to fix this later
         raise AccessError('Token is incorrect/user does not exist')
 
+    # checking if length of handle_str is between 3 and 20 inclusive
+    if len(handle_str) < 3 or len(handle_str) > 20:
+        raise InputError("Handle length needs to be between 3 and 20")
+    
     # Cycles through all users to check if given handle already exists
     for user_handle in users:
         if user_handle['handle_str'] == handle_str:
