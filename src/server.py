@@ -10,6 +10,7 @@ import auth
 import channels
 import channel
 import user
+import other
 
 def defaultHandler(err):
     response = err.get_response()
@@ -89,6 +90,10 @@ def addowener():
 @APP.route("/channel/removeowner", methods=['POST'])
 def removeowener():
     return(channel.channel_removeowner())
+
+@APP.route("/clear", methods=['DELETE'])
+def clear():
+    return(other.clear())
 
 @APP.route("/user/profile", methods=['GET'])
 def profile():

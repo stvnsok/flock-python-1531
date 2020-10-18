@@ -17,7 +17,7 @@ def user_profile():
 
     #Check if user exists/ token is correct
     if authorised_user is None:
-        raise AccessError('Token is incorrect/user does not exist')
+        raise AccessError('Token is incorrect')
 
     # Searches for the user with the u_id
     usersChecked = 0
@@ -55,7 +55,7 @@ def user_profile_sethandle():
 
     # Check if user exists/ token is correct
     if authorised_user is None:
-        raise AccessError('Token is incorrect/user does not exist')
+        raise AccessError('Token is incorrect')
 
     # checking if length of handle_str is between 3 and 20 inclusive
     if len(handle_str) < 3 or len(handle_str) > 20:
