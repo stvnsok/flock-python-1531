@@ -91,7 +91,7 @@ def test_message_remove_invalid_id():
     with pytest.raises(InputError) as err:
         message.message_remove(john['token'], 9999)
 
-    assert str(err.value) == "Message does not exists"
+    assert str(err.value) == "Message does not exist"
     clear()
 
 
@@ -119,7 +119,7 @@ def test_message_remove_incorrect_user():
 def test_message_remove_unauthorised_user():
     '''
     Throws an AccessError if the user trying to remove a given message
-    is not part of the corresponding channel
+    is not an owner of the corresponding channel
     '''
     john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
     bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')

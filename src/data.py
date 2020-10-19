@@ -35,6 +35,7 @@ Message Object : {
                     'u_id' : integer,
                     'message' : string,
                     'time_created' : integer (unix timestamp),
+                    'channel_id': int
                   }
 '''
 data = {
