@@ -65,16 +65,45 @@ def user_profile_sethandle():
     for user_handle in users:
         if user_handle['handle_str'] == handle_str:
             raise InputError('Handle already in use by another user')
-
+    
     # Update the handle_str of user
+    authorised_user['handle_str'] = handle_str
     for curr_user in users:
         if curr_user['token'] == token:
-            curr_user['handle_str'] = handle_str
+            
     
     return {}
+
 def user_profile_setname(token, name_first, name_last):
-    return {
-    }
+    
+    payload = request.get_json()
+    token = payload['token']
+    handle_str = payload['handle_str']
+
+    # Grabs all users from data
+    users = data['users']
+    
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+
+    # Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
+
+    # Checking if length of first name is between 3 and 20 inclusive
+    if len(name_first) < 1 or len(name_first) > 50:
+        raise InputError("First name needs to be between 1 and 50")
+
+    # Checking if length of last name is between 3 and 20 inclusive
+    if len(name_last) < 1 or len(name_last) > 50:
+        raise InputError("Last name needs to be between 1 and 50")
+
+    # Update first name and last name of user
+    authorised_user['name_first'] = name_first
+    authorised_user['name_last'] = name_last
+
+    return {}
 
 def user_profile_setemail(token, email):
     return {
