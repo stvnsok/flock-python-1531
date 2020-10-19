@@ -106,5 +106,31 @@ def user_profile_setname(token, name_first, name_last):
     return {}
 
 def user_profile_setemail(token, email):
-    return {
-    }
+    
+    payload = request.get_json()
+    token = payload['token']
+    handle_str = payload['handle_str']
+
+    # Grabs all users from data
+    users = data['users']
+    
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+
+    # Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
+
+    # Check if email is valid
+    if not check(email):
+        raise InputError("Email entered is not valid")
+    
+    # Check if the email is already being used by another user
+    if any(user['email'] == email and user['u_id'] != authorised_user['u_id'] for user in users):
+        raise InputError("Email address is already being used by another user")
+
+    # Set email    
+    authorised_user['email'] = email
+
+    return {}
