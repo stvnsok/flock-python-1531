@@ -10,16 +10,11 @@ def clear():
 
 
 def users_all(token):
+    '''
+    Returns a list of all users and their associated details
+    '''
     return {
-        'users': [
-            {
-                'u_id': 1,
-                'email': 'cs1531@cse.unsw.edu.au',
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-                'handle_str': 'hjacobs',
-            },
-        ],
+        'users': data['users'],
     }
 
 def admin_userpermission_change(token, u_id, permission_id):
