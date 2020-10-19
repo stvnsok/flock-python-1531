@@ -24,22 +24,23 @@ Channel Object : {
                                         'u_id': integer,
                                         'name_first': string,
                                         'name_last': string,
-                                        'is_owner': boolean
+                                        'permission_id': integer
                                     }
 
-                                ]
+                                ],
+                    'messages' : [
+                                    {
+                                        'message_id' : integer,
+                                        'u_id' : integer,
+                                        'message' : string,
+                                        'time_created' : integer (unix timestamp),
+                                    }
+
+                                ],
                  }
 
-Message Object : {
-                    'message_id' : integer,
-                    'u_id' : integer,
-                    'message' : string,
-                    'time_created' : integer (unix timestamp),
-                    'channel_id': int
-                  }
 '''
 data = {
     'users': [],
     'channels': [],
-    'messages': [],
 }

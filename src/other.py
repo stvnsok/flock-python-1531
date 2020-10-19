@@ -5,6 +5,9 @@ import calendar
 from error import InputError, AccessError
 
 def clear():
+    '''
+    Resets the internal data of the application to it's initial state
+    '''
     data['users'].clear()
     data['channels'].clear()
     data['messages'].clear()
@@ -46,18 +49,29 @@ def admin_userpermission_change(token, u_id, permission_id):
     selected_user['permission_id'] = permission_id
 
     return {}
-
-    
+ 
 def search(token, query_str):
+    '''
+    Given a query string, return a collection of messages in a ll of the channels
+    that the user has joined that match the query
+    '''
+    all_messages = []
+
+    # Verify authorised user
+    authorised_user = next(user for user in users if user['token'] == token)
+    
+    # Get each batch of messages from each channel where the user is a member
+    for channel in data['channels']:
+        for member in channel['members']:
+            if member['u_id'] == authorised_user['u_id']:
+                all_messages += channel['messages']
+                break
+    
+    # Get all the messages that match that 
+    matched_messages = [message for message in all_messages if query_str in message['message']]
+
     return {
-        'messages': [
-            {
-                'message_id': 1,
-                'u_id': 1,
-                'message': 'Hello world',
-                'time_created': 1582426789,
-            }
-        ],
+        'messages': matched_messages
     }
 
 def get_timestamp():
