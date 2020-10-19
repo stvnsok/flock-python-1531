@@ -66,5 +66,43 @@ def message_remove(token, message_id):
     
 
 def message_edit(token, message_id, message):
+        
+    messages = data['messages']
+    channels = data['channels']
+    
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+
+    # Get the channel where the message exists
+    channel = next(channel for channel in channels for message in channel['messages'] if message['message_id'] == message_id)
+
+    # Check if authorised user is owner
+    channel_owner = any(member['permission_id'] == 1 and member['u_id'] == authorised_user['u_id'] for member in channel['members'])
+    
+    
+    updated_message = {
+        'message_id' : str(uuid.uuid4()),
+        'message' : message,
+        'u_id': authorised_user['u_id'],
+        'last_edited': get_timestamp()
+    }
+    
+    # if the message is an empty message, delete the message
+    if updated_message:   
+        channel['messages'].remove(message)
+    
+    for message in channel['messages']:
+        if message['message_id'] == message_id:
+            if message['u_id'] == authorised_user['u_id'] or channel_owner:
+                channel['messages'] = updated_message
+                return {}
+            elif not channel_owner:
+                raise AccessError("Authorised user is not an owner of the channel")
+            else:
+                raise AccessError("Message to remove was not sent by authorised user")
+ 
+
     return {
+        'message_id': updated_message['message_id']
     }
