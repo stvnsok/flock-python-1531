@@ -5,6 +5,7 @@ import re
 from flask import request
 from data import data
 from error import InputError
+from other import check
 #from server import APP
 
 def create_token(email):
@@ -14,18 +15,6 @@ def create_token(email):
     # creates a hash using in built python hash function
     return str(hash(email))
 
-
-def check(email):
-    '''
-    Checks that the entered email is valid based on regex expression
-    '''
-    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-
-    # Make a regular expression for validating an Email
-    if re.search(regex, email):
-        return True
-
-    return False
 
 #@APP.route("/auth/login", methods=['POST'])
 def auth_login():
