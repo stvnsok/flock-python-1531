@@ -15,6 +15,7 @@ import requests
 import json
 import pytest
 import server
+import helper_test_functions
 
 # Use this fixture to get the URL of the server. It starts the server for you,
 # so you don't need to.
@@ -251,3 +252,15 @@ def test_profile_handle_correct_update(url):
     requests.delete(url + '/clear')
 
 
+def test_name_incorrect_length(url):
+    # register first user
+    payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
+    new_user = payload
+    token = new_user['token']
+    
+    response = requests.put(url + 'user/profile/setname', json={"token": token, "name_first": "Jack", "name_last" : "N"})
+    error = response.json()
+    assert error['code'] == 400
+    assert error['message'] == '<p>Second name must be between 1 and 50 characters in length</p>'
+
+    requests.delete(url + '/clear')
