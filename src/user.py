@@ -89,6 +89,10 @@ def user_profile_setname(token, name_first, name_last):
     # Grabs all users from data
     users = data['users']
     
+    # Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
+
     # Raise errors for invalid name lengths
     if (len(first) > 50) or (len(first) < 1):
          raise InputError('First name must be between 1 and 50 characters in length')
