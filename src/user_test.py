@@ -258,8 +258,9 @@ def test_name_incorrect_length(url):
     new_user = payload
     token = new_user['token']
     
-    response = requests.put(url + 'user/profile/setname', json={"token": token, "name_first": "Jack", "name_last" : "N"})
-    error = response.json()
+    response = helper_test_functions.user_profile_setname(token, "Jack", "N", url)
+   
+    error = response
     assert error['code'] == 400
     assert error['message'] == '<p>Second name must be between 1 and 50 characters in length</p>'
 
