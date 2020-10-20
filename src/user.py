@@ -98,11 +98,11 @@ def user_profile_setemail(token, email):
 
     # Check if email is valid
     if not (re.search(regex, email)):
-        raise InputError('Email entered is not a valid email')
+        raise InputError('Email is not valid')
     
     # Check if the email is already being used by another user
     if any(user['email'] == email and user['u_id'] != authorised_user['u_id'] for user in users):
-        raise InputError("Email address is already being used by another user")
+        raise InputError("Email address is already in use")
 
     # Set email    
     authorised_user['email'] = email
