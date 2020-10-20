@@ -14,7 +14,6 @@ def channels_list(token):
     Return type: {channels}
     Exceptions: N/A
     '''
-    # token = request.args.get('token')
 
     # Get users from data
     users = data['users']
@@ -44,7 +43,6 @@ def channels_listall(token):
     Return type: {channels}
     Exceptions: N/A
     '''
-    # token = request.args.get('token')
 
     # Get users from data
     users = data['users']
@@ -70,10 +68,6 @@ def channels_create(token, name, is_public):
     Return type: {channel_id}
     Exceptions: InputError when the name of the channel exceeds 20 characters
     '''
-    # payload = request.get_json()
-    # token = payload['token']
-    # name = payload['name']
-    # is_public = payload['is_public']
 
     # Get users from data
     users = data['users']

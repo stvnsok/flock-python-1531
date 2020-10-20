@@ -15,9 +15,20 @@ import requests
 import json
 import pytest
 import server
+from helper_test_functions import *
 
-# Use this fixture to get the URL of the server. It starts the server for you,
-# so you don't need to.
+# # Helper function to set up user
+# def register_user(email, password, name_first, name_last, url):
+#     response = requests.post(f'{url}auth/register', json={
+#         "email": "john@gmail.com", 
+#         "password": "qwe123!@#",
+#         "name_first": "John",
+#         "name_last": "Smith",
+#     })
+
+#     return response.json()
+
+# Fixture to get the URL of the server. 
 @pytest.fixture
 def url():
     url_re = re.compile(r' \* Running on ([^ ]*)')
@@ -37,36 +48,20 @@ def url():
     else:
         server.kill()
         raise Exception("Couldn't get URL from local server")
-
+    
 
 '''
 Tests for auth.py
-
 '''
 def test_successful_registration(url):
     '''
     Test registration, login and logout working
     '''
+    register_user("john@gmail.com", "qwe123!@#", "John", "Smith", url)
     
-    requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",
-        "name_first": "John",
-        "name_last": "Smith",
-    })
-    
-    response = requests.post(f'{url}auth/login', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",        
-    })
+    login_response = login_user("john@gmail.com", "qwe123!@#", url)
 
-    login_response = response.json()
-
-    response = requests.post(f'{url}auth/logout', json={
-        "token":login_response["token"]
-    })
-
-    logout_response = response.json()
+    logout_response = logout_user(login_response["token"], url) 
 
     assert logout_response["is_success"] == True
     
@@ -79,14 +74,7 @@ def test_invalid_email(url):
     Test that InputError is thrown for invalid email input
     '''
 
-    response = requests.post(f'{url}auth/register', json={
-        "email": "john.com", 
-        "password": "qwe123!@#",
-        "name_first": "John",
-        "name_last": "Smith",
-    })
-
-    error_response = response.json()
+    error_response = register_user("john.com", "qwe123!@#" , "John", "Smith", url)
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>Invalid email</p>"
@@ -100,21 +88,9 @@ def test_email_already_registered(url):
     with email that has already been registered
     '''
 
-    response = requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",
-        "name_first": "John",
-        "name_last": "Smith",
-    })
+    register_user("john@gmail.com", "qwe123!@#", "John", "Smith", url)
     
-    response = requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",
-        "name_first": "John",
-        "name_last": "Smith",
-    })
-    
-    error_response = response.json()
+    error_response = register_user("john@gmail.com", "qwe123!@#", "John", "Smith", url)
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>Email already registered</p>"
@@ -127,15 +103,8 @@ def test_invalid_password(url):
     Test InputError is thrown when length of password entered
     is too short (less than 6 characters)
     '''
-
-    response = requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe",
-        "name_first": "John",
-        "name_last": "Smith",
-    })
     
-    error_response = response.json()
+    error_response = register_user("john@gmail.com", "qwe",  "John", "Smith", url)
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>Password too short</p>"
@@ -154,26 +123,14 @@ def test_invalid_name_first(url):
                         klashfklashfjklshaklfhasdklfhsadkljfhs
                         adklfhasklhfklsahfklsadhfklasdhfklasdhfkljs"""
 
-    response = requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",
-        "name_first": long_first_name,
-        "name_last": "Smith",
-    })
     
-    error_response = response.json()
+    error_response = register_user("john@gmail.com","qwe123!@#", long_first_name, "Smith" ,url)
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>First Name too long or short</p>"
 
-    response = requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",
-        "name_first": "",
-        "name_last": "Smith",
-    })
-    
-    error_response = response.json()
+
+    error_response = register_user("john@gmail.com","qwe123!@#", "", "Smith" ,url)
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>First Name too long or short</p>"
@@ -191,26 +148,13 @@ def test_invalid_name_last(url):
                         klashfklashfjklshaklfhasdklfhsadkljfhs
                         adklfhasklhfklsahfklsadhfklasdhfklasdhfkljs"""
 
-    response = requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",
-        "name_first": "John",
-        "name_last": long_last_name,
-    })
     
-    error_response = response.json()
+    error_response = register_user("john@gmail.com","qwe123!@#", "John", long_last_name ,url)
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>Last Name too long or short</p>"
 
-    response = requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",
-        "name_first": "John",
-        "name_last": "",
-    })
-    
-    error_response = response.json()
+    error_response = register_user("john@gmail.com","qwe123!@#", "John", "" ,url)
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>Last Name too long or short</p>"
@@ -225,12 +169,7 @@ def test_incorrect_email_login(url):
     registered yet
     '''
 
-    response = requests.post(f'{url}auth/login', json={
-        "email": "bob@gmail.com", 
-        "password": "qwe123!@#",
-    })
-
-    error_response = response.json()
+    error_response = login_user("bob@gmail.com","qwe123!@#", url)
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>Email does not belong to a user</p>"
@@ -270,23 +209,12 @@ def test_logout_fail(url):
     Test that if an incorrect token is passed on logout
     correct error is passed to user
     '''
-    requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",
-        "name_first": "John",
-        "name_last": "Smith",
-    })
-    
-    requests.post(f'{url}auth/login', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",        
-    })
 
-    response = requests.post(f'{url}auth/logout', json={
-        "token":"wrong token"
-    })
+    register_user("john@gmail.com", "qwe123!@#", "John", "Smith", url)
 
-    logout_response = response.json()
+    login_user("john@gmail.com", "qwe123!@#", url)
+
+    logout_response = logout_user("WrongToken", url)
 
     assert logout_response["is_success"] == False
     
@@ -296,14 +224,8 @@ def test_handle_too_long(url):
     '''
     Test that handle is being created correctly
     '''
-    response = requests.post(f'{url}auth/register', json={
-        "email": "john@gmail.com", 
-        "password": "qwe123!@#",
-        "name_first": "1234567890",
-        "name_last": "yoyoy123456789",
-    })
 
-    register_response = response.json()
+    register_response = register_user("john@gmail.com", "qwe123!@#", "1234567890", "yoyoy123456789", url)
 
     response = requests.get(f'{url}users/all', json={"token":register_response["token"]})
 

@@ -1,4 +1,3 @@
-
 #26/9/2020
 #Purpose: Test functions in channels.py
 
