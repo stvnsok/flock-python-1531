@@ -3,11 +3,11 @@ from error import InputError, AccessError
 from flask import request
 
 
-def user_profile():
+def user_profile(token, u_id):
 
-    token = request.args.get('token')
-    u_id_str = request.args.get('u_id')
-    u_id = int(u_id_str)
+    # token = request.args.get('token')
+    # u_id_str = request.args.get('u_id')
+    # u_id = int(u_id_str)
     # Get users from data
     users = data['users']
 
@@ -40,11 +40,11 @@ def user_profile():
         'handle_str': profile['handle_str'],
     }
 
-def user_profile_sethandle():
+def user_profile_sethandle(token, handle_str):
 
-    payload = request.get_json()
-    token = payload['token']
-    handle_str = payload['handle_str']
+    # payload = request.get_json()
+    # token = payload['token']
+    # handle_str = payload['handle_str']
 
     # Grabs all users from data
     users = data['users']
@@ -74,9 +74,9 @@ def user_profile_sethandle():
 
 def user_profile_setname(token, name_first, name_last):
     
-    payload = request.get_json()
-    token = payload['token']
-    handle_str = payload['handle_str']
+    # payload = request.get_json()
+    # token = payload['token']
+    # handle_str = payload['handle_str']
 
     # Grabs all users from data
     users = data['users']
@@ -105,9 +105,9 @@ def user_profile_setname(token, name_first, name_last):
 
 def user_profile_setemail(token, email):
     
-    payload = request.get_json()
-    token = payload['token']
-    handle_str = payload['handle_str']
+    # payload = request.get_json()
+    # token = payload['token']
+    # handle_str = payload['handle_str']
 
     # Grabs all users from data
     users = data['users']

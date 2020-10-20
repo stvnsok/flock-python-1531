@@ -17,13 +17,13 @@ def create_token(email):
 
 
 #@APP.route("/auth/login", methods=['POST'])
-def auth_login():
+def auth_login(email, password):
     '''
     Login and authenticate existing user
     '''
-    payload = request.get_json()
-    email = payload['email']
-    password = payload['password']
+    # payload = request.get_json()
+    # email = payload['email']
+    # password = payload['password']
 
     # Check email is valid format
     if (check(email)) is not True:
@@ -49,7 +49,7 @@ def auth_login():
 
     raise InputError('Incorrect password')
 #@APP.route("/auth/logout", methods=['POST'])
-def auth_logout():
+def auth_logout(token):
     '''
     Logout authenticated user
     '''
@@ -65,15 +65,15 @@ def auth_logout():
     return {'is_success': False}
 
 #@APP.route("/auth/register", methods=['POST'])
-def auth_register():
+def auth_register(email, password, name_first, name_last):
     '''
     Register a new user
     '''
-    payload = request.get_json()
-    email = payload['email']
-    password = payload['password']
-    name_first = payload['name_first']
-    name_last = payload['name_last']
+    # payload = request.get_json()
+    # email = payload['email']
+    # password = payload['password']
+    # name_first = payload['name_first']
+    # name_last = payload['name_last']
     # checks for valid email
     if check(email) is not True:
         raise InputError('Invalid email')

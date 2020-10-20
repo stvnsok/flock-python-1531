@@ -50,10 +50,10 @@ def test_profile_invalid_user_token(url):
         "name_last": "wong",
     })
     new_user = response.json()
-    u_id = new_user['u_id']
+    u_id = new_user["u_id"]
     
     # input invalid token into user/profile
-    response = requests.get(url + 'user/profile', params={"token": "invalid_token", "u_id": u_id})
+    response = requests.get(url + 'user/profile', json={"token": "invalid_token", "u_id": u_id})
     error = response.json()
     assert error['code'] == 400
     assert error['message'] == '<p>Token is incorrect</p>'
@@ -74,7 +74,7 @@ def test_profile_U_id_not_found(url):
     token = new_user['token']
 
     #request an invalid u_id
-    response = requests.get(url + 'user/profile', params={"token": token, "u_id": 2})
+    response = requests.get(url + 'user/profile', json={"token": token, "u_id": 2})
     error = response.json()
     assert error['code'] == 400
     assert error['message'] == '<p>No users with the entered u_id was found</p>'
@@ -95,7 +95,7 @@ def test_profile_display_correct_info(url):
     token = new_user['token']
 
     # display profile of the caller
-    response = requests.get(url + 'user/profile', params={"token": token, "u_id": u_id})
+    response = requests.get(url + 'user/profile', json={"token": token, "u_id": u_id})
     profile = response.json()
     assert profile['u_id'] == u_id
     assert profile['email'] == "markowong@hotmail.com"
@@ -114,7 +114,7 @@ def test_profile_display_correct_info(url):
     u_id = new_user['u_id']
 
     # display profile of another user called from the first user
-    response = requests.get(url + 'user/profile', params={"token": token, "u_id": u_id})
+    response = requests.get(url + 'user/profile', json={"token": token, "u_id": u_id})
     profile = response.json()
     assert profile['u_id'] == u_id
     assert profile['email'] == "markowong2@hotmail.com"

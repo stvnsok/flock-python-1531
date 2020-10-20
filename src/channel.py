@@ -6,15 +6,15 @@ from error import InputError, AccessError
 from flask import request
 
 
-def channel_invite():
+def channel_invite(token, channel_id, u_id):
     '''
     Invites a user (with user id u_id) to join a channel with ID channel_id.
     Once invited the user is added to the channel immediately
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    u_id = payload['u_id']
+    # payload = request.get_json()
+    # token = payload['token']
+    # channel_id = payload['channel_id']
+    # u_id = payload['u_id']
 
     channels = data['channels']
     users = data['users']
@@ -55,13 +55,13 @@ def channel_invite():
     return {}
 
 
-def channel_details():
+def channel_details(token, channel_id):
     '''
     Given a Channel with ID channel_id that the authorised user is part of,
     provide basic details about the channel
     '''
-    token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
+    # token = request.args.get('token')
+    # channel_id = request.args.get('channel_id')
 
     channels = data['channels']
     users = data['users']
@@ -94,7 +94,7 @@ def channel_details():
     }
 
 
-def channel_messages():
+def channel_messages(token, channel_id, start):
     '''
     Given a Channel with ID channel_id that the authorised user is part of,
     return up to 50 messages between index "start" and "start + 50". Message with
@@ -103,13 +103,12 @@ def channel_messages():
     the least recent messages in the channel, returns -1 in "end" to indicate there are
     no more messages to load after this return.
     '''
-    token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
-    start = request.args.get('start')
+    # token = request.args.get('token')
+    # channel_id = request.args.get('channel_id')
+    # start = request.args.get('start')
 
     channels = data['channels']
     users = data['users']
-    messages = data['messages']
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
@@ -129,8 +128,7 @@ def channel_messages():
             'Authorised user is not a member of the channel')
 
     # Gets all the messages for the given channel
-    messages_from_channel = [
-        message for message in messages if message['channel_id'] == channel['channel_id']]
+    messages_from_channel = channel['messages']
 
     # sets the index for the last message
     end = start + 50
@@ -156,13 +154,13 @@ def channel_messages():
     }
 
 
-def channel_leave():
+def channel_leave(token, channel_id):
     '''
     Given a channel ID, the user removed as a member of this channel
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
+    # payload = request.get_json()
+    # token = payload['token']
+    # channel_id = payload['channel_id']
 
     channels = data['channels']
     users = data['users']
@@ -195,14 +193,14 @@ def channel_leave():
     return {}
 
 
-def channel_join():
+def channel_join(token, channel_id):
     '''
     Given a channel_id of a channel that the authorised user can join,
     adds them to that channel
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
+    # payload = request.get_json()
+    # token = payload['token']
+    # channel_id = payload['channel_id']
 
     channels = data['channels']
     users = data['users']
@@ -237,14 +235,14 @@ def channel_join():
     return {}
 
 
-def channel_addowner():
+def channel_addowner(token, channel_id, u_id):
     '''
     Make user with user id u_id an owner of this channel
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    u_id = payload['u_id']
+    # payload = request.get_json()
+    # token = payload['token']
+    # channel_id = payload['channel_id']
+    # u_id = payload['u_id']
 
     channels = data['channels']
     users = data['users']
@@ -293,14 +291,14 @@ def channel_addowner():
     return {}
 
 
-def channel_removeowner():
+def channel_removeowner(token, channel_id, u_id):
     '''
     Remove user with user id u_id an owner of this channel
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    u_id = payload['u_id']
+    # payload = request.get_json()
+    # token = payload['token']
+    # channel_id = payload['channel_id']
+    # u_id = payload['u_id']
 
     channels = data['channels']
     users = data['users']

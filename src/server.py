@@ -3,8 +3,8 @@ imports
 '''
 import sys
 from json import dumps
-from flask import Flask, request
-from flask_cors import CORS
+from flask import Flask, request, jsonify
+# from flask_cors import CORS
 from error import InputError
 import auth
 import channels
@@ -24,7 +24,7 @@ def defaultHandler(err):
     return response
 
 APP = Flask(__name__)
-CORS(APP)
+# CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
@@ -41,67 +41,98 @@ def echo():
 
 @APP.route("/auth/login", methods=['POST'])
 def login():
-    return(auth.auth_login())
+    data = request.get_json()
+    result = auth.auth_login(data['email'], data['password'])
+    return dumps(result)
 
 @APP.route("/auth/logout", methods=['POST'])
 def logout():
-    return(auth.auth_logout())
+    data = request.get_json()
+    result = auth.auth_logout(data['token'])
+    return dumps(result)
 
 @APP.route("/auth/register", methods=['POST'])
 def register():
-    return(auth.auth_register())
+    data = request.get_json()
+    result = auth.auth_register(data['email'], data['password'], data['name_first'], data['name_last'])
+    return dumps(result)
 
 @APP.route("/channels/create", methods=['POST'])
 def create():
-    return(channels.channels_create())
+    data = request.get_json()
+    result = channels.channels_create(data['token'], data['name'], data['is_public'])
+    return dumps(result)
 
 @APP.route("/channels/listall", methods=['GET'])
 def listall():
-    return(dumps(channels.channels_listall()))
+    data = request.get_json()
+    result = channels.channels_listall(data['token'])
+    return dumps(result)
 
 @APP.route("/channels/list", methods=['GET'])
 def lists():
-    return(dumps(channels.channels_list()))
+    data = request.get_json()
+    result = channels.channels_list(data['token'])
+    return dumps(result)
 
 @APP.route("/channel/invite", methods=['POST'])
 def invite():
-    return(channel.channel_invite())
+    data = request.get_json()
+    result = channel.channel_invite(data['token'], data['channel_id'], data['u_id'])
+    return dumps(result)
 
 @APP.route("/channel/details", methods=['GET'])
 def details():
-    return(dumps(channel.channel_details()))
+    data = request.get_json()
+    result = channel.channel_details(data['token'], data['channel_id'])
+    return dumps(result)
 
 @APP.route("/channel/messages", methods=['GET'])
 def messages():
-    return(dumps(channel.channel_messages()))
+    data = request.get_json()
+    result = channel.channel_messages(data['token'], data['channel_id'], data['start'])
+    return dumps(result)
 
 @APP.route("/channel/leave", methods=['POST'])
 def leave():
-    return(channel.channel_leave())
+    data = request.get_json()
+    result = channel.channel_leave(data['token'], data['channel_id'])
+    return dumps(result)
 
 @APP.route("/channel/join", methods=['POST'])
 def join():
-    return(channel.channel_join())
+    data = request.get_json()
+    result = channel.channel_join(data['token'], data['channel_id'])
+    return dumps(result)
 
 @APP.route("/channel/addowner", methods=['POST'])
-def addowener():
-    return(channel.channel_addowner())
+def addowner():
+    data = request.get_json()
+    result = channel.channel_addowner(data['token'], data['channel_id'], data['u_id'])
+    return dumps(result)
 
 @APP.route("/channel/removeowner", methods=['POST'])
-def removeowener():
-    return(channel.channel_removeowner())
+def removeowner():
+    data = request.get_json()
+    result = channel.channel_removeowner(data['token'], data['channel_id'], data['u_id'])
+    return dumps(result)
 
 @APP.route("/clear", methods=['DELETE'])
 def clear():
-    return(other.clear())
+    result = other.clear()
+    return dumps(result)
 
 @APP.route("/user/profile", methods=['GET'])
 def profile():
-    return(user.user_profile())
+    data = request.get_json()
+    result = user.user_profile(data['token'], data['u_id'])
+    return dumps(result)
 
 @APP.route("/user/profile/sethandle", methods=['PUT'])
 def sethandle():
-    return(user.user_profile_sethandle())
+    data = request.get_json()
+    result = user.user_profile_sethandle(data['token'], data['handle_str'])
+    return dumps(result)
 
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port 

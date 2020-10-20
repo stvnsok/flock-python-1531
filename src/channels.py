@@ -5,7 +5,7 @@ from data import data
 from error import InputError, AccessError
 from flask import request
 
-def channels_list():
+def channels_list(token):
     '''
     channels_list
     Provide a list of all channels (and their associated details)
@@ -14,7 +14,7 @@ def channels_list():
     Return type: {channels}
     Exceptions: N/A
     '''
-    token = request.args.get('token')
+    # token = request.args.get('token')
 
     # Get users from data
     users = data['users']
@@ -36,7 +36,7 @@ def channels_list():
     return {'channels': channels}
 
 
-def channels_listall():
+def channels_listall(token):
     '''
     channels_listall
     Provide a list of all channels (and their associated details)
@@ -44,7 +44,7 @@ def channels_listall():
     Return type: {channels}
     Exceptions: N/A
     '''
-    token = request.args.get('token')
+    # token = request.args.get('token')
 
     # Get users from data
     users = data['users']
@@ -62,7 +62,7 @@ def channels_listall():
     return {'channels': data['channels']}
 
 
-def channels_create():
+def channels_create(token, name, is_public):
     '''
     channels_create
     Creates a new channel with that name that is either a public or private channel
@@ -70,10 +70,10 @@ def channels_create():
     Return type: {channel_id}
     Exceptions: InputError when the name of the channel exceeds 20 characters
     '''
-    payload = request.get_json()
-    token = payload['token']
-    name = payload['name']
-    is_public = payload['is_public']
+    # payload = request.get_json()
+    # token = payload['token']
+    # name = payload['name']
+    # is_public = payload['is_public']
 
     # Get users from data
     users = data['users']

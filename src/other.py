@@ -3,6 +3,7 @@ import copy
 from datetime import timezone
 import calendar
 from error import InputError, AccessError
+import re
 
 def clear():
     '''
@@ -11,6 +12,8 @@ def clear():
     data['users'].clear()
     data['channels'].clear()
     data['messages'].clear()
+
+    return {}
 
 
 def users_all(token):
@@ -32,14 +35,14 @@ def admin_userpermission_change(token, u_id, permission_id):
         raise InputError('Permission_id does not refer to a value permission')
     
     # Get Authorised user
-    authorised_user = next(user for user in users if user['token'] == token, None)
+    authorised_user = next((user for user in users if user['token'] == token), None)
     
     # Check authorised user permission is 1
     if authorised_user['permission_id'] != 1:
         raise InputError('The authorised user is not an admin or owner')
 
     # Get selected user 
-    selected_user = next(user for user in users if user['u_id'] == u_id, None)
+    selected_user = next((user for user in users if user['u_id'] == u_id), None)
 
     # Check if u_id refers to valid user
     if selected_user is None:
