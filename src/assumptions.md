@@ -18,8 +18,9 @@
 
 ## Related to user.py
     *   handle_str must be between 3 and 20 characters is INCLUSIVE of 3 and 20
+
 ## Related to message.py and messages
-    *   Since all messages will have a unique id, they will be stored in their own table rather than be nested within a field of the channel data.
+    *   For message/edit an empty string is a string that has no white space at all, therefore will have a length of zero without performing any stripping
 
 ## General:
 
