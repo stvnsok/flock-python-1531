@@ -2,9 +2,10 @@
 Tests for message.py
 
 '''
+
 import pytest
-import message
 import auth
+import message
 import channels
 import channel
 from error import InputError, AccessError

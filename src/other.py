@@ -1,6 +1,6 @@
 from data import data
 import copy
-from datetime import timezone
+import datetime
 import calendar
 from error import InputError, AccessError
 import re
@@ -28,7 +28,7 @@ def admin_userpermission_change(token, u_id, permission_id):
     '''
     Given a User by their user ID, set their permissions to new permissions described by permission_id
     '''
-    user = data['users']
+    users = data['users']
     
     # Validate permission_id is correct
     if permission_id != 1 or permission_id != 2:

@@ -1,6 +1,7 @@
 from data import data
 from error import InputError, AccessError
 from flask import request
+from other import check
 
 
 def user_profile(token, u_id):

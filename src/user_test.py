@@ -70,7 +70,7 @@ def test_profile_U_id_not_found(url):
         "name_last": "wong",
     })
     new_user = response.json()
-    u_id = new_user['u_id']
+    # u_id = new_user['u_id']
     token = new_user['token']
 
     #request an invalid u_id
@@ -137,7 +137,7 @@ def test_profile_handle_invalid_user_token(url):
         "name_last": "wong",
     })
     new_user = response.json()
-    u_id = new_user['u_id']
+    # u_id = new_user['u_id']
     
     # input invalid token into user/profile/sethandle
     response = requests.put(url + 'user/profile/sethandle', json={"token": "invalid_token", "handle_str": "Mr.cool"})
@@ -157,7 +157,7 @@ def test_profile_handle_too_short(url):
         "name_last": "wong",
     })
     new_user = response.json()
-    u_id = new_user['u_id']
+    # u_id = new_user['u_id']
     token = new_user['token']
 
     # input invalid handle into user/profile/sethandle
@@ -179,7 +179,7 @@ def test_profile_handle_too_long(url):
         "name_last": "wong",
     })
     new_user = response.json()
-    u_id = new_user['u_id']
+    # u_id = new_user['u_id']
     token = new_user['token']
 
     # input invalid handle into user/profile/sethandle

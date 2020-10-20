@@ -22,7 +22,7 @@ def message_send(token, channel_id, message):
         raise InputError("Message is more than 1000 characters")
 
     # Get the selected channel
-    channel = next(channel for channel in data['channels'] if channel['channel_id'] == channel_id, None)
+    channel = next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), None)
 
     # Create new message object
     new_message = {
@@ -52,7 +52,7 @@ def message_remove(token, message_id):
         (user for user in users if user['token'] == token), None)
 
     # Get the channel where the message exists
-    channel = next(channel for channel in channels for message in channel['messages'] if message['message_id'] == message_id)
+    channel = next((channel for channel in channels for message in channel['messages'] if message['message_id'] == message_id), None)
 
     # Check if authorised user is owner
     channel_owner = any(member['permission_id'] == 1 and member['u_id'] == authorised_user['u_id'] for member in channel['members'])
@@ -81,7 +81,7 @@ def message_edit(token, message_id, message):
         (user for user in users if user['token'] == token), None)
 
     # Get the channel where the message exists
-    channel = next(channel for channel in channels for message in channel['messages'] if message['message_id'] == message_id)
+    channel = next((channel for channel in channels for message in channel['messages'] if message['message_id'] == message_id), None)
 
     # Check if authorised user is owner
     channel_owner = any(member['permission_id'] == 1 and member['u_id'] == authorised_user['u_id'] for member in channel['members'])
