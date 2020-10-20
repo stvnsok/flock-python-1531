@@ -1,18 +1,16 @@
 '''
-import regex library
+Auth function
 '''
 import re
 from flask import request
 from data import data
 from error import InputError
 from other import check
-#from server import APP
 
 def create_token(email):
     '''
     Creates a token for each user
     '''
-    # creates a hash using in built python hash function
     return str(hash(email))
 
 
@@ -21,10 +19,6 @@ def auth_login(email, password):
     '''
     Login and authenticate existing user
     '''
-    # payload = request.get_json()
-    # email = payload['email']
-    # password = payload['password']
-
     # Check email is valid format
     if (check(email)) is not True:
         raise InputError('Invalid email')
@@ -37,7 +31,7 @@ def auth_login(email, password):
 
     # If the was not found based on email, throw exception
     if user is None:
-        raise InputError('Incorrect email')
+        raise InputError('Email does not belong to a user')
 
     # If password matches send back id and token
     # Else throw exception
@@ -53,8 +47,6 @@ def auth_logout(token):
     '''
     Logout authenticated user
     '''
-    payload = request.get_json()
-    token = payload['token']
     # Get users from data
     users = data['users']
 
@@ -69,12 +61,7 @@ def auth_register(email, password, name_first, name_last):
     '''
     Register a new user
     '''
-    # payload = request.get_json()
-    # email = payload['email']
-    # password = payload['password']
-    # name_first = payload['name_first']
-    # name_last = payload['name_last']
-    # checks for valid email
+    # Check email is valid format
     if check(email) is not True:
         raise InputError('Invalid email')
 
