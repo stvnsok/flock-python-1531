@@ -2,6 +2,8 @@ from data import data
 from error import InputError, AccessError
 from flask import request
 from other import check
+import re 
+  
 
 
 def user_profile(token, u_id):
@@ -12,6 +14,10 @@ def user_profile(token, u_id):
     # Get users from data
     users = data['users']
 
+    regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'  
+    # Check if email uses valid syntax
+    if not (re.search(regex, email)):
+        raise InputError('Email entered is not a valid email')
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
@@ -79,5 +85,25 @@ def user_profile_setname(token, name_first, name_last):
     return {}
 
 def user_profile_setemail(token, email):
+    # Grabs all users from data
+    users = data['users']
+    
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
 
+    # Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
+
+    # Check if email is valid
+    if not (re.search(regex, email)):
+        raise InputError('Email entered is not a valid email')
+    
+    # Check if the email is already being used by another user
+    if any(user['email'] == email and user['u_id'] != authorised_user['u_id'] for user in users):
+        raise InputError("Email address is already being used by another user")
+
+    # Set email    
+    authorised_user['email'] = email
     return {}
