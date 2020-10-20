@@ -74,62 +74,10 @@ def user_profile_sethandle(token, handle_str):
     return {}
 
 def user_profile_setname(token, name_first, name_last):
-    
-    # payload = request.get_json()
-    # token = payload['token']
-    # handle_str = payload['handle_str']
 
-    # Grabs all users from data
-    users = data['users']
-    
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    # Check if user exists/ token is correct
-    if authorised_user is None:
-        raise AccessError('Token is incorrect')
-
-    # Checking if length of first name is between 3 and 20 inclusive
-    if len(name_first) < 1 or len(name_first) > 50:
-        raise InputError("First name needs to be between 1 and 50")
-
-    # Checking if length of last name is between 3 and 20 inclusive
-    if len(name_last) < 1 or len(name_last) > 50:
-        raise InputError("Last name needs to be between 1 and 50")
-
-    # Update first name and last name of user
-    authorised_user['name_first'] = name_first
-    authorised_user['name_last'] = name_last
 
     return {}
 
 def user_profile_setemail(token, email):
-    
-    # payload = request.get_json()
-    # token = payload['token']
-    # handle_str = payload['handle_str']
-
-    # Grabs all users from data
-    users = data['users']
-    
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    # Check if user exists/ token is correct
-    if authorised_user is None:
-        raise AccessError('Token is incorrect')
-
-    # Check if email is valid
-    if not check(email):
-        raise InputError("Email entered is not valid")
-    
-    # Check if the email is already being used by another user
-    if any(user['email'] == email and user['u_id'] != authorised_user['u_id'] for user in users):
-        raise InputError("Email address is already being used by another user")
-
-    # Set email    
-    authorised_user['email'] = email
 
     return {}
