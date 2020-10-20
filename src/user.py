@@ -66,12 +66,10 @@ def user_profile_sethandle():
         if user_handle['handle_str'] == handle_str:
             raise InputError('Handle already in use by another user')
     
+    
     # Update the handle_str of user
     authorised_user['handle_str'] = handle_str
-    for curr_user in users:
-        if curr_user['token'] == token:
             
-    
     return {}
 
 def user_profile_setname(token, name_first, name_last):
