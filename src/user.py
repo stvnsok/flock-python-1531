@@ -80,7 +80,25 @@ def user_profile_sethandle(token, handle_str):
     return {}
 
 def user_profile_setname(token, name_first, name_last):
+    # Get input from json and store in variables 
+    # payload = request.get_json()
+    # token = payload['token']
+    # first = payload['name_first']
+    # last = payload['name_last']
 
+    # Grabs all users from data
+    users = data['users']
+    
+    # Raise errors for invalid name lengths
+    if (len(first) > 50) or (len(first) < 1):
+         raise InputError('First name must be between 1 and 50 characters in length')
+
+    if (len(second) > 50) or (len(second) < 1):
+         raise InputError('Second name must be between 1 and 50 characters in length')   
+
+    # Update first name and last name of user
+    authorised_user['name_first'] = name_first
+    authorised_user['name_last'] = name_last
 
     return {}
 
