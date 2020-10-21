@@ -11,6 +11,7 @@ import channels
 import channel
 import user
 import other
+import message
 
 def defaultHandler(err):
     response = err.get_response()
@@ -23,6 +24,7 @@ def defaultHandler(err):
     response.content_type = 'application/json'
     return response
 
+
 APP = Flask(__name__)
 # CORS(APP)
 
@@ -30,6 +32,8 @@ APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
 # Example
+
+
 @APP.route("/echo", methods=['GET'])
 def echo():
     data = request.args.get('data')
@@ -43,11 +47,14 @@ def echo():
 '''
 Auth Endpoints
 '''
+
+
 @APP.route("/auth/login", methods=['POST'])
 def login():
     data = request.get_json()
     result = auth.auth_login(data['email'], data['password'])
     return dumps(result)
+
 
 @APP.route("/auth/logout", methods=['POST'])
 def logout():
@@ -55,55 +62,72 @@ def logout():
     result = auth.auth_logout(data['token'])
     return dumps(result)
 
+
 @APP.route("/auth/register", methods=['POST'])
 def register():
     data = request.get_json()
-    result = auth.auth_register(data['email'], data['password'], data['name_first'], data['name_last'])
+    result = auth.auth_register(
+        data['email'], data['password'], data['name_first'], data['name_last'])
     return dumps(result)
 
 
 '''
 Channels Endpoints
 '''
+
+
 @APP.route("/channels/create", methods=['POST'])
 def create():
     data = request.get_json()
-    result = channels.channels_create(data['token'], data['name'], data['is_public'])
+    result = channels.channels_create(
+        data['token'], data['name'], data['is_public'])
     return dumps(result)
+
 
 @APP.route("/channels/listall", methods=['GET'])
 def listall():
-    data = request.get_json()
-    result = channels.channels_listall(data['token'])
+    token = request.args.get('token')
+    result = channels.channels_listall(token)
     return dumps(result)
+
 
 @APP.route("/channels/list", methods=['GET'])
 def lists():
-    data = request.get_json()
-    result = channels.channels_list(data['token'])
+    token = request.args.get('token')
+    result = channels.channels_list(token)
     return dumps(result)
 
 
 '''
 Channel Endpoints
 '''
+
+
 @APP.route("/channel/invite", methods=['POST'])
 def invite():
     data = request.get_json()
-    result = channel.channel_invite(data['token'], data['channel_id'], data['u_id'])
+    result = channel.channel_invite(
+        data['token'], data['channel_id'], data['u_id'])
     return dumps(result)
+
 
 @APP.route("/channel/details", methods=['GET'])
 def details():
-    data = request.get_json()
-    result = channel.channel_details(data['token'], data['channel_id'])
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    result = channel.channel_details(token, channel_id)
     return dumps(result)
+
 
 @APP.route("/channel/messages", methods=['GET'])
 def messages():
-    data = request.get_json()
-    result = channel.channel_messages(data['token'], data['channel_id'], data['start'])
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    start = request.args.get('start')
+    result = channel.channel_messages(
+        token, channel_id, start)
     return dumps(result)
+
 
 @APP.route("/channel/leave", methods=['POST'])
 def leave():
@@ -111,45 +135,57 @@ def leave():
     result = channel.channel_leave(data['token'], data['channel_id'])
     return dumps(result)
 
+
 @APP.route("/channel/join", methods=['POST'])
 def join():
     data = request.get_json()
     result = channel.channel_join(data['token'], data['channel_id'])
     return dumps(result)
 
+
 @APP.route("/channel/addowner", methods=['POST'])
 def addowner():
     data = request.get_json()
-    result = channel.channel_addowner(data['token'], data['channel_id'], data['u_id'])
+    result = channel.channel_addowner(
+        data['token'], data['channel_id'], data['u_id'])
     return dumps(result)
+
 
 @APP.route("/channel/removeowner", methods=['POST'])
 def removeowner():
     data = request.get_json()
-    result = channel.channel_removeowner(data['token'], data['channel_id'], data['u_id'])
+    result = channel.channel_removeowner(
+        data['token'], data['channel_id'], data['u_id'])
     return dumps(result)
- 
+
 
 '''
 User Endpoints
 '''
+
+
 @APP.route("/user/profile", methods=['GET'])
 def profile():
-    data = request.get_json()
-    result = user.user_profile(data['token'], data['u_id'])
+    token = request.args.get('token')
+    u_id = request.args.get('u_id')
+    result = user.user_profile(token, u_id)
     return dumps(result)
+
 
 @APP.route("/user/profile/setname", methods=['PUT'])
 def setname():
     data = request.get_json()
-    result = user.user_setname(data['token'], data['name_first'], data['name_last'])
+    result = user.user_profile_setname(
+        data['token'], data['name_first'], data['name_last'])
     return dumps(result)
+
 
 @APP.route("/user/profile/setemail", methods=['PUT'])
 def setemail():
     data = request.get_json()
-    result = user.user_setemail(data['token'], data['email'])
+    result = user.user_profile_setemail(data['token'], data['email'])
     return dumps(result)
+
 
 @APP.route("/user/profile/sethandle", methods=['PUT'])
 def sethandle():
@@ -161,11 +197,15 @@ def sethandle():
 '''
 Message Endpoints
 '''
+
+
 @APP.route("/message/send", methods=['POST'])
 def send():
     data = request.get_json()
-    result = message.message_send(data['token'], data['channel_id'], data['message'])
+    result = message.message_send(
+        data['token'], data['channel_id'], data['message'])
     return dumps(result)
+
 
 @APP.route("/message/remove", methods=['DELETE'])
 def remove():
@@ -173,32 +213,42 @@ def remove():
     result = message.message_remove(data['token'], data['message_id'])
     return dumps(result)
 
+
 @APP.route("/message/edit", methods=['PUT'])
 def edit():
     data = request.get_json()
-    result = message.message_edit(data['token'], data['message_id'], data['message'])
+    result = message.message_edit(
+        data['token'], data['message_id'], data['message'])
     return dumps(result)
+
 
 '''
 Other Endpoints
 '''
+
+
 @APP.route("/users/all", methods=['GET'])
 def usersall():
-    data = request.get_json()
-    result = other.users_all(data['token'])
+    token = request.args.get('token')
+    result = other.users_all(token)
     return dumps(result)
+
 
 @APP.route("/admin/userpermission/change", methods=['POST'])
 def userpermission_change():
     data = request.get_json()
-    result = other.admin_userpermission_change(data['token'], data['u_id'], data['permission_id'])
+    result = other.admin_userpermission_change(
+        data['token'], data['u_id'], data['permission_id'])
     return dumps(result)
+
 
 @APP.route("/search", methods=['GET'])
 def search():
-    data = request.get_json()
-    result = other.search(data['token'], data['query_str'])
+    token = request.args.get('token')
+    query_str = request.args.get('query_str')
+    result = other.search(token, query_str)
     return dumps(result)
+
 
 @APP.route("/clear", methods=['DELETE'])
 def clear():
@@ -207,4 +257,4 @@ def clear():
 
 
 if __name__ == "__main__":
-    APP.run(port=0) # Do not edit this port 
+    APP.run(port=0)  # Do not edit this port
