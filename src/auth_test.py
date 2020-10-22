@@ -1,6 +1,5 @@
 '''
 Tests for user.py
-
 '''
 import re
 from subprocess import Popen, PIPE
@@ -9,11 +8,12 @@ from time import sleep
 import pytest
 import helper_test_functions as test_setup
 
-# Fixture to get the URL of the server.
-
 
 @pytest.fixture
 def url():
+    '''
+    Fixture to get the URL of server
+    '''
     url_re = re.compile(r' \* Running on ([^ ]*)')
     server = Popen(["python3", "server.py"], stderr=PIPE, stdout=PIPE)
     line = server.stderr.readline()
