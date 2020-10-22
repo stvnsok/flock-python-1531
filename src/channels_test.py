@@ -58,7 +58,7 @@ def test_channels_list_no_channels(url):
     test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
     list_response = test_setup.token(register_response['token'], url)
     token = user['token']
-    assert list_response = {'channels': []}
+    assert list_response == {'channels': []}
     test_setup.clear(url)
 
 # 1 exiting channel
@@ -69,7 +69,7 @@ def test_channels_list_one():
     token = user['token'[
     channels_response = test_setup.channels_create(token, "channel_1", True, url)
     
-    assert channels_response = {'channels': [
+    assert channels_response == {'channels': [
         {'channel_id': 1, 
         'is_public': True,
         'members': [{
@@ -88,13 +88,13 @@ def test_channels_list_one():
 def test_channels_list_three():
 
     
-    test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob")
+    test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
     token = user['token']
     channels_response = test_setup.channels_create(token, "channel_1", True, url)
     channels_response = test_setup.channels_create(token, "channel_2", False, url)
     channels_response = test_setup.channels_create(token, "channel_3", True, url)
     
-    assert channels_response = 'channels': [
+    assert channels_response == {'channels': [
         {'channel_id': 1, 
         'is_public': True,
         'members': [{
@@ -126,14 +126,14 @@ def test_channels_list_three():
     
 
 # one channel the user is not part of 
-def test_channels_list_not_in():
-    user1 = auth.auth_register("123@hotmail.com", "password", "Bobby", "McBob")
+def test_channels_list_not_in(url):
+    user1 = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
     token1 = user1['token']
     channels.channels_create(token1,"channel_1", True)
-    user2 = auth.auth_register("bestanime@hotmail.com", "Goku is mid!", "mei", "wei")
+    user2 = test_setup.register_user("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", url)
     token2 = user2['token']
-    channels.channels_create(token2,"channel_2", False)
-    assert channels.channels_list(token2) == {'channels': [
+    channels_response = test_setup.channels_create(token2,"channel_2", False, url)
+    assert channels_response == {'channels': [
         {'channel_id': 2, 
         'is_public': False,
         'members': [{
@@ -144,7 +144,7 @@ def test_channels_list_not_in():
         'messages': [],
         'name': 'channel_2'}],
         }
-    clear()
+    test_setup.clear(url)
     
 # user not part of any channels with existing channels
 def test_channels_list_user_in_no_channels():
