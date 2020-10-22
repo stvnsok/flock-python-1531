@@ -308,3 +308,18 @@ def test_name_incorrect_length(url):
     assert error['message'] == '<p>First name must be between 1 and 50 characters in length</p>'
 
     requests.delete(url + '/clear')
+
+
+def test_token_incorrect_set_name(url):
+   
+    payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
+    new_user = payload
+    token = new_user['token']
+    
+    response = helper_test_functions.user_profile_setname("0", "Jack", "N", url)
+   
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>Token is incorrect</p>'
+
+    requests.delete(url + '/clear')
