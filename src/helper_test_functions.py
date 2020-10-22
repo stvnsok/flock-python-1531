@@ -11,7 +11,7 @@ import requests
 '''
 
 
-def register_user(email, password, name_first, name_last, url):
+def auth_register(email, password, name_first, name_last, url):
     response = requests.post(f'{url}auth/register', json={
         "email": email,
         "password": password,
@@ -22,7 +22,7 @@ def register_user(email, password, name_first, name_last, url):
     return response.json()
 
 
-def login_user(email, password, url):
+def auth_login(email, password, url):
     response = requests.post(f'{url}auth/login', json={
         "email": email,
         "password": password,
@@ -31,7 +31,7 @@ def login_user(email, password, url):
     return response.json()
 
 
-def logout_user(token, url):
+def auth_logout(token, url):
     response = requests.post(f'{url}auth/logout', json={
         "token": token
     })
