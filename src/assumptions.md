@@ -23,5 +23,6 @@
     *   For message/edit an empty string is a string that has no white space at all, therefore will have a length of zero without performing any stripping
 
 ## General:
+    * if token is invalid there should not be any other error messages before it
 
     
