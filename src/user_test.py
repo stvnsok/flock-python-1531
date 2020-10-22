@@ -296,28 +296,29 @@ def test_second_name_incorrect_length(url):
     requests.delete(url + '/clear')
 
 def test_name_incorrect_length(url):
-    
+    # Register user
     payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
     new_user = payload
     token = new_user['token']
     
     response = helper_test_functions.user_profile_setname(token, "J", "Napier", url)
-   
+    
+    # Check server response aligns with error messages
     error = response
     assert error['code'] == 400
     assert error['message'] == '<p>First name must be between 1 and 50 characters in length</p>'
 
     requests.delete(url + '/clear')
 
-
 def test_token_incorrect_set_name(url):
-   
+    # Register user
     payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
     new_user = payload
     token = new_user['token']
     
     response = helper_test_functions.user_profile_setname("0", "Jack", "N", url)
-   
+    
+    # Check server response aligns with error messages
     error = response
     assert error['code'] == 400
     assert error['message'] == '<p>Token is incorrect</p>'
@@ -325,13 +326,14 @@ def test_token_incorrect_set_name(url):
     requests.delete(url + '/clear')
 
 def test_set_email_not_valid(url):
-   
+    # Register user
     payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
     new_user = payload
     token = new_user['token']
     
     response = helper_test_functions.user_profile_setemail(token, "jack-napier@hotmail.com", url)
-   
+    
+    # Check server response aligns with error messages
     error = response
     assert error['code'] == 400
     assert error['message'] == '<p>Email is not valid</p>'
@@ -339,14 +341,17 @@ def test_set_email_not_valid(url):
     requests.delete(url + '/clear')
 
 def test_set_email_used(url):
-   
+    # Register user
     payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
     new_user = payload
     token = new_user['token']
+
+    # Register second user
     helper_test_functions.register_user("jacknapier@hotmail.com", "j0ker", "jack", "napier", url)
    
     response = helper_test_functions.user_profile_setemail(token, "jacknapier@hotmail.com", url)
-   
+    
+    # Check server response aligns with error messages
     error = response
     assert error['code'] == 400
     assert error['message'] == '<p>Email address is already in use</p>'
@@ -354,13 +359,15 @@ def test_set_email_used(url):
     requests.delete(url + '/clear')
 
 def test_set_email_token_incorrect(url):
-   
+    
+    # Register user
     payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
     new_user = payloadls
     token = new_user['token']
    
     response = helper_test_functions.user_profile_setemail(0, "jacknapier@hotmail.com", url)
-   
+    
+    # Check server response aligns with error messages
     error = response
     assert error['code'] == 400
     assert error['message'] == '<p>Token is incorrect</p>'
