@@ -106,7 +106,6 @@ def user_profile_setemail(token, email):
         raise AccessError('Token is incorrect')
 
     # Check if email is valid
-    regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
     if not (check(email)):
         raise InputError('Email is not valid')
     
