@@ -100,23 +100,24 @@ def test_message_send_unauthorised_user(url):
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>Authorised user has not joined this channel yet</p>"
-    clear()
+    test_setup.clear(url)
 
 
-# def test_message_send_sent(url):
-#     '''
-#     Tests whether a valid message is stored correctly
-#     '''
-#     john = test_setup.auth_register(
-#         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-#     john_channel = test_setup.channels_create(
-#         john['token'], 'john_channel', True, url)
-#     valid_message = "Hello"
-#     message_sent_john = test_setup.message_send(
-#         john['token'], john_channel['channel_id'], valid_message, url)
+def test_message_send_sent(url):
+    '''
+    Tests whether a valid message is stored correctly
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+    
+    valid_message = "Hello"
+    message_sent_john = test_setup.message_send(
+        john['token'], john_channel['channel_id'], valid_message, url)
 
-#     assert message_sent_john['message_id'] == valid_message
-#     clear()
+    assert message_sent_john["message_id"] == valid_message
+    test_setup.clear(url)
 
 
 # def test_message_remove_invalid_id(url):
