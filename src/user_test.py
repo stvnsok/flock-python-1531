@@ -354,7 +354,7 @@ def test_set_email_token_incorrect(url):
     new_user = payload
     token = new_user['token']
    
-    response = helper_test_functions.user_profile_setemail(0, "jacknapier@hotmail.com", url)
+    response = helper_test_functions.user_profile_setemail("0", "jacknapier@hotmail.com", url)
     
     # Check server response aligns with error messages
     error = response
