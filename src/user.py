@@ -107,7 +107,7 @@ def user_profile_setemail(token, email):
 
     # Check if email is valid
     regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-    if not (re.search(regex, email)):
+    if not (check(email)):
         raise InputError('Email is not valid')
     
     # Check if the email is already being used by another user
