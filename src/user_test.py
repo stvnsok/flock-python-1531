@@ -276,17 +276,6 @@ def test_second_name_incorrect_length(url):
     token = new_user['token']
     
     # call setname function
-    response = helper_test_functions.user_profile_setname(token, "", "haha", url)
-   
-    error = response
-
-def test_second_name_incorrect_length(url):
-    # register first user
-    payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
-    new_user = payload
-    token = new_user['token']
-    
-    # call setname function
     response = helper_test_functions.user_profile_setname(token, "Jack", "is this enough tests yet??? no?... eeeee fine, here's more", url)
    
     error = response
@@ -362,7 +351,7 @@ def test_set_email_token_incorrect(url):
     
     # Register user
     payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
-    new_user = payloadls
+    new_user = payload
     token = new_user['token']
    
     response = helper_test_functions.user_profile_setemail(0, "jacknapier@hotmail.com", url)
