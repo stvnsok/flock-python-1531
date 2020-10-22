@@ -42,7 +42,7 @@ def url():
 #---------------------Testing channels_list function with:---------------------#
 # incorrect token
 def test_channels_list_invalid_token(url):
-    register_response = test_setup.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    test_setup.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', url)
     error_response = test_setup.token(register_response['token'], url)
     token = user['token']
     
@@ -54,8 +54,8 @@ def test_channels_list_invalid_token(url):
 
 # no existing channels
 def test_channels_list_no_channels(url):
-    
-    register_response = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
+
+    test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
     list_response = test_setup.token(register_response['token'], url)
     token = user['token']
     assert list_response = {'channels': []}
@@ -63,10 +63,13 @@ def test_channels_list_no_channels(url):
 
 # 1 exiting channel
 def test_channels_list_one():
-    user = auth.auth_register("123@hotmail.com", "password", "Bobby", "McBob")
-    token = user['token']
-    channels.channels_create(token,"channel_1", True)
-    assert channels.channels_list(token) == {'channels': [
+
+    
+    test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob",url)
+    token = user['token'[
+    channels_response = test_setup.channels_create(token, "channel_1", True, url)
+    
+    assert channels_response = {'channels': [
         {'channel_id': 1, 
         'is_public': True,
         'members': [{
@@ -77,17 +80,21 @@ def test_channels_list_one():
         'messages': [],
         'name': 'channel_1'}],
         }
-    clear()
-
+    
+    test_setup.clear(url)
+    
 
 # 3 exisiting channels
 def test_channels_list_three():
-    user = auth.auth_register("123@hotmail.com", "password", "Bobby", "McBob")
+
+    
+    test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob")
     token = user['token']
-    channels.channels_create(token,"channel_1", True)
-    channels.channels_create(token,"channel_2", False)
-    channels.channels_create(token,"channel_3", True)
-    assert channels.channels_list(token) == {'channels': [
+    channels_response = test_setup.channels_create(token, "channel_1", True, url)
+    channels_response = test_setup.channels_create(token, "channel_2", False, url)
+    channels_response = test_setup.channels_create(token, "channel_3", True, url)
+    
+    assert channels_response = 'channels': [
         {'channel_id': 1, 
         'is_public': True,
         'members': [{
@@ -114,7 +121,9 @@ def test_channels_list_three():
         'messages': [],
         'name': 'channel_3'}],
     }
-    clear()
+    
+    test_setup.clear(url)
+    
 
 # one channel the user is not part of 
 def test_channels_list_not_in():
