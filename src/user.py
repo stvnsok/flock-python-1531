@@ -1,10 +1,6 @@
 from data import data
 from error import InputError, AccessError
-from flask import request
 from other import check
-import re 
-  
-
 
 def user_profile(token, u_id):
 
@@ -20,16 +16,17 @@ def user_profile(token, u_id):
         raise AccessError('Token is incorrect')
 
     # Searches for the user with the u_id
-    usersChecked = 0
+    users_checked = 0
     for user_id in users:
-        if user_id['u_id'] == u_id:
+        if int(user_id['u_id']) == int(u_id):
             profile = user_id
         else:
-            usersChecked += 1
+            users_checked += 1
 
     # If list reaches end then raise error for no user found
-    print(usersChecked)
-    if usersChecked == len(users):
+    print(users_checked)
+    print(len(users))
+    if users_checked == len(users):
         raise InputError('No users with the entered u_id was found')
         
     return {
@@ -96,7 +93,7 @@ def user_profile_setname(token, name_first, name_last):
 def user_profile_setemail(token, email):
     # Grabs all users from data
     users = data['users']
-    
+
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
@@ -105,14 +102,14 @@ def user_profile_setemail(token, email):
     if authorised_user is None:
         raise AccessError('Token is incorrect')
 
-    # Check if email is valid
-    if not (check(email)):
+    # Check email is valid format
+    if check(email) is not True:
         raise InputError('Email is not valid')
-    
+
     # Check if the email is already being used by another user
     if any(user['email'] == email and user['u_id'] != authorised_user['u_id'] for user in users):
-        raise InputError("Email address is already in use")
+       raise InputError("Email address is already in use")
 
-    # Set email    
+    # Set email
     authorised_user['email'] = email
     return {}
