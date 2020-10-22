@@ -352,3 +352,17 @@ def test_set_email_used(url):
     assert error['message'] == '<p>Email address is already in use</p>'
 
     requests.delete(url + '/clear')
+
+def test_set_email_token_incorrect(url):
+   
+    payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
+    new_user = payloadls
+    token = new_user['token']
+   
+    response = helper_test_functions.user_profile_setemail(0, "jacknapier@hotmail.com", url)
+   
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>Token is incorrect</p>'
+
+    requests.delete(url + '/clear')
