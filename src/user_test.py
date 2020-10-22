@@ -326,7 +326,7 @@ def test_profile_setname_correct_update(_url):
     # clears data
     requests.delete(_url + '/clear')
 
-def test_last_name_too_short(_url):
+def test_profile_setname_last_name_too_short(_url):
     '''
     This test uses the feature user/profile/setname with an invalid name_last
     that is too short. The expected outcome is an error of 400 saying 'Handle
@@ -352,7 +352,7 @@ def test_last_name_too_short(_url):
     assert error['message'] == '<p>Last name must be between 1 and 50 characters in length</p>'
     requests.delete(_url + '/clear')
 
-def test_last_name_too_long(_url):
+def test_profile_setname_last_name_too_long(_url):
     '''
     This test uses the feature user/profile/setname with an invalid name_last
     that is too long. The expected outcome is an error of 400 saying 'Handle
@@ -383,7 +383,7 @@ def test_last_name_too_long(_url):
     assert error['message'] == '<p>Last name must be between 1 and 50 characters in length</p>'
     requests.delete(_url + '/clear')
 
-def test_first_name_too_short(_url):
+def test_profile_setname_first_name_too_short(_url):
     '''
     This test uses the feature user/profile/setname with an invalid name_first
     that is too short. The expected outcome is an error of 400 saying 'Handle
@@ -407,7 +407,7 @@ def test_first_name_too_short(_url):
 
     requests.delete(_url + '/clear')
 
-def test_first_name_too_long(_url):
+def test_profile_setname_first_name_too_long(_url):
     '''
     This test uses the feature user/profile/setname with an invalid name_first
     that is too long. The expected outcome is an error of 400 saying 'Handle
@@ -437,7 +437,7 @@ def test_first_name_too_long(_url):
     requests.delete(_url + '/clear')
 
 
-def test_token_incorrect_set_name(_url):
+def test_profile_setname_token_incorrect(_url):
     '''
     This test uses the feature user/profile/setname with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
@@ -452,7 +452,7 @@ def test_token_incorrect_set_name(_url):
 
 ###################### Tests for user/profile/setemail #########################
 
-def test_set_email_not_valid(_url):
+def test_profile_setemail_not_valid(_url):
     '''
     This test uses the feature user/profile/setemail with an invalid email. The
     expected outcome is an error of 400 saying 'Email is not valid'
@@ -510,7 +510,7 @@ def test_set_email_not_valid(_url):
 
     #requests.delete(_url + '/clear')
 
-def test_set_email_token_incorrect(_url):
+def test_profile_setemail_token_incorrect(_url):
     '''
     This test uses the feature user/profile/setemail with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
@@ -523,7 +523,7 @@ def test_set_email_token_incorrect(_url):
 
     requests.delete(_url + '/clear')
 
-def test_profile_email_correct_update(_url):
+def test_profile_setemail_correct_update(_url):
     '''
     This test uses the feature user/profile/setemail with valid inputs. The
     expected outcome is the email assoicate the user who calls this function will
