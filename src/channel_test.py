@@ -354,6 +354,27 @@ def test_channel_messages_invalid_channel_id(_url): #NOT DONE
     This test uses the feature channel/messages with an invalid channel_id. The
     expected outcome is an error of 400 saying 'Channel_id does not exist'
     '''
+'''
+    response = helper_test_functions.register_user(
+        "123@hotmail.com", 
+        "password", 
+        "Bobby", 
+        "McBob",
+        _url
+    )
+    new_user_1 = response
+    token_1 = new_user_1['token']
+    response = helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
+    new_channel = response
+    channel_id = new_channel['channel_id']
+
+    response = helper_test_functions.channel_messages("0", channel_id, 0, _url)
+
+    error = response
+
+    assert error['code'] == 400
+    assert error['message'] == '<p>Channel_id does not exist</p>'
+''' 
 
 def test_channel_messages_start_greater(_url): #NOT DONE
     '''
