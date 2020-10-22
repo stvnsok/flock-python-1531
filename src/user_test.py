@@ -280,11 +280,7 @@ def test_first_name_too_short(url):
    
     error = response
 
-    assert error['code'] == 400
-    assert error['message'] == '<p>First name must be between 1 and 50 characters in length</p>'
-    requests.delete(url + '/clear')
-
-def test_last_name_too_long(url):
+def test_second_name_incorrect_length(url):
     # register first user
     payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
     new_user = payload
@@ -299,17 +295,4 @@ def test_last_name_too_long(url):
     assert error['message'] == '<p>Last name must be between 1 and 50 characters in length</p>'
     requests.delete(url + '/clear')
 
-def test_first_name_too_long(url):
-    # register first user
-    payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
-    new_user = payload
-    token = new_user['token']
-    
-    # call setname function
-    response = helper_test_functions.user_profile_setname(token, "so is this going to get a good mark?... I really hope so...", "haha", url)
-   
-    error = response
 
-    assert error['code'] == 400
-    assert error['message'] == '<p>First name must be between 1 and 50 characters in length</p>'
-    requests.delete(url + '/clear')
