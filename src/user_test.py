@@ -323,3 +323,17 @@ def test_token_incorrect_set_name(url):
     assert error['message'] == '<p>Token is incorrect</p>'
 
     requests.delete(url + '/clear')
+
+def test_set_email_not_valid(url):
+   
+    payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
+    new_user = payload
+    token = new_user['token']
+    
+    response = helper_test_functions.user_profile_setemail(token, "jack-napier@hotmail.com", url)
+   
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>Email is not valid</p>'
+
+    requests.delete(url + '/clear')
