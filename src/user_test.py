@@ -305,7 +305,7 @@ def test_token_incorrect_set_name(url):
     new_user = payload
     token = new_user['token']
     
-    response = helper_test_functions.user_profile_setname("0", "Jack", "N", url)
+    response = helper_test_functions.user_profile_setname("0", "Jack", "Napier", url)
     
     # Check server response aligns with error messages
     error = response
@@ -320,7 +320,7 @@ def test_set_email_not_valid(url):
     new_user = payload
     token = new_user['token']
     
-    response = helper_test_functions.user_profile_setemail(token, "jack-napier@hotmail.com", url)
+    response = helper_test_functions.user_profile_setemail(token, "jacknapier.com", url)
     
     # Check server response aligns with error messages
     error = response
