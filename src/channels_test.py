@@ -14,7 +14,7 @@ import requests
 import json
 
 import server
-import helper_test_functions
+import helper_test_functions as test_setup
 
 # Fixture to get the URL of the server. 
 
@@ -41,20 +41,25 @@ def url():
 
 #---------------------Testing channels_list function with:---------------------#
 # incorrect token
-def test_channels_list_invalid_token():
-    user = auth.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith')
+def test_channels_list_invalid_token(url):
+    register_response = test_setup.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    error_response = test_setup.token(register_response['token'], url)
     token = user['token']
-    with pytest.raises(AccessError) as e:
-        channels.channels_list("invalid_token")
-    assert 'Token is incorrect/user does not exist' == str(e.value)
-    clear()
+    
+    
+    assert error_response["code"] == 400
+    assert error_response["message"] == "<p> Token is incorrect/user does not exist</p>"
+
+    test_setup.clear(url)
 
 # no existing channels
-def test_channels_list_no_channels():
-    user = auth.auth_register("123@hotmail.com", "password", "Bobby", "McBob")
+def test_channels_list_no_channels(url):
+    
+    register_response = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
+    list_response = test_setup.token(register_response['token'], url)
     token = user['token']
-    assert channels.channels_list(token) == {'channels': []}
-    clear()
+    assert list_response = {'channels': []}
+    test_setup.clear(url)
 
 # 1 exiting channel
 def test_channels_list_one():
