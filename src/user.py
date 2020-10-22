@@ -108,7 +108,7 @@ def user_profile_setemail(token, email):
 
     # Check if the email is already being used by another user
     if any(user['email'] == email and user['u_id'] != authorised_user['u_id'] for user in users):
-       raise InputError("Email address is already in use")
+        raise InputError("Email address is already in use")
 
     # Set email
     authorised_user['email'] = email
