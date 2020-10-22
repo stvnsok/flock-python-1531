@@ -1,6 +1,6 @@
 from data import data
 import copy
-import datetime
+from datetime import datetime
 import calendar
 from error import InputError, AccessError
 import re
