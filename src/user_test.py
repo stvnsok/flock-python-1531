@@ -290,7 +290,7 @@ def test_name_incorrect_length(url):
     new_user = payload
     token = new_user['token']
     
-    response = helper_test_functions.user_profile_setname(token, "J", "Napier", url)
+    response = helper_test_functions.user_profile_setname(token, "", "Napier", url)
     
     # Check server response aligns with error messages
     error = response
