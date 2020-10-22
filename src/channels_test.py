@@ -41,33 +41,35 @@ def _url():
 
 #---------------------Testing channels_list function with:---------------------#
 # incorrect token
-def test_channels_list_invalid_token(url):
-    user = test_setup.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    error_response = test_setup.token(user['token'], url)
+def test_channels_list_invalid_token(_url):
+    user = helper_test_functions.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
+
     token = user['token']
     
-    
-    assert error_response["code"] == 400
-    assert error_response["message"] == "<p> Token is incorrect/user does not exist</p>"
+    response = helper_test_functions.channels_list('token', _url)
+    assert response"code"] == 400
+    assert response["message"] == "<p> Token is incorrect/user does not exist</p>"
 
-    test_setup.clear(url)
+    requests.delete(_url + '/clear')
+
 
 # no existing channels
 def test_channels_list_no_channels(url):
 
-    user = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
-    list_response = test_setup.token(user['token'], url)
+    user = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", _url)
+    list_response = test_setup.token(user['token'], _url)
     token = user['token']
     assert list_response == {'channels': []}
-    test_setup.clear(url)
+    requests.delete(_url + '/clear')
+
 
 # 1 exiting channel
 def test_channels_list_one():
 
     
-    user = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob",url)
+    user = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob",_url)
     token = user['token']
-    channels_response = test_setup.channels_create(token, "channel_1", True, url)
+    channels_response = test_setup.channels_create(token, "channel_1", True, _url)
     
     assert channels_response == {'channels': [
         {'channel_id': 1, 
@@ -81,18 +83,19 @@ def test_channels_list_one():
         'name': 'channel_1'}],
         }
     
-    test_setup.clear(url)
+    requests.delete(_url + '/clear')
+
     
 
 # 3 exisiting channels
 def test_channels_list_three():
 
     
-    user = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
+    user = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", _url)
     token = user['token']
-    channels_response = test_setup.channels_create(token, "channel_1", True, url)
-    channels_response = test_setup.channels_create(token, "channel_2", False, url)
-    channels_response = test_setup.channels_create(token, "channel_3", True, url)
+    channels_response = test_setup.channels_create(token, "channel_1", True, _url)
+    channels_response = test_setup.channels_create(token, "channel_2", False, _url)
+    channels_response = test_setup.channels_create(token, "channel_3", True, _url)
     
     assert channels_response == {'channels': [
         {'channel_id': 1, 
@@ -122,17 +125,18 @@ def test_channels_list_three():
         'name': 'channel_3'}],
     }
     
-    test_setup.clear(url)
+    requests.delete(_url + '/clear')
+
     
 
 # one channel the user is not part of 
 def test_channels_list_not_in(url):
-    user1 = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
+    user1 = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", _url)
     token1 = user1['token']
     channels_response = test_setup.channels_create(token1,"channel_1", True, url)
-    user2 = test_setup.register_user("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", url)
+    user2 = test_setup.register_user("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
     token2 = user2['token']
-    channels_response = test_setup.channels_create(token2,"channel_2", False, url)
+    channels_response = test_setup.channels_create(token2,"channel_2", False, _url)
     assert channels_response == {'channels': [
         {'channel_id': 2, 
         'is_public': False,
@@ -144,34 +148,47 @@ def test_channels_list_not_in(url):
         'messages': [],
         'name': 'channel_2'}],
         }
-    test_setup.clear(url)
+    requests.delete(_url + '/clear')
+
     
 # user not part of any channels with existing channels
 def test_channels_list_user_in_no_channels():
-    user1 = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", url)
+    user1 = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob", _url)
     token1 = user1['token']
-    channels_response = test_setup.channels_create(token1,"channel_1", True, url)
-    channels_response = test_setup.channels_create(token1,"channel_2", False, url)
-    channels_response = test_setup.channels_create(token1,"channel_3", True, url)
-    channels_response = test_setup.channels_create(token1,"channel_4", False, url)
-    user2 = test_setup.register_user("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", url)
+    channels_response = test_setup.channels_create(token1,"channel_1", True, _url)
+    channels_response = test_setup.channels_create(token1,"channel_2", False, _url)
+    channels_response = test_setup.channels_create(token1,"channel_3", True, _url)
+    channels_response = test_setup.channels_create(token1,"channel_4", False, _url)
+    user2 = test_setup.register_user("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
     token2 = user2['token']
     assert channels_response == {'channels': []}
-    test_setup.clear(url)
+    requests.delete(_url + '/clear')
+
 
 #---------------------Testing channels_listall function with:------------------#
 # incorrect token
 def test_channels_listall_invalid_token():
-    user = test_setup.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith')
+    user = test_setup.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
     token = user['token']
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p> Token is incorrect/user does not exist</p>"
     test_setup.clear(url)
+    
+    user = test_setup.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
+    error_response = test_setup.token(user['token'], _url)
+    token = user['token']
+    
+    
+    assert error_response["code"] == 400
+    assert error_response["message"] == "<p> Token is incorrect/user does not exist</p>"
+
+    requests.delete(_url + '/clear')
+
 
 # no existing channels
 def test_channels_listall_no_channels():
-    user = auth.auth_register("123@hotmail.com", "password", "Bobby", "McBob")
+    user = test_setup.register_user("123@hotmail.com", "password", "Bobby", "McBob")
     token = user['token']
     assert channels.channels_listall(token) == {'channels': []}
     clear()
@@ -302,21 +319,21 @@ def test_channels_listall_user_in_no_channels():
 #--------------------Testing channels_create function for:---------------------#
 # incorrect token
 def test_channels_create_invalid_token():
-    user = auth.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith')
+    user = test_setup.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
     token = user['token']
     with pytest.raises(AccessError) as e:
         channels.channels_create("invalid_token", "name", True)
     assert 'Token is incorrect/user does not exist' == str(e.value)
-    clear()
+    requests.delete(_url + '/clear')
 
 # invalid name
 def test_channels_create_invalid_name():
-    user = auth.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith')
+    user = test_setup.register_user('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
     token = user['token']
     with pytest.raises(InputError) as e:
         channels.channels_create(token, "Hatsune Miku is best Waifu, FIGHT ME!", True)
     assert 'Input Channel Name too long' == str(e.value)
-    clear()
+    requests.delete(_url + '/clear')
 
 # 1000 channel creation
 def test_channels_create_lots():
