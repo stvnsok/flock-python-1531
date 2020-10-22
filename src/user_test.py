@@ -269,7 +269,7 @@ def test_last_name_too_short(url):
     assert error['message'] == '<p>Last name must be between 1 and 50 characters in length</p>'
     requests.delete(url + '/clear')
 
-def test_first_name_too_short(url):
+def test_second_name_incorrect_length(url):
     # register first user
     payload = helper_test_functions.register_user("brucewayne@hotmail.com", "batm4n", "bruce", "wayne", url)
     new_user = payload
