@@ -175,8 +175,12 @@ def profile():
 @APP.route("/user/profile/setname", methods=['PUT'])
 def setname():
     data = request.get_json()
+<<<<<<< HEAD
     result = user.user_profile_setname(
         data['token'], data['name_first'], data['name_last'])
+=======
+    result = user.user_profile_setname(data['token'], data['name_first'], data['name_last'])
+>>>>>>> fixed errors in users_test
     return dumps(result)
 
 
@@ -229,7 +233,11 @@ Other Endpoints
 
 @APP.route("/users/all", methods=['GET'])
 def usersall():
+<<<<<<< HEAD
     token = request.args.get('token')
+=======
+    token = request.args.get("token")
+>>>>>>> fixed errors in users_test
     result = other.users_all(token)
     return dumps(result)
 

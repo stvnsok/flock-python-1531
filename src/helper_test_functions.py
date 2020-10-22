@@ -225,9 +225,13 @@ def user_profile_sethandle(token, handle_str, url):
 
 
 def users_all(token, url):
+<<<<<<< HEAD
     response = requests.get(f'{url}users/all', params={
         "token": token,
     })
+=======
+    response = requests.get(f'{url}users/all', params={"token" : token,})
+>>>>>>> fixed errors in users_test
 
     return response.json()
 
