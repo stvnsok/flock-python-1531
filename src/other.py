@@ -11,7 +11,6 @@ def clear():
     '''
     data['users'].clear()
     data['channels'].clear()
-    data['messages'].clear()
 
     return {}
 
