@@ -99,14 +99,6 @@ def message_edit(token, message_id, message):
     # Check if authorised user is channel owner or Flockr owner
     channel_owner = any((member['is_owner'] and member['u_id'] == authorised_user['u_id']) or (authorised_user['permission_id'] == 1 and member['u_id'] == authorised_user['u_id']) for member in channel['members'])
     
-    # Create message
-    # updated_message = {
-    #     'message_id' : str(uuid.uuid4()),
-    #     'message' : message,
-    #     'u_id': authorised_user['u_id'],
-    #     'last_edited': get_timestamp()
-    # }
-    
     # If the message is an empty message, delete the message
     if len(message) == 0:   
         channel['messages'].remove(message)
