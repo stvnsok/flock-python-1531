@@ -163,41 +163,47 @@ def test_channels_list_user_in_no_channels(_url):
     helper_test_functions.clear(_url)
 
 
-# #---------------------Testing channels_listall function with:------------------#
-# # incorrect token
-# def test_channels_listall_invalid_token(_url):
-#     response = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
-    
-#     new_user = response
-#     token = new_user['token']
-    
-    
-#     response = helper_test_functions.channel_listall(token, _url)
-    
-    
-#     assert error["code"] == 400
-#     assert error["message"] == "<p> Token is incorrect/user does not exist</p>"
+#---------------------Testing channels_listall function with:------------------#
+# incorrect token
+def test_channels_listall_invalid_token(_url):
 
-#     requests.delete(_url + '/clear')
+    response = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
+        
+    response = helper_test_functions.channels_create(response['token'], 'channel_1', True, _url)
+    
+    error_response = helper_test_functions.channels_listall("incorrect token", _url)
+
+    assert error_response["code"] == 400
+    assert error_response["message"] == "<p>Token is incorrect/user does not exist</p>"
+
+    helper_test_functions.clear(_url)
 
 
-# # no existing channels
-# def test_channels_listall_no_channels(_url):
-#     user= helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
-#     token = user['token']
-#     error = helper_test_functions.channel_listall(token, _url)
-#     assert error_response == {'channels': []}
-#     requests.delete(_url + '/clear')
 
-# # 1 exiting channel
-# def test_channels_listall_one(_url):
-#     response = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
-#     token = user['token']
-#     response = helper_test_functions.channels_create(token,"channel_1", True, _url)
+
+# no existing channels
+def test_channels_listall_no_channels(_url):
+    user_1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
+    
+    response = helper_test_functions.channels_listall(user_1['token'], _url)
+    assert len(response['channels']) == 0
+    helper_test_functions.clear(_url)
+
+# 1 exiting channel
+def test_channels_listall_one(_url):
+    user_1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
+    
+    channel_1 = helper_test_functions.channels_create(user_1['token'],"channel_1", True, _url)
     
     
-#     response = helper_test_functions.channel_listall(token, _url)
-#     error = response
+    response = helper_test_functions.channels_listall(user_1['token'], _url)
+    
+
+    assert len(response['channels']) == 1
+    assert response['channels'][0]['channel_id'] == 1
+    assert response['channels'][0]['name'] == "channel_1"
+    
+    helper_test_functions.clear(_url) 
 #     assert error_response == {'channels': [
 #         {'channel_id': 1, 
 #         'is_public': True,
