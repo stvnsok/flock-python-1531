@@ -123,7 +123,7 @@ def test_channel_invite_invalid_user_id(_url):
     assert error['code'] == 400
     assert error['message'] == '<p>user_id does not exist</p>'
 
-def test_channel_invite_user_inviting_when_not_in_channel(_url):
+def test_channel_invite_user_not_in_channel(_url):
     '''
     This test uses the feature channel/invite with an user_id that is already in
     the channel. The expected outcome is error of 400 saying 'Authorised user is
@@ -264,7 +264,7 @@ def test_channel_details_user_not_a_member(_url): #NOT DONE
     the channel. The expected outcome is error of 400 saying 'Authorised user is
     not a member of the channel'.
     '''
-'''    response = helper_test_functions.auth_register(
+    '''response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -288,7 +288,8 @@ def test_channel_details_user_not_a_member(_url): #NOT DONE
     new_channel = response
     channel_id = new_channel['channel_id']
 
-    response = helper_test_functions.channel_details(token_2, channel_id, _url)
+    print(len(data['channels']))
+    response = helper_test_functions.channel_details(token_1, channel_id, _url)
     error = response
     assert error['code'] == 400
     assert error['message'] == '<p>Authorised user is not a member of the channel</p>'

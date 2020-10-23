@@ -113,6 +113,7 @@ def channel_messages(token, channel_id, start):
     channel = next(
         (channel for channel in channels if channel['channel_id'] == channel_id), None)
 
+    print(len(channels))
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
