@@ -54,16 +54,19 @@ def admin_userpermission_change(token, u_id, permission_id):
  
 def search(token, query_str):
     '''
-    Given a query string, return a collection of messages in a ll of the channels
+    Given a query string, return a collection of messages in all of the channels
     that the user has joined that match the query
     '''
     all_messages = []
 
+    users = data['users']
+    channels = data['channels']
+
     # Verify authorised user
-    authorised_user = next(user for user in users if user['token'] == token)
+    authorised_user = next((user for user in users if user['token'] == token), None)
     
     # Get each batch of messages from each channel where the user is a member
-    for channel in data['channels']:
+    for channel in channels:
         for member in channel['members']:
             if member['u_id'] == authorised_user['u_id']:
                 all_messages += channel['messages']
