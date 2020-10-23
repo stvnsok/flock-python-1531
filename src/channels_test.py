@@ -114,18 +114,23 @@ def test_channels_list_three(_url):
     assert response['channels'][2]['name'] == "channel_3"
     
     
-    
+    helper_test_functions.clear(_url)
 
 # # one channel the user is not part of 
-# def test_channels_list_not_in(_url):
-#     user1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
-#     token1 = user1['token']
-#     response = helper_test_functions.channels_create(token1,"channel_1", True, _url)
-#     user2 = helper_test_functions.auth_register("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
-#     token2 = user2['token']
-#     response = helper_test_functions.channels_create(token2,"channel_2", False, _url)
+def test_channels_list_not_in(_url):
+    user1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
+
+    channel_1 = helper_test_functions.channels_create(user1['token'],"channel_1", True, _url)
+    user2 = helper_test_functions.auth_register("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
+
+    channel_2 = helper_test_functions.channels_create(user2['token'],"channel_2", False, _url)
+
+    response  = helper_test_functions.channels_list(user2['token'], _url)
+     
+    assert len(response['channels']) == 1
+    assert response['channels'][0]['channel_id'] == 2
+    assert response['channels'][0]['name'] == "channel_2"
     
-#     error = response
 #     assert error == {'channels': [
 #         {'channel_id': 2, 
 #         'is_public': False,
@@ -139,21 +144,23 @@ def test_channels_list_three(_url):
 #         }
 #     requests.delete(_url + '/clear')
 
+    helper_test_functions.clear(_url)
     
-# # user not part of any channels with existing channels
-# def test_channels_list_user_in_no_channels(_url):
-#     user1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
-#     token1 = user1['token']
-#     response = helper_test_functions.channels_create(token1,"channel_1", True, _url)
-#     response = helper_test_functions.channels_create(token1,"channel_2", False, _url)
-#     response = helper_test_functions.channels_create(token1,"channel_3", True, _url)
-#     response = helper_test_functions.channels_create(token1,"channel_4", False, _url)
-#     user2 = helper_test_functions.auth_register("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
-#     token2 = user2['token']
+ # user not part of any channels with existing channels
+def test_channels_list_user_in_no_channels(_url):
+    user_1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
     
-#     error = response
-#     assert error == {'channels': []}
-#     requests.delete(_url + '/clear')
+    channel_1 = helper_test_functions.channels_create(user_1['token'],"channel_1", True, _url)
+    channel_2 = helper_test_functions.channels_create(user_1,"channel_2", False, _url)
+    channel_3 = helper_test_functions.channels_create(user_1,"channel_3", True, _url)
+    channel_4 = helper_test_functions.channels_create(user_1,"channel_4", False, _url)
+    user_2 = helper_test_functions.auth_register("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
+    
+    
+    response = helper_test_functions.channels_list(user_2['token'], _url)
+    
+    assert len(response['channels']) == 0
+    helper_test_functions.clear(_url)
 
 
 # #---------------------Testing channels_listall function with:------------------#
