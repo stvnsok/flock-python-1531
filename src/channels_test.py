@@ -252,69 +252,48 @@ def test_channels_listall_not_in(_url):
 
     helper_test_functions.clear(_url)
     
-# # user not part of any channels with existing channels
-# def test_channels_listall_user_in_no_channels(_url):
-#     user1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
-#     token1 = user1['token']
-#     helper_test_functions.channels_create(token1,"channel_1", True, _url)
-#     helper_test_functions.channels_create(token1,"channel_2", False, _url)
-#     helper_test_functions.channels_create(token1,"channel_3", True, _url)
-#     user2 = helper_test_functions.auth_register("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
-#     token2 = user2['token']
+# user not part of any channels with existing channels
+def test_channels_listall_user_in_no_channels(_url):
+    user_1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
     
-#     error_response = helper_test_functions.channels_listall(token2)
+    channel_1 = helper_test_functions.channels_create(user_1['token'],"channel_1", True, _url)
+    channel_2 = helper_test_functions.channels_create(user_1['token'],"channel_2", False, _url)
+    channel_3 = helper_test_functions.channels_create(user_1['token'],"channel_3", True, _url)
+    user_2 = helper_test_functions.auth_register("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
     
-#     assert error_response == {'channels': [
-#         {'channel_id': 1, 
-#         'is_public': True,
-#         'members': [{
-#             'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_1'},
-#         {'channel_id': 2,
-#         'is_public': False,
-#         'members': [{'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_2'},
-#         {'channel_id': 3,
-#         'is_public': True,
-#         'members': [{'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_3'}],
-#     }
+    
+    response = helper_test_functions.channels_listall(user_2['token'], _url)
+    assert len(response['channels']) == 3
+    assert response['channels'][0]['channel_id'] == 1
+    assert response['channels'][0]['name'] == "channel_1"
+    assert response['channels'][1]['channel_id'] == 2
+    assert response['channels'][1]['name'] == "channel_2"
+    assert response['channels'][2]['channel_id'] == 3
+    assert response['channels'][2]['name'] == "channel_3"
+    helper_test_functions.clear(_url)
 
-# # #--------------------Testing channels_create function for:---------------------#
-# # # incorrect token
-# # def test_channels_create_invalid_token(_url):
-# #     user = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
-# #     token = user['token']
+# #--------------------Testing channels_create function for:---------------------#
+# # incorrect token
+def test_channels_create_invalid_token(_url):
+    user_1 = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
     
     
-# #     response = helper_test_functions.channels_create(token,"channel_1", True, _url)
-# #     error = response
-# #     assert error['code'] == 400
-# #     assert error['message'] == '<p>Token is incorrect/user does not exist</p>'
-# #     requests.delete(_url + '/clear')
+    
+    error = helper_test_functions.channels_create("incorrect_token","channel_1", True, _url)
+    
+    assert error['code'] == 400
+    assert error['message'] == '<p>Token is incorrect/user does not exist</p>'
+    helper_test_functions.clear(_url)
 
-# # # invalid name
-# # def test_channels_create_invalid_name(_url):
-# #     user = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
-# #     token = user['token']
+# invalid name
+def test_channels_create_invalid_name(_url):
+    user_1 = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
 
-# #     response = helper_test_functions.channels_create(token, "Hatsune Miku is best Waifu, FIGHT ME!", True, _url)
-# #     error = response
-# #     assert error['code'] == 400
-# #     assert error['message'] == '<p>Input Channel Name too long</p>'
-# #     requests.delete(_url + '/clear')
+
+    error = helper_test_functions.channels_create(user_1['token'], "Hatsune Miku is best Waifu, FIGHT ME!", True, _url)
+    assert error['code'] == 400
+    assert error['message'] == '<p>Input Channel Name too long</p>'
+    requests.delete(_url + '/clear')
 
 # # # 1000 channel creation
 # # def test_channels_create_lots(_url):
