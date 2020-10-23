@@ -4,6 +4,8 @@ import data dictionary from data.py
 from data import data
 from error import InputError, AccessError
 from flask import request
+from auth import *
+from other import *
 
 def channels_list(token):
     '''
@@ -117,3 +119,4 @@ def channels_create(token, name, is_public):
 
     # Return new channel
     return {'channel_id': new_channel['channel_id']}
+

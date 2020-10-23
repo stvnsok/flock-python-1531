@@ -13,7 +13,6 @@ import helper_test_functions
 import pytest
 
 
-
 @pytest.fixture
 def _url():
     '''
@@ -303,18 +302,20 @@ def test_channels_create_is_public(_url):
     user_1 = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith',_url)
    
     channel_1 = helper_test_functions.channels_create(user_1['token'], "No, I'm spiderman", True, _url)
-    list_channels = data['channels']
-    assert list_channels[0]['is_public'] == True
+    list_channels = helper_test_functions.channels_listall(user_1['token'], _url)
+    assert list_channels['channels'][0]['is_public'] == True
     channel_2 = helper_test_functions.channels_create(user_1['token'], "cult of spidermans", False, _url)
-    assert list_channels[1]['is_public'] == False
+    list_channels = helper_test_functions.channels_listall(user_1['token'], _url)
+    assert list_channels['channels'][1]['is_public'] == False
     helper_test_functions.clear(_url)
 
  # creator got added to channnel as owner
 def test_channels_create_owner(_url):
-     user_1 = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
+    user_1 = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
 
-     helper_test_functions.channels_create(user_1['token'], "Anime Betrayals", True, _url)
-     list_channels = data['channels']
-     assert list_channels[0]['members'][0]['is_owner'] == True
-     helper_test_functions.clear(_url)
+    helper_test_functions.channels_create(user_1['token'], "Anime Betrayals", True, _url)
+    list_channels = helper_test_functions.channels_list(user_1['token'], _url)
+
+    assert list_channels['channels'][0]['members'][0]['is_owner'] == True
+    helper_test_functions.clear(_url)
 
