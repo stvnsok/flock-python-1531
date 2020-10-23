@@ -204,89 +204,53 @@ def test_channels_listall_one(_url):
     assert response['channels'][0]['name'] == "channel_1"
     
     helper_test_functions.clear(_url) 
-#     assert error_response == {'channels': [
-#         {'channel_id': 1, 
-#         'is_public': True,
-#         'members': [{
-#             'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_1'}],
-#         }
-#     requests.delete(_url + '/clear')
 
 
-# # 3 exisiting channels
-# def test_channels_listall_three(_url):
-#     user = helper_test_functions.auth_register("123@hotmail.com","password", "Bobby", "McBob", _url)
-#     token = user['token']
-#     helper_test_functions.channels_create(token,"channel_1", True, _url)
-#     helper_test_functions.channels_create(token,"channel_2", False, _url)
-#     helper_test_functions.channels_create(token,"channel_3", True, _url)
+
+# 3 exisiting channels
+def test_channels_listall_three(_url):
+    user_1 = helper_test_functions.auth_register("123@hotmail.com","password", "Bobby", "McBob", _url)
     
-#     error_response = helper_test_functions.channel_listall(token, _url)
-#     assert error_response == {'channels': [
-#         {'channel_id': 1, 
-#         'is_public': True,
-#         'members': [{
-#             'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_1'},
-#         {'channel_id': 2,
-#         'is_public': False,
-#         'members': [{'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_2'},
-#         {'channel_id': 3,
-#         'is_public': True,
-#         'members': [{'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_3'}],
-#     }
-#     requests.delete(_url + '/clear')
-
-# # one channel the user is not part of 
-# def test_channels_listall_not_in(_url):
-#     user1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
-#     token1 = user1['token']
-#     helper_test_functions.channels_create(token1,"channel_1", True, _url)
-#     user2 = helper_test_functions.auth_register("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
-#     token2 = user2['token']
-#     helper_test_functions.channels_create(token2,"channel_2", False, _url)
+    channel_1 = helper_test_functions.channels_create(user_1['token'],"channel_1", True, _url)
+    channel_2 = helper_test_functions.channels_create(user_1['token'],"channel_2", False, _url)
+    channel_3 = helper_test_functions.channels_create(user_1['token'],"channel_3", True, _url)
     
-#     error_response = helper_test_functions.channels_listall(token2)
-#     assert error_response == {'channels': [
-#         {'channel_id': 1, 
-#         'is_public': True,
-#         'members': [{
-#             'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_1'},
-#         {'channel_id': 2, 
-#         'is_public': False,
-#         'members': [{
-#             'is_owner': True,
-#             'name_first': 'mei',
-#             'name_last': 'wei',
-#             'u_id': 2}],
-#         'messages': [],
-#         'name': 'channel_2'}],
-#         }
-#     requests.delete(_url + '/clear')
+    response = helper_test_functions.channels_listall(user_1['token'], _url)
+    
+    assert len(response['channels']) == 3
+    assert response['channels'][0]['channel_id'] == 1
+    assert response['channels'][0]['name'] == "channel_1"
+    
+ 
+    assert response['channels'][1]['channel_id'] == 2
+    assert response['channels'][1]['name'] == "channel_2"
+    
+
+    assert response['channels'][2]['channel_id'] == 3
+    assert response['channels'][2]['name'] == "channel_3"
+    
+    helper_test_functions.clear(_url) 
+
+
+# one channel the user is not part of 
+def test_channels_listall_not_in(_url):
+    user_1 = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
+    
+    channel_1 = helper_test_functions.channels_create(user_1['token'],"channel_1", True, _url)
+    user_2 = helper_test_functions.auth_register("bestanime@hotmail.com", "Goku is mid!", "mei", "wei", _url)
+    
+    channel_2 = helper_test_functions.channels_create(user_2['token'],"channel_2", False, _url)
+    
+    response = helper_test_functions.channels_listall(user_2['token'], _url)
+
+
+    assert len(response['channels']) == 2
+    assert response['channels'][0]['channel_id'] == 1
+    assert response['channels'][0]['name'] == "channel_1"
+    assert response['channels'][1]['channel_id'] == 2
+    assert response['channels'][1]['name'] == "channel_2"
+
+    helper_test_functions.clear(_url)
     
 # # user not part of any channels with existing channels
 # def test_channels_listall_user_in_no_channels(_url):
