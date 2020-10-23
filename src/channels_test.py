@@ -90,47 +90,30 @@ def test_channels_list_one(_url):
     
 
 # # 3 exisiting channels
-# def test_channels_list_three(_url):
+def test_channels_list_three(_url):
 
     
-#     response = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
-#     new_user = response
-#     token = new_user['token']
-#     response = helper_test_functions.channels_create(token, "channel_1", True, _url)
-#     response = helper_test_functions.channels_create(token, "channel_2", False, _url)
-#     response = helper_test_functions.channels_create(token, "channel_3", True, _url)
-    
-#     error = response
-#     assert error == {'channels': [
-#         {'channel_id': 1, 
-#         'is_public': True,
-#         'members': [{
-#             'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_1'},
-#         {'channel_id': 2,
-#         'is_public': False,
-#         'members': [{'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_2'},
-#         {'channel_id': 3,
-#         'is_public': True,
-#         'members': [{'is_owner': True,
-#             'name_first': 'Bobby',
-#             'name_last': 'McBob',
-#             'u_id': 1}],
-#         'messages': [],
-#         'name': 'channel_3'}],
-#     }
-    
-#     requests.delete(_url + '/clear')
+    bobby = helper_test_functions.auth_register("123@hotmail.com", "password", "Bobby", "McBob", _url)
 
+    channel_1 = helper_test_functions.channels_create(bobby['token'], "channel_1", True, _url)
+    channel_2 = helper_test_functions.channels_create(bobby['token'], "channel_2", False, _url)
+    channel_3 = helper_test_functions.channels_create(bobby['token'], "channel_3", True, _url)
+    
+    response = helper_test_functions.channels_list(bobby['token'], _url)
+    
+    assert len(response['channels']) == 3
+    assert response['channels'][0]['channel_id'] == 1
+    assert response['channels'][0]['name'] == "channel_1"
+    
+ 
+    assert response['channels'][1]['channel_id'] == 2
+    assert response['channels'][1]['name'] == "channel_2"
+    
+
+    assert response['channels'][2]['channel_id'] == 3
+    assert response['channels'][2]['name'] == "channel_3"
+    
+    
     
 
 # # one channel the user is not part of 
@@ -386,3 +369,4 @@ def test_channels_list_one(_url):
 # #     list_channels = data['channels']
 # #     assert list_channels[0]['members'][0]['is_owner'] == True
 # #     requests.delete(_url + '/clear')
+
