@@ -118,7 +118,7 @@ def channel_removeowner(token, channel_id, u_id, url):
 
 
 def channels_list(token, url):
-    response = requests.get(f'{url}channel/list', params={
+    response = requests.get(f'{url}channels/list', params={
         "token": token,
     })
 
@@ -126,7 +126,7 @@ def channels_list(token, url):
 
 
 def channels_listall(token, url):
-    response = requests.get(f'{url}channel/listall', params={
+    response = requests.get(f'{url}channels/listall', params={
         "token": token,
     })
 
