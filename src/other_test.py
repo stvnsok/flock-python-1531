@@ -41,7 +41,6 @@ def test_admin_userpermission_change():
     assert user2['permission_id'] == 1
 '''
 
-
 def test_other_search():
     # Register new user
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
@@ -58,6 +57,5 @@ def test_other_search():
 
     # Check if correct messages are returned
     assert messages == {'messages': ['hello!', 'Just wanted to say hello']}
-
 
 
