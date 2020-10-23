@@ -22,6 +22,14 @@
 ## Related to message.py and messages
     *   For message/edit an empty string is a string that has no white space at all, therefore will have a length of zero without performing any stripping
 
+    *   Message objects only require time created, therefore when a message is edited, it will not create a new message object, but simply update the message field of the existing message object
+
+## Related to permissions
+    *   Channel permissions will be separate to global permissions. Global permissions are admin rights across the Flockr app, whereas a channel permissions are limited to the scope of the selected channel. Channel permissions will work how regular admin permissions work in other messaging apps. 
+    *   Permission_id will be stored in both the user object and channel.members object. Only the first user to sign up to Flock is a a global admin. Anyone that creates a channel is admin of that channel, not of Flockr.
+
+    *   Since we used a boolean 'is_owner' to determine whether a member is the creator or owner of a channel, we will continue to use that as it is embedded in iteration1 tests. Spec only requires a permission id be set as a global variable.
+
 ## General:
     * if token is invalid there should not be any other error messages before it
 
