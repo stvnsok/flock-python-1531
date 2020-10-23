@@ -131,19 +131,6 @@ def test_channels_list_not_in(_url):
     assert response['channels'][0]['channel_id'] == 2
     assert response['channels'][0]['name'] == "channel_2"
     
-#     assert error == {'channels': [
-#         {'channel_id': 2, 
-#         'is_public': False,
-#         'members': [{
-#             'is_owner': True,
-#             'name_first': 'mei',
-#             'name_last': 'wei',
-#             'u_id': 2}],
-#         'messages': [],
-#         'name': 'channel_2'}],
-#         }
-#     requests.delete(_url + '/clear')
-
     helper_test_functions.clear(_url)
     
  # user not part of any channels with existing channels
