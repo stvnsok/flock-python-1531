@@ -44,17 +44,13 @@ def test_channels_list_invalid_token(_url):
 
   
     response = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
-    new_user_1 = response
-    token_1 = new_user_1['token']
-    
         
-    response = helper_test_functions.channels_create(token, 'channel_1', True, _url)
-    new_channel = response
+    response = helper_test_functions.channels_create(response['token'], 'channel_1', True, _url)
     
-    error = helper_test_functions.channels_list("incorrect token", _url)
+    error_response = helper_test_functions.channels_list("incorrect token", _url)
 
-    assert error["code"] == 400
-    assert error["message"] == "<p>Token is incorrect/user does not exist</p>"
+    assert error_response["code"] == 400
+    assert error_response["message"] == "<p>Token is incorrect/user does not exist</p>"
 
     helper_test_functions.clear(_url)
 
