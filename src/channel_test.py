@@ -45,7 +45,7 @@ def test_channel_invite_token_incorrect(_url):
     This test uses the feature channel/invite with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -74,7 +74,7 @@ def test_channel_invite_invalid_channel_id(_url):
     This test uses the feature channel/invite with an invalid channel_id. The
     expected outcome is error of 400 saying 'Channel_id does not exist'.
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -84,7 +84,7 @@ def test_channel_invite_invalid_channel_id(_url):
     new_user_1 = response
     token_1 = new_user_1['token']
 
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong2@hotmail.com",
         "markowong2",
         "marko2",
@@ -104,7 +104,7 @@ def test_channel_invite_invalid_user_id(_url):
     This test uses the feature channel/invite with an invalid user_id. The
     expected outcome is error of 400 saying 'user_id does not exist'.
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -129,7 +129,7 @@ def test_channel_invite_user_inviting_when_not_in_channel(_url):
     the channel. The expected outcome is error of 400 saying 'Authorised user is
     not a member of the channel'.
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -139,7 +139,7 @@ def test_channel_invite_user_inviting_when_not_in_channel(_url):
     new_user_1 = response
     token_1 = new_user_1['token']
 
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong2@hotmail.com",
         "markowong2",
         "marko2",
@@ -149,7 +149,7 @@ def test_channel_invite_user_inviting_when_not_in_channel(_url):
     new_user_2 = response
     token_2 = new_user_2['token']
 
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong3@hotmail.com",
         "markowong3",
         "marko3",
@@ -174,7 +174,7 @@ def test_channel_invite_working(_url): #NOT DONE
     This test uses the feature channel/invite with valid inputs. The expected
     utcome is the invited user is added to the channel immediately.
     '''
-'''    response = helper_test_functions.register_user(
+'''    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -185,7 +185,7 @@ def test_channel_invite_working(_url): #NOT DONE
     u_id_1 = new_user_1['u_id']
     token_1 = new_user_1['token']
 
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong2@hotmail.com",
         "markowong2",
         "marko2",
@@ -213,7 +213,7 @@ def test_channel_details_invalid_token(_url):
     This test uses the feature channel/details with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -240,7 +240,7 @@ def test_channel_details_invalid_channel_id(_url):
     This test uses the feature channel/details with an invalid channel_id. The
     expected outcome is an error of 400 saying 'Channel_id does not exist'
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -264,7 +264,7 @@ def test_channel_details_user_not_a_member(_url): #NOT DONE
     the channel. The expected outcome is error of 400 saying 'Authorised user is
     not a member of the channel'.
     '''
-'''    response = helper_test_functions.register_user(
+'''    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -274,7 +274,7 @@ def test_channel_details_user_not_a_member(_url): #NOT DONE
     new_user_1 = response
     token_1 = new_user_1['token']
 
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong2@hotmail.com",
         "markowong2",
         "marko2",
@@ -301,7 +301,7 @@ def test_channel_detail_working(_url): #NOT DONE
     outcome is providing basic details about the channel including: name,
     owner_members, all_members.
     '''
-'''    response = helper_test_functions.register_user(
+'''    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -327,7 +327,7 @@ def test_channel_messages_invalid_token(_url):
     This test uses the feature channel/messages with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -355,7 +355,7 @@ def test_channel_messages_invalid_channel_id(_url): #NOT DONE
     expected outcome is an error of 400 saying 'Channel_id does not exist'
     '''
 '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "123@hotmail.com", 
         "password", 
         "Bobby", 
@@ -403,7 +403,7 @@ def test_channel_leave_invalid_token(_url):
     This test uses the feature channel/leave with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -451,7 +451,7 @@ def test_channel_join_invalid_token(_url):
     This test uses the feature channel/join with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -498,7 +498,7 @@ def test_channel_addowner_invalid_token(_url):
     This test uses the feature channel/addowner with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -547,7 +547,7 @@ def test_channel_removeowner_invalid_token(_url):
     This test uses the feature channel/removeowner with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
     '''
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
