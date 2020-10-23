@@ -73,7 +73,7 @@ def search(token, query_str):
                 break
     
     # Get all the messages that match that 
-    matched_messages = [message for message in all_messages if query_str in message['message']]
+    matched_messages = [message['message'] for message in all_messages if query_str in message['message']]
 
     return {
         'messages': matched_messages
