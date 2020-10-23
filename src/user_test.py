@@ -479,36 +479,36 @@ def test_profile_setemail_not_valid(_url):
 
     requests.delete(_url + '/clear')
 
-#def test_set_email_used(_url):
+def test_set_email_used(_url):
 
     # Register user
-    #response = helper_test_functions.register_user(
-    #    "markowong@hotmail.com",
-    #    "markowong",
-    #    "marko",
-    #    "wong",
-    #    _url
-    #)
-    #new_user = response
-    #token = new_user['token']
+    response = helper_test_functions.auth_register(
+        "markowong@hotmail.com",
+        "markowong",
+        "marko",
+        "wong",
+        _url
+    )
+    new_user = response
+    token = new_user['token']
 
     # Register second user
-    #response = helper_test_functions.register_user(
-    #    "markowong2@hotmail.com",
-    #    "markowong2",
-    #    "marko2",
-    #    "wong2",
-    #    _url
-    #)
-    #assert len(data['users']) == 2
-
-    #response = helper_test_functions.user_profile_setemail(token, "markowong@hotmail.com", _url)
+    response = helper_test_functions.auth_register(
+        "markowong2@hotmail.com",
+        "markowong2",
+        "marko2",
+        "wong2",
+        _url
+    )
+    
+    response = helper_test_functions.user_profile_setemail(token, "markowong2@hotmail.com", _url)
+    
     # Check server response aligns with error messages
-    #error = response
-    #assert error['code'] == 400
-    #assert error['message'] == '<p>Email address is already in use</p>'
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>Email address is already in use</p>'
 
-    #requests.delete(_url + '/clear')
+    requests.delete(_url + '/clear')
 
 def test_profile_setemail_token_incorrect(_url):
     '''
