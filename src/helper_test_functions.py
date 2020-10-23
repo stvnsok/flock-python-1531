@@ -170,7 +170,7 @@ def message_remove(token, message_id, url):
 def message_edit(token, message_id, message, url):
     response = requests.put(f'{url}message/edit', json={
         "token": token,
-        "channel_id": message_id,
+        "message_id": message_id,
         "message": message
     })
 
