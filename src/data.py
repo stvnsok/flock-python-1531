@@ -13,6 +13,7 @@ User 0bject :  {
                     'name_last' : string,
                     'handle_str' : string,
                     'token' : string
+                    'permission_id' : integer
                }
 
 Channel Object : {
@@ -24,7 +25,7 @@ Channel Object : {
                                         'u_id': integer,
                                         'name_first': string,
                                         'name_last': string,
-                                        'permission_id': integer
+                                        'is_owner': bool
                                     }
 
                                 ],
