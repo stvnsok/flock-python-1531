@@ -293,36 +293,41 @@ def test_channels_create_invalid_name(_url):
     error = helper_test_functions.channels_create(user_1['token'], "Hatsune Miku is best Waifu, FIGHT ME!", True, _url)
     assert error['code'] == 400
     assert error['message'] == '<p>Input Channel Name too long</p>'
-    requests.delete(_url + '/clear')
+    helper_test_functions.clear(_url)
 
-# # # 1000 channel creation
-# # def test_channels_create_lots(_url):
-# #     user = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
-# #     token = user['token']
+# 1000 channel creation
+#def test_channels_create_lots(_url):
+#    user_1 = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
+
 # #     for no_of_channels in range(1000):
-# #         channel = helper_test_functions.channels_create(token, "No, I'm spiderman", True,_url)
+# #         channel = helper_test_functions.channels_create(user_1['token'], "No, I'm spiderman", True,_url)
 # #         id = channel['channel_id']
 # #         assert id == (no_of_channels + 1)
 # #     assert id == 1000
 # #     requests.delete(_url + '/clear')
 
-# # # correct is_public status
-# # def test_channels_create_is_public(_url):
-# #     user = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith',_url)
-# #     token = user['token']
-# #     helper_test_functions.channels_create(token, "No, I'm spiderman", True, _url)
-# #     list_channels = data['channels']
-# #     assert list_channels[0]['is_public'] == True
-# #     helper_test_functions.channels_create(token, "cult of spidermans", False, _url)
-# #     assert list_channels[1]['is_public'] == False
-# #     requests.delete(_url + '/clear')
+#    for no_of_channels in range(1000):
+#        channel = helper_test_functions.channels_create(user_1['token'], "No, I'm spiderman", True,_url)
+#        assert channel['channel_id'] == no_of_channels + 1
+#    assert channel['channel_id'] == 1000
+#    helper_test_functions.clear(_url)
+# correct is_public status
+def test_channels_create_is_public(_url):
+    user_1 = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith',_url)
+   
+    channel_1 = helper_test_functions.channels_create(user_1['token'], "No, I'm spiderman", True, _url)
+    list_channels = data['channels']
+    assert list_channels[0]['is_public'] == True
+    channel_2 = helper_test_functions.channels_create(user_1['token'], "cult of spidermans", False, _url)
+    assert list_channels[1]['is_public'] == False
+    helper_test_functions.clear(_url)
 
-# # # creator got added to channnel as owner
-# # def test_channels_create_owner(_url):
-# #     user = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
-# #     token = user['token']
-# #     helper_test_functions.channels_create(token, "Anime Betrayals", True, _url)
-# #     list_channels = data['channels']
-# #     assert list_channels[0]['members'][0]['is_owner'] == True
-# #     requests.delete(_url + '/clear')
+ # creator got added to channnel as owner
+def test_channels_create_owner(_url):
+     user_1 = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', _url)
+
+     helper_test_functions.channels_create(user_1['token'], "Anime Betrayals", True, _url)
+     list_channels = data['channels']
+     assert list_channels[0]['members'][0]['is_owner'] == True
+     helper_test_functions.clear(_url)
 
