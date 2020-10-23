@@ -44,7 +44,7 @@ def test_profile_invalid_user_token(_url):
     outcome is giving an error of 400 saying 'Token is incorrect'.
     '''
     # register first user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -70,7 +70,7 @@ def test_profile_u_id_not_found(_url):
     found'.
     '''
     # register first user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -96,7 +96,7 @@ def test_profile_display_correct_info(_url):
     the user with the inputted u_id.
     '''
     # register first user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -118,7 +118,7 @@ def test_profile_display_correct_info(_url):
     assert profile['handle_str'] == "markowong"
 
     # register second user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong2@hotmail.com",
         "markowong",
         "marko2",
@@ -164,7 +164,7 @@ def test_profile_handle_too_short(_url):
     needs to be between 3 and 20.
     '''
     # register first user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -192,7 +192,7 @@ def test_profile_handle_too_long(_url):
     needs to be between 3 and 20.
     '''
     # register first user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -223,7 +223,7 @@ def test_profile_handle_exisiting(_url):
     another user.
     '''
     # register first user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -242,7 +242,7 @@ def test_profile_handle_exisiting(_url):
             assert user['handle_str'] == "10/10?"
 
     # register second user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong2@hotmail.com",
         "markowong",
         "marko2",
@@ -270,7 +270,7 @@ def test_profile_handle_correct_update(_url):
     to the input handle string.
     '''
     # register first user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -299,7 +299,7 @@ def test_profile_setname_correct_update(_url):
     database will change to the inputted strings.
     '''
     # register first user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -333,7 +333,7 @@ def test_profile_setname_last_name_too_short(_url):
     length needs to be between 3 and 20.
     '''
     # register first user
-    payload = helper_test_functions.register_user(
+    payload = helper_test_functions.auth_register(
         "brucewayne@hotmail.com",
         "batm4n",
         "bruce",
@@ -359,7 +359,7 @@ def test_profile_setname_last_name_too_long(_url):
     length needs to be between 3 and 20.
     '''
     # register first user
-    payload = helper_test_functions.register_user(
+    payload = helper_test_functions.auth_register(
         "brucewayne@hotmail.com",
         "batm4n",
         "bruce",
@@ -389,7 +389,7 @@ def test_profile_setname_first_name_too_short(_url):
     that is too short. The expected outcome is an error of 400 saying 'Handle
     length needs to be between 3 and 20.
     '''
-    payload = helper_test_functions.register_user(
+    payload = helper_test_functions.auth_register(
         "brucewayne@hotmail.com",
         "batm4n",
         "bruce",
@@ -413,7 +413,7 @@ def test_profile_setname_first_name_too_long(_url):
     that is too long. The expected outcome is an error of 400 saying 'Handle
     length needs to be between 3 and 20.
     '''
-    payload = helper_test_functions.register_user(
+    payload = helper_test_functions.auth_register(
         "brucewayne@hotmail.com",
         "batm4n",
         "bruce",
@@ -457,7 +457,7 @@ def test_profile_setemail_not_valid(_url):
     This test uses the feature user/profile/setemail with an invalid email. The
     expected outcome is an error of 400 saying 'Email is not valid'
     '''
-    payload = helper_test_functions.register_user(
+    payload = helper_test_functions.auth_register(
         "brucewayne@hotmail.com",
         "batm4n",
         "bruce",
@@ -469,7 +469,7 @@ def test_profile_setemail_not_valid(_url):
 
     response = helper_test_functions.user_profile_setemail(
         token,
-        "jack-napier@hotmail.com",
+        "jacknapier.com",
         _url
     )
 
@@ -530,7 +530,7 @@ def test_profile_setemail_correct_update(_url):
     have their email changed in the database.
     '''
     # register first user
-    response = helper_test_functions.register_user(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
