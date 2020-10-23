@@ -7,7 +7,9 @@ import other
 from error import InputError, AccessError
 from datetime import datetime
 import pytest
-
+'''
+NEED TO ADD TEST FOR TIMESTAMP
+'''
 def test_clear():
     # Create new user
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
