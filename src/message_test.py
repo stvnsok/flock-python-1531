@@ -46,6 +46,7 @@ def test_message_send_length(url):
     '''
     Throws an InputError if they message is longer than 1000 characters
     '''
+
     john = test_setup.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
     john_channel = test_setup.channels_create(
@@ -81,7 +82,7 @@ def test_message_send_length(url):
     test_setup.clear(url)
 
 
-def test_message_send_unauthorised_user(url):
+def test_message_uninvited_user(url):
     '''
     Throws an access error if a user that has not joined the channel tries to post a message
     '''
@@ -100,12 +101,14 @@ def test_message_send_unauthorised_user(url):
 
     assert error_response["code"] == 400
     assert error_response["message"] == "<p>Authorised user has not joined this channel yet</p>"
+
+    
     test_setup.clear(url)
 
 
-def test_message_send_sent(url):
+def test_message_send_and_remove(url):
     '''
-    Tests whether a valid message is stored correctly
+    Tests whether a valid message is stored correctly and can be removed
     '''
     john = test_setup.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
@@ -116,161 +119,121 @@ def test_message_send_sent(url):
     message_sent_john = test_setup.message_send(
         john['token'], john_channel['channel_id'], valid_message, url)
 
-    #need to confirm messages being uploaded
-    # assert message_sent_john["message_id"] == valid_message
+    response = test_setup.message_remove(john['token'], message_sent_john['message_id'], url)
+
+    assert response == {}
+
     test_setup.clear(url)
 
 
-# def test_message_remove_invalid_id(url):
-#     '''
-#     Throws an Input error if the message based on ID no longer exists
-#     '''
-#     john = test_setup.auth_register(
-#         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+def test_message_remove_invalid_id(url):
+    '''
+    Throws an Input error if the message based on ID no longer exists
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
 
-#     with pytest.raises(InputError) as err:
-#         message.message_remove(john['token'], 9999)
+    error_response =  test_setup.message_remove(john['token'], 9999, url)
 
-#     assert str(err.value) == "Message does not exist"
-#     clear()
+    assert error_response["code"] == 400
+    assert error_response["message"] == "<p>Message does not exist</p>"
 
+    error_response =  test_setup.message_edit(john['token'], 9999, "Goodbye", url)
 
-# def test_message_remove_incorrect_user(url):
-#     '''
-#     Throws an AccessError if the message id does not map to a message sent by the authorised user
-#     '''
-#     john = test_setup.auth_register(
-#         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-#     bob = test_setup.auth_register(
-#         'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
-
-#     bob_channel = test_setup.channels_create(
-#         bob['token'], 'bob_channel', True, url)
-#     test_setup.channel_addowner(
-#         bob['token'], bob_channel['channel_id'], bob['u_id'], url)
-
-#     message_sent = test_setup.message_send(
-#         bob['token'], bob_channel['channel_id'], "Hello", url)
-
-#     with pytest.raises(AccessError) as err:
-#         test_setup.message_remove(
-#             john['token'], message_sent['message_id'], url)
-
-#     assert str(err.value) == "Message to remove was not sent by authorised user"
-#     clear()
+    assert error_response["code"] == 400
+    assert error_response["message"] == "<p>Message does not exist</p>"
+    
+    test_setup.clear(url)
 
 
-# def test_message_remove_unauthorised_user():
-#     '''
-#     Throws an AccessError if the user trying to remove a given message
-#     is not an owner of the corresponding channel
-#     '''
-#     john = test_setup.auth_register(
-#         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-#     bob = test_setup.auth_register(
-#         'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
+def test_message_unauthorised_user(url):
+    '''
+    Throws an AccessError if the message id does not map to a message 
+    sent by the authorised user
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    bob = test_setup.auth_register(
+        'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
+    sally = test_setup.auth_register(
+        'sally@gmail.com', 'Helo123!', 'Sally', 'Lemon', url
+    )
 
-#     bob_channel = test_setup.channels_create(
-#         bob['token'], 'bob_channel', True, url)
+    bob_channel = test_setup.channels_create(
+        bob['token'], 'bob_channel', True, url)
+    test_setup.channel_addowner(
+        bob['token'], bob_channel['channel_id'], bob['u_id'], url)
+    
 
-#     message_sent = test_setup.message_send(
-#         bob['token'], bob_channel['channel_id'], "Hello", url)
+    message_sent = test_setup.message_send(
+        bob['token'], bob_channel['channel_id'], "Hello", url)
 
-#     with pytest.raises(AccessError) as err:
-#         test_setup.message_remove(
-#             john['token'], message_sent['message_id'], url)
+    error_response = test_setup.message_remove(
+            sally['token'], message_sent['message_id'], url)
 
-#     assert str(
-#         err.value) == "Message to remove was not sent by an owner of this channel"
-#     clear()
+    assert error_response["code"] == 400
+    assert error_response["message"] == "<p>Message to remove was not sent by authorised user. Authorised user is not an owner of the channel</p>"
 
+    error_response = test_setup.message_edit(
+            sally['token'], message_sent['message_id'], "Goodbye",url)
 
-# def test_message_remove_removed(url):
-#     '''
-#     Test that message was sent and remove successfully
-#     '''
-#     bob = test_setup.auth_register(
-#         'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
+    assert error_response["code"] == 400
+    assert error_response["message"] == "<p>Message to remove was not sent by authorised user. Authorised user is not an owner of the channel</p>"
 
-#     bob_channel = test_setup.channels_create(
-#         bob['token'], 'bob_channel', True, url)
-
-#     message_sent = test_setup.message_send(
-#         bob['token'], bob_channel['channel_id'], "Hello", url)
-
-#     test_setup.message_remove(bob['token'], message_sent['message_id'], url)
-#     clear()
+    test_setup.clear(url)
 
 
-# def test_message_edit_incorrect_user(url):
-#     '''
-#     Throws an AccessError if the message id does not map to a message sent by the authorised user
-#     '''
-#     john = test_setup.auth_register(
-#         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-#     bob = test_setup.auth_register(
-#         'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
+def test_message_user_permissions(url):
+    '''
+    Test that John as an owner of Flockr cannot delete/edit messages even though he has global
+    permissions because he is not in the channel Bob set up
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    bob = test_setup.auth_register(
+        'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
 
-#     bob_channel = test_setup.channels_create(
-#         bob['token'], 'bob_channel', True, url)
-#     test_setup.channel_addowner(
-#         bob['token'], bob_channel['channel_id'], bob['u_id'], url)
+    bob_channel = test_setup.channels_create(
+        bob['token'], 'bob_channel', True, url)
 
-#     message_sent = test_setup.message_send(
-#         bob['token'], bob_channel['channel_id'], "Hello", url)
+    message_sent = test_setup.message_send(
+        bob['token'], bob_channel['channel_id'], "Hello", url)
 
-#     with pytest.raises(AccessError) as err:
-#         test_setup.message_edit(
-#             john['token'], message_sent['message_id'], "Goodbye", url)
+    error_response = test_setup.message_remove(
+            john['token'], message_sent['message_id'], url)
 
-#     assert str(err.value) == "Message to remove was not sent by authorised user"
-#     clear()
+    assert error_response['code'] == 400
+    assert error_response['message'] == "<p>Message to remove was not sent by authorised user. Authorised user is not an owner of the channel</p>"
+    
+    error_response = test_setup.message_edit(
+            john['token'], message_sent['message_id'], "Goodbye", url)
 
+    assert error_response['code'] == 400
+    assert error_response['message'] == "<p>Message to remove was not sent by authorised user. Authorised user is not an owner of the channel</p>"
 
-# def test_message_edit_unauthorised_user(url):
-#     '''
-#     Throws an AccessError if the user trying to edit a given message
-#     is not part of the corresponding channel
-#     '''
-#     john = test_setup.auth_register(
-#         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-#     bob = test_setup.auth_register(
-#         'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
-
-#     bob_channel = test_setup.channels_create(
-#         bob['token'], 'bob_channel', True, url)
-
-#     message_sent = test_setup.message_send(
-#         bob['token'], bob_channel['channel_id'], "Hello", url)
-
-#     with pytest.raises(AccessError) as err:
-#         test_setup.message_edit(
-#             john['token'], message_sent['message_id'], "Goodbye", url)
-
-#     assert str(
-#         err.value) == "Message to remove was not sent by an owner of this channel"
-#     clear()
+    test_setup.clear(url)
 
 
-# def test_message_edit_edited(url):
-#     '''
-#     Test that a message sent can be edited successfully and correctly
-#     '''
-#     john = test_setup.auth_register(
-#         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-#     john_channel = test_setup.channels_create(
-#         john['token'], 'john_channel', True, url)
 
-#     old_message = "This is the old message"
-#     message_sent_john = test_setup.message_send(
-#         john['token'], john_channel['channel_id'], old_message, url)
+def test_message_edit_edited(url):
+    '''
+    Test that a message sent can be edited successfully and correctly
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
 
-#     new_message = "This is the new message"
-#     test_setup.message_edit(
-#         john['token'], message_sent_john['message_id'], new_message, url)
+    old_message = "This is the old message"
+    message_sent_john = test_setup.message_send(
+        john['token'], john_channel['channel_id'], old_message, url)
 
-#     message_in_data = next(message for message in data['messages']
-#                            if message['message_id'] == message_sent_john['message_id'])
+    new_message = "This is the new message"
+    test_setup.message_edit(
+        john['token'], message_sent_john['message_id'], new_message, url)
 
-#     assert message_in_data['message'] == new_message
-#     clear()
+
+    message_in_data = test_setup.search(john['token'], "This is the new message", url) 
+
+    assert message_in_data['messages'][0]['message'] == new_message
+    test_setup.clear(url)
