@@ -30,7 +30,7 @@ def admin_userpermission_change(token, u_id, permission_id):
     users = data['users']
     
     # Validate permission_id is correct
-    if permission_id != 1 or permission_id != 2:
+    if permission_id < 1 or permission_id > 2:
         raise InputError('Permission_id does not refer to a value permission')
     
     # Get Authorised user
