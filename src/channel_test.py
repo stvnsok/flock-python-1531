@@ -696,6 +696,29 @@ def test_channel_removeowner_invalid_channel_id(_url): #NOT DONE
     This test uses the feature channel/removeowner with an invalid channel_id. The
     expected outcome is an error of 400 saying 'Channel_id does not exist'
     '''
+    
+    user_1 = helper_test_functions.auth_register(
+        "123@hotmail.com", 
+        "password", 
+        "Bobby", 
+        "McBob",
+        _url
+    )
+    
+    user_2 = helper_test_functions.auth_register(
+        "bestanime@hotmail.com",
+        "Goku is mid!", 
+        "mei", 
+        "wei", 
+        _url
+    )
+    helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
+    helper_test_functions.channel_addowner(user_1['token'], channel_1['channel_id'], user_2['u_id'],_url)
+    
+    response = helper_test_functions.channel_removeowner(user_1['token'], 909, user_2['u_id'],_url)
+
+    assert response["code"] == 400
+    assert response["message"] == '<p>Channel_id does not exist<p>'
 
 def test_channel_removeowner_user_not_a_member(_url): #NOT DONE
     '''
