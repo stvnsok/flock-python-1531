@@ -94,11 +94,10 @@ def test_admin_userpermission_change(_url):
     assert users['users'][1]['permission_id'] == 1
 
     other.clear()
-'''
+
 
 def test_admin_userpermission_change_invalid_permission_id(_url):
     # Testing if permission changes catch invalid permission ids
-     # Testing if permission changes are correctly executed
     user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)
     token = user['token']
     users = helper_test_functions.users_all(token, _url)
@@ -114,14 +113,14 @@ def test_admin_userpermission_change_invalid_permission_id(_url):
     # Check if first user permissions are regular permissions (2)
     assert users['users'][1]['permission_id'] == 2
 
-    # Change permissions
-    helper_test_functions.change_userpermission(user['token'], user2['u_id'], 1, _url)
-    users = helper_test_functions.users_all(token, _url)
+    # Change permissions to failure
+    error = helper_test_functions.change_userpermission(user['token'], user2['u_id'], 3, _url)
 
-    # Check if new permissions are in effect
-    assert users['users'][1]['permission_id'] == 1
+    assert error['code'] == 400
+    assert error['message'] == '<p>Permission_id does not refer to a value permission</p>'
 
     other.clear()
+
 '''
 def test_admin_userpermission_change_invalid_admin(_url):
     # Testing if permission changes catch invalid admins
