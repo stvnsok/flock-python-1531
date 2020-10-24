@@ -56,19 +56,19 @@ def test_clear(_url):
     # Check if data structure is empty
     assert len(data['users']) == 0
     assert len(data['channels']) == 0
-'''
+
 def test_users_all(_url):   
     # Register new user
-    user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
+    user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)
     token = user['token']
-    auth.auth_register('jacknapier@hotmail.com', 'j0kerr', 'Jack', 'Napier')
+    helper_test_functions.auth_register('jacknapier@hotmail.com', 'j0kerr', 'Jack', 'Napier', _url)
 
     # Check if correct items are returned
     assert other.users_all(token) == {'users': data['users']}
 
     other.clear()
 
-
+'''
 def test_admin_userpermission_change(_url):
     # Testing if permission changes are correctly executed
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
