@@ -716,8 +716,8 @@ def test_channel_removeowner_working(_url): #NOT DONE
 
 
 
-
 '''
+
 def test_channel():
     bruce = auth.auth_register('bruce@gmail.com', 'batm4n23', 'Bruce', 'Wayne')
     wayne = auth.auth_register('wayne@gmail.com', 'zorro#', 'Wayne', 'Thomas')
@@ -808,42 +808,42 @@ def test_channel():
     assert len(ch_details['owner_members']) == 1
 
     clear()
-
+'''
 # Test that public channel operates as expected
 def test_channel_public():
     # Register users and have john set up a public channel
-    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
-    cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
+    john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
+    bob = helper_test_functions.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime',_url)
+    cool_channel = helper_test_functions.channels_create(john['token'], 'cool_channel', True,_url)
 
-    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+
+    ch_details = helper_test_functions.channel_details(john['token'], cool_channel['channel_id'],_url)
     assert ch_details['name'] == 'cool_channel'
     assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
 
     # Check that new members are being added correctly
-    channel.channel_invite(john['token'], cool_channel['channel_id'], bob['u_id'])
-    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+    helper_test_functions.channel_invite(john['token'], cool_channel['channel_id'], bob['u_id'],_url)
+    ch_details = helper_test_functions.channel_details(john['token'], cool_channel['channel_id'],_url)
 
     assert ch_details['name'] == 'cool_channel'
     assert len(ch_details['owner_members']) == 1
     assert len(ch_details['all_members']) == 2
     
     # Check that members can leave
-    channel.channel_leave(bob['token'], cool_channel['channel_id'])
-    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+    helper_test_functions.channel_leave(bob['token'], cool_channel['channel_id'],_url)
+    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'],_url)
     assert len(ch_details['owner_members']) == 1 
     assert len(ch_details['all_members']) == 1
     
     # Check that members can join a public channel on their own
-    channel.channel_join(bob['token'], cool_channel['channel_id'])
-    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'])
+    helper_test_functions.channel_join(bob['token'], cool_channel['channel_id'],_url)
+    ch_details = channel.channel_details(john['token'], cool_channel['channel_id'],_url)
     assert len(ch_details['owner_members']) == 1 
     assert len(ch_details['all_members']) == 2
 
-    clear()
+    helper_test_functions.clear(_url)
 
 
-'''
 # Test that private channel operates as expected
 def test_channel_private():
 
