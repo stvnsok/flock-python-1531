@@ -7,12 +7,47 @@ import other
 from error import InputError, AccessError
 from datetime import datetime
 import pytest
+import re
+from subprocess import Popen, PIPE
+import signal
+from time import sleep
+import requests
+import helper_test_functions
+
 '''
 NEED TO ADD TEST FOR TIMESTAMP
 '''
-def test_clear():
+####################################################################################
+
+@pytest.fixture
+def _url():
+    '''
+    Use this fixture to get the URL of the server. It starts the server for you,
+    so you don't need to.
+    '''
+    url_re = re.compile(r' \* Running on ([^ ]*)')
+    server = Popen(["python3", "server.py"], stderr=PIPE, stdout=PIPE)
+    line = server.stderr.readline()
+    local_url = url_re.match(line.decode())
+    if local_url:
+        yield local_url.group(1)
+        # Terminate the server
+        server.send_signal(signal.SIGINT)
+        waited = 0
+        while server.poll() is None and waited < 5:
+            sleep(0.1)
+            waited += 0.1
+        if server.poll() is None:
+            server.kill()
+    else:
+        server.kill()
+        raise Exception("Couldn't get URL from local server")
+
+#####################################################################################
+
+def test_clear(_url):
     # Create new user
-    user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
+    user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)
     channels.channels_create(user['token'],"channel", True)
     
     other.clear()
@@ -20,8 +55,8 @@ def test_clear():
     # Check if data structure is empty
     assert len(data['users']) == 0
     assert len(data['channels']) == 0
-
-def test_users_all():   
+'''
+def test_users_all(_url):   
     # Register new user
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
     token = user['token']
@@ -33,7 +68,7 @@ def test_users_all():
     other.clear()
 
 
-def test_admin_userpermission_change():
+def test_admin_userpermission_change(_url):
     # Testing if permission changes are correctly executed
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
     users = data['users']
@@ -53,7 +88,7 @@ def test_admin_userpermission_change():
 
     other.clear()
 
-def test_admin_userpermission_change_invalid_permission_id():
+def test_admin_userpermission_change_invalid_permission_id(_url):
     # Testing if permission changes catch invalid permission ids
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
     users = data['users']
@@ -74,7 +109,7 @@ def test_admin_userpermission_change_invalid_permission_id():
 
     other.clear()
 
-def test_admin_userpermission_change_invalid_admin():
+def test_admin_userpermission_change_invalid_admin(_url):
     # Testing if permission changes catch invalid admins
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
     users = data['users']
@@ -95,7 +130,7 @@ def test_admin_userpermission_change_invalid_admin():
 
     other.clear()
 
-def test_admin_userpermission_change_invalid_user():
+def test_admin_userpermission_change_invalid_user(_url):
     # Testing if permission changes catch invalid users
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
     users = data['users']
@@ -116,7 +151,7 @@ def test_admin_userpermission_change_invalid_user():
 
     other.clear()
 
-def test_other_search():
+def test_other_search(_url):
     # Register new user
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
     
@@ -135,7 +170,7 @@ def test_other_search():
     assert actual_messages  == ['hello!', 'Just wanted to say hello']
     other.clear()
 
-def test_other_search_none():
+def test_other_search_none(_url):
     # Register new user
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
     
@@ -163,4 +198,4 @@ def test_check_email_true():
     email = 'jacknapier@hotmail.com'
     assert other.check(email) == True
 
- 
+'''
