@@ -121,28 +121,33 @@ def test_admin_userpermission_change_invalid_permission_id(_url):
 
     other.clear()
 
-'''
+
 def test_admin_userpermission_change_invalid_admin(_url):
     # Testing if permission changes catch invalid admins
-    user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
-    users = data['users']
+    user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)
     token = user['token']
-    
-    authorised_user = next((user for user in users if user['token'] == token), None)
-    assert authorised_user['permission_id'] == 1
+    users = helper_test_functions.users_all(token, _url)
 
-    user2 = auth.auth_register('jacknapier@hotmail.com', 'j0kerr', 'Jack', 'Napier') 
+    # Check if first user permissions are admin permissions (1)
+    assert users['users'][0]['permission_id'] == 1
+
+    # Register new user
+    user2 = helper_test_functions.auth_register('jacknapier@hotmail.com', 'j0kerr', 'Jack', 'Napier', _url) 
     token2 = user2['token']
+    users = helper_test_functions.users_all(token2, _url)
 
-    authorised_user2 = next((user for user in users if user['token'] == token2), None)
-    assert authorised_user2['permission_id'] == 2
-    
-    with pytest.raises(InputError) as e:
-        other.admin_userpermission_change(user2['token'], user['u_id'], 2)
-    assert '400 Bad Request: The authorised user is not an admin or owner' == str(e.value)
+    # Check if first user permissions are regular permissions (2)
+    assert users['users'][1]['permission_id'] == 2
+
+    # Change permissions to failure
+    error = helper_test_functions.change_userpermission(user2['token'], user['u_id'], 1, _url)
+
+    assert error['code'] == 400
+    assert error['message'] == '<p>The authorised user is not an admin or owner</p>'
 
     other.clear()
 
+'''
 def test_admin_userpermission_change_invalid_user(_url):
     # Testing if permission changes catch invalid users
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
