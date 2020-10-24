@@ -68,49 +68,61 @@ def test_users_all(_url):
 
     other.clear()
 
-'''
+
 def test_admin_userpermission_change(_url):
     # Testing if permission changes are correctly executed
-    user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
+    user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)
     token = user['token']
     users = helper_test_functions.users_all(token, _url)
 
-    authorised_user = next((user for user in users if user['token'] == token), None)
-    assert authorised_user['permission_id'] == 1
+    # Check if first user permissions are admin permissions (1)
+    assert users['users'][0]['permission_id'] == 1
 
-    user2 = auth.auth_register('jacknapier@hotmail.com', 'j0kerr', 'Jack', 'Napier') 
+    # Register new user
+    user2 = helper_test_functions.auth_register('jacknapier@hotmail.com', 'j0kerr', 'Jack', 'Napier', _url) 
     token2 = user2['token']
+    users = helper_test_functions.users_all(token2, _url)
 
-    authorised_user2 = next((user for user in users if user['token'] == token2), None)
-    assert authorised_user2['permission_id'] == 2
+    # Check if first user permissions are regular permissions (2)
+    assert users['users'][1]['permission_id'] == 2
 
-    other.admin_userpermission_change(user['token'], user2['u_id'], 1)
-    assert authorised_user2['permission_id'] == 1
+    # Change permissions
+    helper_test_functions.change_userpermission(user['token'], user2['u_id'], 1, _url)
+    users = helper_test_functions.users_all(token, _url)
+
+    # Check if new permissions are in effect
+    assert users['users'][1]['permission_id'] == 1
 
     other.clear()
-
+'''
 
 def test_admin_userpermission_change_invalid_permission_id(_url):
     # Testing if permission changes catch invalid permission ids
-    user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
-    users = data['users']
+     # Testing if permission changes are correctly executed
+    user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)
     token = user['token']
-    
-    authorised_user = next((user for user in users if user['token'] == token), None)
-    assert authorised_user['permission_id'] == 1
+    users = helper_test_functions.users_all(token, _url)
 
-    user2 = auth.auth_register('jacknapier@hotmail.com', 'j0kerr', 'Jack', 'Napier') 
+    # Check if first user permissions are admin permissions (1)
+    assert users['users'][0]['permission_id'] == 1
+
+    # Register new user
+    user2 = helper_test_functions.auth_register('jacknapier@hotmail.com', 'j0kerr', 'Jack', 'Napier', _url) 
     token2 = user2['token']
+    users = helper_test_functions.users_all(token2, _url)
 
-    authorised_user2 = next((user for user in users if user['token'] == token2), None)
-    assert authorised_user2['permission_id'] == 2
-    
-    with pytest.raises(InputError) as e:
-        other.admin_userpermission_change(user['token'], user2['u_id'], 3)
-    assert '400 Bad Request: Permission_id does not refer to a value permission' == str(e.value)
+    # Check if first user permissions are regular permissions (2)
+    assert users['users'][1]['permission_id'] == 2
+
+    # Change permissions
+    helper_test_functions.change_userpermission(user['token'], user2['u_id'], 1, _url)
+    users = helper_test_functions.users_all(token, _url)
+
+    # Check if new permissions are in effect
+    assert users['users'][1]['permission_id'] == 1
 
     other.clear()
-
+'''
 def test_admin_userpermission_change_invalid_admin(_url):
     # Testing if permission changes catch invalid admins
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
