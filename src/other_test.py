@@ -131,7 +131,8 @@ def test_other_search():
     messages = other.search(user['token'], "hello")
 
     # Check if correct messages are returned
-    assert messages == {'messages': ['hello!', 'Just wanted to say hello']}
+    actual_messages = [message['message'] for message in messages['messages']]
+    assert actual_messages  == ['hello!', 'Just wanted to say hello']
     other.clear()
 
 def test_other_search_none():

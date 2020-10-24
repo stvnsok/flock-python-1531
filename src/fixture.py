@@ -1,6 +1,4 @@
-'''
-imports
-'''
+
 import re
 from subprocess import Popen, PIPE
 import signal
@@ -9,11 +7,8 @@ import json
 import requests
 import pytest
 
-
-# Use this fixture to get the URL of the server. It starts the server for you,
-# so you don't need to.
 @pytest.fixture
-def _url():
+def url():
     '''
     Use this fixture to get the URL of the server. It starts the server for you,
     so you don't need to.
@@ -35,10 +30,3 @@ def _url():
     else:
         server.kill()
         raise Exception("Couldn't get URL from local server")
-
-def test_echo(_url):
-    '''
-    A simple test to check echo
-    '''
-    resp = requests.get(_url + 'echo', params={'data': 'hello'})
-    assert json.loads(resp.text) == {'data': 'hello'}
