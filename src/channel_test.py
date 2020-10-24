@@ -716,99 +716,101 @@ def test_channel_removeowner_working(_url): #NOT DONE
 
 
 
-'''
+
 
 def test_channel():
-    bruce = auth.auth_register('bruce@gmail.com', 'batm4n23', 'Bruce', 'Wayne')
-    wayne = auth.auth_register('wayne@gmail.com', 'zorro#', 'Wayne', 'Thomas')
-    alfred = auth.auth_register('alfred@gmail.com', 'wayneman0r', 'Alfred', 'Pennyworth')
-    jack = auth.auth_register('jack@gmail.com', 'jkrsfunland', 'Jack', 'Napier')
+    bruce = helper_test_functions.auth_register('bruce@gmail.com', 'batm4n23', 'Bruce', 'Wayne',_url)
+    wayne = helper_test_functions.auth_register('wayne@gmail.com', 'zorro#', 'Wayne', 'Thomas',_url)
+    alfred = helper_test_functions.auth_register('alfred@gmail.com', 'wayneman0r', 'Alfred', 'Pennyworth',_url)
+    jack = helper_test_functions.auth_register('jack@gmail.com', 'jkrsfunland', 'Jack', 'Napier',_url)
     
-    batcave_channel = channels.channels_create(bruce['token'], 'batcave_channel', True)
-    manor_channel = channels.channels_create(wayne['token'], 'batcave_channel', False)
+    batcave_channel = helper_test_functions.channels_create(bruce['token'], 'batcave_channel', True,_url)
+    manor_channel = helper_test_functions.channels_create(wayne['token'], 'batcave_channel', False,_url)
 
-    ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'])
+    ch_details = helper_test_functions.channel_details(bruce['token'], batcave_channel['channel_id'],_url)
     assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
 
     # Test if members are added correctly when joining
-    channel.channel_join(alfred['token'], batcave_channel['channel_id'])
+    helper_test_functions.channel_join(alfred['token'], batcave_channel['channel_id'],_url)
     assert len(ch_details['all_members']) == 2
-
-    with pytest.raises(InputError) as e:
-        channel.channel_join(alfred['token'], 909)
-    assert str(e.value) == 'Channel_id does not exist'
-
-    with pytest.raises(AccessError) as e:
-        channel.channel_join(alfred['token'], manor_channel['channel_id'])
-    assert str(e.value) == 'Channel_id refers to a channel that is private'
-
-    with pytest.raises(InputError) as e:
-        channel.channel_addowner(wayne['token'], 909, alfred['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
     
-    with pytest.raises(AccessError) as e:
-        channel.channel_addowner(wayne['token'], batcave_channel['channel_id'], alfred['u_id'])
-    assert str(e.value) == 'Authorised user is not an owner of the channel'
+    no_id_response = helper_test_functions.channel_join(alfred['token'], 909,_url)
+    assert no_id_response["code"] == 400
+    assert no_id_response["message"] == '<p>Channel_id does not exist<p>'
+    
+    private_response = helper_test_functions.channel_join(alfred['token'], manor_channel['channel_id'], _url)
+    assert private_response["code"] == 400
+    assert private_response["message"] == '<p>Channel_id refers to a channel that is private<p>'
+
+    no_id_response = helper_test_functions.channel_addowner(wayne['token'], 909, alfred['u_id'], _url)
+    assert no_id_response["code"] == 400
+    assert no_id_response["message"] == '<p>Channel_id does not exist<p>'
+    
+    owner_response = helper_test_functions.channel_addowner(wayne['token'], batcave_channel['channel_id'], alfred['u_id'], _url)
+    assert owner_response["code"] == 400
+    assert owner_response["message"] == '<p>Authorised user is not an owner of the channel<p>'
 
     # Test if owners are added correctly
-    channel.channel_addowner(bruce['token'], batcave_channel['channel_id'], alfred['u_id'])
-    ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'])
+    helper_test_functions.channel_addowner(bruce['token'], batcave_channel['channel_id'], alfred['u_id'], _url)
+    ch_details = helper_test_functions.channel_details(bruce['token'], batcave_channel['channel_id'], _url)
     assert len(ch_details['owner_members']) == 2
 
-    with pytest.raises(InputError) as e:
-        channel.channel_addowner(bruce['token'], batcave_channel['channel_id'], alfred['u_id'])
-    assert str(e.value) == 'User is already an owner of the channel'
+    response = helper_test_functions.channel_addowner(bruce['token'], batcave_channel['channel_id'], alfred['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == '<p>User is already an owner of the channel<p>'
 
-    with pytest.raises(InputError) as e:
-        channel.channel_addowner(bruce['token'], 909, alfred['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
+  
+    response = helper_test_functions.channel_addowner(bruce['token'], 909, alfred['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == '<p>Channel_id does not exist<p>'
 
-    with pytest.raises(AccessError) as e:
-        channel.channel_addowner(wayne['token'], batcave_channel['channel_id'], alfred['u_id'])
-    assert str(e.value) == 'Authorised user is not an owner of the channel'
+    response = helper_test_functions.channel_addowner(wayne['token'], batcave_channel['channel_id'], alfred['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == '<p>Authorised user is not an owner of the channel<p>'
 
-    channel.channel_join(jack['token'], batcave_channel['channel_id'])
-    ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'])
+    helper_test_functions.channel_join(jack['token'], batcave_channel['channel_id'], _url)
+    ch_details = helper_test_functions.channel_details(bruce['token'], batcave_channel['channel_id'], _url)
     assert len(ch_details['all_members']) == 3
     assert len(ch_details['owner_members']) == 2
 
     # Test channel_leave is implemented correctly 
-    with pytest.raises(InputError) as e:
-        channel.channel_leave(alfred['token'], 909)
-    assert str(e.value) == 'Channel_id does not exist'
+    response = helper_test_functions.channel_leave(alfred['token'], 909, _url)
+    assert response["code"] == 400
+    assert response["message"] == '<p>Channel_id does not exist<p>'
+    
+    response = helper_test_functions.channel_leave(alfred['token'], manor_channel['channel_id'],_url)
+    assert response["code"] == 400
+    assert response["message"] == '<p>Authorised user is not a member of the channel<p>'
 
-    with pytest.raises(AccessError) as e:
-        channel.channel_leave(alfred['token'], manor_channel['channel_id'])
-    assert str(e.value) == 'Authorised user is not a member of the channel'
 
-    channel.channel_leave(alfred['token'], batcave_channel['channel_id'])
-    ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'])
+    helper_test_functions.channel_leave(alfred['token'], batcave_channel['channel_id'], _url)
+    ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'], _url)
     assert len(ch_details['all_members']) == 2
     assert len(ch_details['owner_members']) == 1
 
     # Test remove_owner
-    channel.channel_addowner(bruce['token'], batcave_channel['channel_id'], jack['u_id'])
-    ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'])
+    helper_test_functions.channel_addowner(bruce['token'], batcave_channel['channel_id'], jack['u_id'],_url)
+    ch_details = helper_test_functions.channel_details(bruce['token'], batcave_channel['channel_id'],_url)
     assert len(ch_details['owner_members']) == 2
+    
+    response = helper_test_functions.channel_removeowner(bruce['token'], batcave_channel['channel_id'], alfred['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == '<p>User with u_id is not an owner of the channel<p>'
 
-    with pytest.raises(InputError) as e:
-        channel.channel_removeowner(bruce['token'], batcave_channel['channel_id'], alfred['u_id'])
-    assert str(e.value) == 'User with u_id is not an owner of the channel'
+    response = helper_test_functions.channel_removeowner(alfred['token'], batcave_channel['channel_id'], bruce['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == '<p>Authorised user is not an owner of the channel<p>'
+    
+    response = helper_test_functions.channel_removeowner(alfred['token'], 909, bruce['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == '<p>Channel_id does not exist<p>'    
 
-    with pytest.raises(AccessError) as e:
-        channel.channel_removeowner(alfred['token'], batcave_channel['channel_id'], bruce['u_id'])
-    assert str(e.value) == 'Authorised user is not an owner of the channel'
-
-    with pytest.raises(InputError) as e:
-        channel.channel_removeowner(alfred['token'], 909, bruce['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
-
-    channel.channel_removeowner(bruce['token'], batcave_channel['channel_id'], jack['u_id'])
-    ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'])
+    helper_test_functions.channel_removeowner(bruce['token'], batcave_channel['channel_id'], jack['u_id'],_url)
+    ch_details = helper_test_functions.channel_details(bruce['token'], batcave_channel['channel_id'],_url)
     assert len(ch_details['owner_members']) == 1
 
-    clear()
-'''
+    helper_test_functions.clear(_url)
+
 # Test that public channel operates as expected
 def test_channel_public():
     # Register users and have john set up a public channel
