@@ -173,23 +173,24 @@ def test_other_search(_url):
     assert messages['messages'][1]['message'] == 'Just wanted to say hello'
 
     other.clear()
-'''
+
 def test_other_search_none(_url):
     # Register new user
-    user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
+    user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)
     
     # Create a new channel
-    new_channel = channels.channels_create(user['token'], 'channel', True)
+    new_channel = helper_test_functions.channels_create(user['token'], 'channel', True, _url)
 
     # Create new messages
-    message.message_send(user['token'], new_channel['channel_id'], 'hello!')
-    message.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say hello')
-    message.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say goodbye')
+    helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'hello!', _url)
+    helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say hello', _url)
+    helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say goodbye', _url)
 
-    messages = other.search(user['token'], "batmobile")
+    messages = helper_test_functions.search(user['token'], "batmobile", _url)
 
     # Check if correct messages are returned
-    assert messages == {'messages': []}
+    assert messages['messages'] == []
+
     other.clear()
 
 def test_check_email_false():
@@ -202,4 +203,3 @@ def test_check_email_true():
     email = 'jacknapier@hotmail.com'
     assert other.check(email) == True
 
-'''
