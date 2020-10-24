@@ -21,6 +21,7 @@ def _url():
     Use this fixture to get the URL of the server. It starts the server for you,
     so you don't need to.
     '''
+
     url_re = re.compile(r' \* Running on ([^ ]*)')
     server = Popen(["python3", "server.py"], stderr=PIPE, stdout=PIPE)
     line = server.stderr.readline()
@@ -1003,32 +1004,32 @@ def test_channel_removeowner_exceptions():
 
     clear()
 
-
-# Check channel_messages is working
+'''
+#Check channel_messages is working
 def test_channel_messages():
-    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
-    cool_channel = channels.channels_create(john['token'], 'cool_channel', False)
+    john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
+    bob = helper_test_functions.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime',_url)
+    helper_test_functions.channels_create(john['token'], 'cool_channel', False,_url)
     
     # Check exceptions
-    with pytest.raises(InputError) as e:
-        channel.channel_messages(john['token'], 9999, 0)
-    assert str(e.value) == 'Channel_id does not exist'
-
-    with pytest.raises(InputError) as e:
-        channel.channel_messages(john['token'], cool_channel['channel_id'], 999)
-    assert str(e.value) == 'Start is greater than total number of messages'
-
-    with pytest.raises(AccessError) as e:
-        channel.channel_messages(bob['token'], cool_channel['channel_id'], 999)
-    assert str(e.value) == 'Authorised user is not a member of the channel'
+    response = helper_test_functions.channel_messages(john['token'], 9999, 0, _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Channel_id does not exist</p>"
     
+    response = helper_test_functions.channel_messages(john['token'], cool_channel['channel_id'], 999, _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Start is greater than total number of messages</p>"
+    
+    response = helper_test_functions.channel_messages(bob['token'], cool_channel['channel_id'], 999, _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Authorised user is not a member of the channel</p>"
+
     # Check that there are no messages
-    messages = channel.channel_messages(john['token'], cool_channel['channel_id'], 0)
+    messages = helper_test_functions.channel_messages(john['token'], cool_channel['channel_id'], 0)
 
     assert len(messages['messages']) == 0
 
-    clear()
+    helper_test_functions.clear(_url)
 
 
-'''
+
