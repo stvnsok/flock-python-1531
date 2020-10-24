@@ -912,39 +912,39 @@ def test_channel_invite_exceptions():
     assert str(e.value) == 'Authorised user is not a member of the channel'
     
     clear()
-
+'''
 # Check channel_detail expections are working
 def test_channel_detail_exceptions():
-    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
-    cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
-
-    with pytest.raises(InputError) as e:
-        channel.channel_details(john['token'], 9999)
-    assert str(e.value) == 'Channel_id does not exist'
-
-    with pytest.raises(AccessError) as e:
-        channel.channel_details(bob['token'], cool_channel['channel_id'])
-    assert str(e.value) == 'Authorised user is not a member of the channel'
+    john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
+    bob = helper_test_functions.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime',_url)
+    cool_channel = helper_test_functions.channels_create(john['token'], 'cool_channel', True,_url)
     
-    clear()
+    response = helper_test_functions.channel_details(john['token'], 9999, _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Channel_id does not exist</p>"
+    
+    response = helper_test_functions.channel_details(bob['token'], cool_channel['channel_id'],_url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Authorised user is not a member of the channel</p>"
+
+    helper_test_functions.clear(_url)
 
 # Check channel_leave exceptions are working
 def test_channel_leave_exceptions():
-    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
-    cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
-
-    with pytest.raises(InputError) as e:
-        channel.channel_leave(john['token'], 9999)
-    assert str(e.value) == 'Channel_id does not exist'
-
-    with pytest.raises(AccessError) as e:
-        channel.channel_leave(bob['token'], cool_channel['channel_id'])
-    assert str(e.value) == 'Authorised user is not a member of the channel'
+    john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
+    bob = helper_test_functions.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime',_url)
+    cool_channel = helper_test_functions.channels_create(john['token'], 'cool_channel', True,_url)
     
-    clear()
-'''
+    response = helper_test_functions.channel_leave(john['token'], 9999, _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Channel_id does not exist</p>"
+    
+    response = helper_test_functions.channel_leave(bob['token'], cool_channel['channel_id'],_url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Authorised user is not a member of the channel</p>"
+
+    helper_test_functions.clear(_url)
+
 # Check channel_leave exceptions are working
 def test_channel_join_exceptions():
     john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
