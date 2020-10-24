@@ -892,27 +892,28 @@ def test_channel_private():
     assert str(e.value) == 'User with u_id is not an owner of the channel'
 
     clear()
-
+'''
 # Check channel_invite expections are working
 def test_channel_invite_exceptions():
-    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
-    cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
+    john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
+    bob = helper_test_functions.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime',_url)
+    cool_channel = helper_test_functions.channels_create(john['token'], 'cool_channel', True,_url)
 
-    with pytest.raises(InputError) as e:
-        channel.channel_invite(john['token'], 9999, bob['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
 
-    with pytest.raises(InputError) as e:
-        channel.channel_invite(john['token'], cool_channel['channel_id'], 9999)
-    assert str(e.value) == 'U_id does not exist'
-
-    with pytest.raises(AccessError) as e:
-        channel.channel_invite(bob['token'], cool_channel['channel_id'], john['u_id'])
-    assert str(e.value) == 'Authorised user is not a member of the channel'
+    response = helper_test_functions.channel_invite(john['token'], 9999, bob['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Channel_id does not exist</p>"
     
-    clear()
-'''
+    response = helper_test_functions.channel_invite(john['token'], cool_channel['channel_id'], 9999, _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>U_id does not exist</p>"
+    
+    response = helper_test_functions.channel_invite(bob['token'], cool_channel['channel_id'], john['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Authorised user is not a member of the channel</p>"
+    
+    helper_test_functions.clear(_url)
+
 # Check channel_detail expections are working
 def test_channel_detail_exceptions():
     john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
