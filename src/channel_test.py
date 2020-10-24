@@ -843,56 +843,57 @@ def test_channel_public():
     clear()
 
 
-
+'''
 # Test that private channel operates as expected
 def test_channel_private():
 
     # Register three users and have John set up a private channel
-    chicken = auth.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget")
-    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
-    private_cool_channel = channels.channels_create(john['token'], 'private_cool_channel', False)
+    chicken = helper_test_functions.auth_register"hehe@hotmail.com", "qwerty", "Chicken", "Nugget", _url)
+    john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith', _url)
+    bob = helper_test_functions.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', _url)
+    private_cool_channel = helper_test_functions.channels_create(john['token'], 'private_cool_channel', False,_url)
 
     # Joining a private channel should throw an error
-    with pytest.raises(AccessError) as e:
-        channel.channel_join(chicken['token'], private_cool_channel['channel_id'])
-    assert 'Channel_id refers to a channel that is private' == str(e.value)
+    join_response = helper_test_functions.channel_join(chicken['token'], private_cool_channel['channel_id'], _url)
+    assert join_response["code"] == 400
+    assert join_response["message"] == "<p>Channel_id refers to a channel that is private</p>"
 
     # John adds an Chicken as an owner of the private channel
-    with pytest.raises(AccessError) as e:
-        channel.channel_addowner(bob['token'], private_cool_channel['channel_id'], chicken['u_id'])
-    assert 'Authorised user is not an owner of the channel' == str(e.value)
+    addowner_response = helper_test_functions.channel_addowner(bob['token'], private_cool_channel['channel_id'], chicken['u_id'], _url)
+    assert addowner_response["code"] == 400
+    assert addowner_response["message"] == "<p>Authorised user is not an owner of the channel</p>"
+    
 
     # Add chicken correctly
-    channel.channel_addowner(john['token'], private_cool_channel['channel_id'], chicken['u_id'])
-
+    helper_test_functions.channel_addowner(john['token'], private_cool_channel['channel_id'], chicken['u_id'], _url)
     # Inputting the incorrect channel id
-    with pytest.raises(InputError) as e:
-        channel.channel_addowner(chicken['token'], 'incorrect_channel', bob['u_id'])
-    assert 'Channel_id does not exist' == str(e.value)
-
+    response = helper_test_functions.channel_addowner(chicken['token'], 'incorrect_channel', bob['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Channel_id does not exist</p>"
+    
     # Trying to invite a user that is already an owner 
-    with pytest.raises(InputError) as e:
-        channel.channel_addowner(chicken['token'], private_cool_channel['channel_id'], john['u_id'])
-    assert 'User is already an owner of the channel' == str(e.value)
+    invite_response = helper_test_functions.channel_addowner(chicken['token'], private_cool_channel['channel_id'], john['u_id'], _url)
+    assert invite_response["code"] == 400
+    assert invite_response["message"] == "<p>User is already an owner of the channel</p>"
+
     
     # Allows user to invite people to private channel
-    channel.channel_invite(chicken['token'], private_cool_channel['channel_id'], bob['u_id'])
+    helper_test_functions.channel_invite(chicken['token'], private_cool_channel['channel_id'], bob['u_id'],_url)
     
     # Check details of channel, John, Chicken and Bob are all members,
     # John and Chicken are the only owners
-    ch_details = channel.channel_details(chicken['token'], private_cool_channel['channel_id'])
+    ch_details = helper_test_functions.channel_details(chicken['token'], private_cool_channel['channel_id'], _url)
     assert len(ch_details['owner_members']) == 2
     assert len(ch_details['all_members']) == 3
     assert ch_details['name'] == 'private_cool_channel'
-    
     # Check that remove owner throw's correct exception
-    with pytest.raises(InputError) as e:
-        channel.channel_removeowner(john['token'], private_cool_channel['channel_id'], bob['u_id'])
-    assert str(e.value) == 'User with u_id is not an owner of the channel'
+    response = helper_test_functions.channel_removeowner(john['token'], private_cool_channel['channel_id'], bob['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>User with u_id is not an owner of the channel</p>"
 
-    clear()
-'''
+
+    helper_test_functions.clear(_url)
+
 # Check channel_invite expections are working
 def test_channel_invite_exceptions():
     john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
