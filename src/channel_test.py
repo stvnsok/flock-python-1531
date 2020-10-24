@@ -960,30 +960,27 @@ def test_channel_join_exceptions():
     assert str(e.value) == 'Channel_id refers to a channel that is private'
     
     clear()
-
+'''
 # Check channel_addowner exceptions are working
 def test_channel_addowner_exceptions():
-    john = auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    bob = auth.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
-    lucy = auth.auth_register('lucy@gmail.com', 'asd123!@#', 'Lucy', 'Lime')
-    cool_channel = channels.channels_create(john['token'], 'cool_channel', True)
-
-    with pytest.raises(InputError) as e:
-        channel.channel_addowner(john['token'], 9999 , bob['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
+    john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
+    bob = helper_test_functions.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime',_url)
+    lucy = helper_test_functions.auth_register('lucy@gmail.com', 'asd123!@#', 'Lucy', 'Lime',_url)
+    cool_channel = helper_test_functions.channels_create(john['token'], 'cool_channel', True,_url)
+    
+    response = helper_test_functions.channel_addowner(john['token'], 9999 , bob['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Channel_id does not exist</p>"
    
-    channel.channel_addowner(john['token'], cool_channel['channel_id'], bob['u_id'])
-    
-    with pytest.raises(InputError) as e:
-        channel.channel_addowner(john['token'], cool_channel['channel_id'], bob['u_id'])
-    assert str(e.value) == 'User is already an owner of the channel'
-    
-    with pytest.raises(AccessError) as e:
-        channel.channel_addowner(lucy['token'], cool_channel['channel_id'], bob['u_id'])
-    assert str(e.value) == 'Authorised user is not an owner of the channel'
+    response = helper_test_functions.channel_addowner(john['token'], cool_channel['channel_id'], bob['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>User is already an owner of the channel</p>"
 
-    clear()
-'''
+    response = helper_test_functions.channel_addowner(john['token'], cool_channel['channel_id'], bob['u_id'], _url)
+    assert response["code"] == 400
+    assert response["message"] == "<p>Authorised user is not an owner of the channel/p>"
+
+    helper_test_functions.clear(_url)
 #Check channel_removeowner exceptions are working
 def test_channel_removeowner_exceptions():
     john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith',_url)
