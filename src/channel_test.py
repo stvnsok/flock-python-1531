@@ -14,31 +14,30 @@ import channels
 import auth
 from error import InputError, AccessError
 from other import clear
-from fixture import url as _url
 
-# @pytest.fixture
-# def _url():
-#     '''
-#     Use this fixture to get the URL of the server. It starts the server for you,
-#     so you don't need to.
-#     '''
-#     url_re = re.compile(r' \* Running on ([^ ]*)')
-#     server = Popen(["python3", "server.py"], stderr=PIPE, stdout=PIPE)
-#     line = server.stderr.readline()
-#     local_url = url_re.match(line.decode())
-#     if local_url:
-#         yield local_url.group(1)
-#         # Terminate the server
-#         server.send_signal(signal.SIGINT)
-#         waited = 0
-#         while server.poll() is None and waited < 5:
-#             sleep(0.1)
-#             waited += 0.1
-#         if server.poll() is None:
-#             server.kill()
-#     else:
-#         server.kill()
-#         raise Exception("Couldn't get URL from local server")
+@pytest.fixture
+def _url():
+    '''
+    Use this fixture to get the URL of the server. It starts the server for you,
+    so you don't need to.
+    '''
+    url_re = re.compile(r' \* Running on ([^ ]*)')
+    server = Popen(["python3", "server.py"], stderr=PIPE, stdout=PIPE)
+    line = server.stderr.readline()
+    local_url = url_re.match(line.decode())
+    if local_url:
+        yield local_url.group(1)
+        # Terminate the server
+        server.send_signal(signal.SIGINT)
+        waited = 0
+        while server.poll() is None and waited < 5:
+            sleep(0.1)
+            waited += 0.1
+        if server.poll() is None:
+            server.kill()
+    else:
+        server.kill()
+        raise Exception("Couldn't get URL from local server")
 
 ######################### Tests for channel/invite #############################
 def test_channel_invite_token_incorrect(_url):
@@ -368,7 +367,7 @@ def test_channel_messages_invalid_channel_id(_url):
     new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
     channel_id = new_channel['channel_id']
 
-    error = helper_test_functions.channel_messages(user_1['token'], channel_id, 0, _url)
+    error = helper_test_functions.channel_messages(user_1['token'], new_channel['channel_id'], 0, _url)
 
 
 
@@ -383,11 +382,26 @@ def test_channel_messages_start_greater(_url): #NOT DONE
     expected outcome is an error of 400 saying 'Start is greater than total
     number of messages'.
     '''
-    
-    
-#    assert error['code'] == 400
-#    assert error['message'] == '<p>Start is greater than total number of messages</p>'
+'''
+    user_1 = helper_test_functions.auth_register(
+        "123@hotmail.com", 
+        "password", 
+        "Bobby", 
+        "McBob",
+        _url
+    )
+   
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
+    channel_id = new_channel['channel_id']
 
+    error = helper_test_functions.channel_messages(user_1['token'], new_channel['channel_id'], 100, _url)
+    
+    assert error['code'] == 400
+    assert error['message'] == '<p>Start is greater than total number of messages</p>'
+    requests.delete(_url + '/clear')
+    
+    # getting {'code': 400, 'name': 'System Error', 'message': '<p>Channel_id does not exist</p>'}    
+'''    
 def test_channel_messages_user_not_a_member(_url): #NOT DONE
     '''
     This test uses the feature channel/messages with an user_id that is not in
