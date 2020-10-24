@@ -72,9 +72,9 @@ def test_users_all(_url):
 def test_admin_userpermission_change(_url):
     # Testing if permission changes are correctly executed
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
-    users = data['users']
     token = user['token']
-    
+    users = helper_test_functions.users_all(token, _url)
+
     authorised_user = next((user for user in users if user['token'] == token), None)
     assert authorised_user['permission_id'] == 1
 
@@ -88,6 +88,7 @@ def test_admin_userpermission_change(_url):
     assert authorised_user2['permission_id'] == 1
 
     other.clear()
+
 
 def test_admin_userpermission_change_invalid_permission_id(_url):
     # Testing if permission changes catch invalid permission ids
@@ -152,25 +153,27 @@ def test_admin_userpermission_change_invalid_user(_url):
 
     other.clear()
 
+'''
 def test_other_search(_url):
     # Register new user
-    user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
+    user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)
     
     # Create a new channel
-    new_channel = channels.channels_create(user['token'], 'channel', True)
+    new_channel = helper_test_functions.channels_create(user['token'], 'channel', True, _url)
 
     # Create new messages
-    message.message_send(user['token'], new_channel['channel_id'], 'hello!')
-    message.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say hello')
-    message.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say goodbye')
+    helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'hello!', _url)
+    helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say hello', _url)
+    helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say goodbye', _url)
 
-    messages = other.search(user['token'], "hello")
+    messages = helper_test_functions.search(user['token'], "hello", _url)
 
     # Check if correct messages are returned
-    actual_messages = [message['message'] for message in messages['messages']]
-    assert actual_messages  == ['hello!', 'Just wanted to say hello']
-    other.clear()
+    assert messages['messages'][0]['message'] == 'hello!'
+    assert messages['messages'][1]['message'] == 'Just wanted to say hello'
 
+    other.clear()
+'''
 def test_other_search_none(_url):
     # Register new user
     user = auth.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne')
