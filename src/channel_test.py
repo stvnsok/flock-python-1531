@@ -174,12 +174,11 @@ def test_channel_invite_user_not_in_channel(_url):
     requests.delete(_url + '/clear')
 
 
-def test_channel_invite_working(_url): #NOT DONE
+def test_channel_invite_working(_url): 
     '''
     This test uses the feature channel/invite with valid inputs. The expected
     utcome is the invited user is added to the channel immediately.
     '''
-'''
     response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
@@ -188,7 +187,6 @@ def test_channel_invite_working(_url): #NOT DONE
         _url
     )
     new_user_1 = response
-    u_id_1 = new_user_1['u_id']
     token_1 = new_user_1['token']
 
     response = helper_test_functions.auth_register(
@@ -199,21 +197,34 @@ def test_channel_invite_working(_url): #NOT DONE
         _url
     )
     new_user_2 = response
+    token_2 = new_user_2['token']
     u_id_2 = new_user_2['u_id']
+
+    response = helper_test_functions.auth_register(
+        "markowong3@hotmail.com",
+        "markowong3",
+        "marko3",
+        "wong3",
+        _url
+    )
+    new_user_3 = response
+    u_id_3 = new_user_3['u_id']
 
     response = helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
     new_channel = response
     channel_id = new_channel['channel_id']
 
+    # invite users to channel
     helper_test_functions.channel_invite(token_1, channel_id, u_id_2, _url)
-    print(channel_id) #correct channel_id
-    response = helper_test_functions.channel_details(token_1, channel_id, _url)
-    ch_details = response
-    # getting {'code': 400, 'name': 'System Error', 'message': '<p>Channel_id does not exist</p>'} from channel_details
-    print(ch_details)
-    assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
-    requests.delete(_url + '/clear')
-'''
+    helper_test_functions.channel_invite(token_2, channel_id, u_id_3, _url)
+    
+    # check that the users are in the channel
+    response = helper_test_functions.channels_list(token_1, _url)
+    memebers = response['channels'][0]['members']
+    assert memebers[0]['name_first'] == 'marko'
+    assert memebers[1]['name_first'] == 'marko2'
+    assert memebers[2]['name_first'] == 'marko3'
+
 ######################### Tests for channel/details ############################
 def test_channel_details_invalid_token(_url):
     '''
@@ -271,7 +282,7 @@ def test_channel_details_user_not_a_member(_url): #NOT DONE
     the channel. The expected outcome is error of 400 saying 'Authorised user is
     not a member of the channel'.
     '''
-    '''response = helper_test_functions.auth_register(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -295,13 +306,11 @@ def test_channel_details_user_not_a_member(_url): #NOT DONE
     new_channel = response
     channel_id = new_channel['channel_id']
 
-    print(len(data['channels']))
-    response = helper_test_functions.channel_details(token_1, channel_id, _url)
+    response = helper_test_functions.channel_details(token_2, channel_id, _url)
     error = response
     assert error['code'] == 400
     assert error['message'] == '<p>Authorised user is not a member of the channel</p>'
-    # getting {'code': 400, 'name': 'System Error', 'message': '<p>Channel_id does not exist</p>'} from channel_details
-'''
+    requests.delete(_url + '/clear')
 
 def test_channel_detail_working(_url): #NOT DONE
     '''

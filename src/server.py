@@ -115,6 +115,8 @@ def invite():
 def details():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
+    print(token)
+    print(channel_id)
     result = channel.channel_details(token, channel_id)
     return dumps(result)
 

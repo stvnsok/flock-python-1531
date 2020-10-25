@@ -59,24 +59,23 @@ def channel_details(token, channel_id):
     Given a Channel with ID channel_id that the authorised user is part of,
     provide basic details about the channel
     '''
-
     channels = data['channels']
     users = data['users']
+    channel_id = int(channel_id)
 
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    #Check if user exists/ token is correct
-    if authorised_user is None:
-        raise AccessError('Token is incorrect')
-    
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
         (channel for channel in channels if channel['channel_id'] == channel_id), None)
 
-    # Check channel exists
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+    
+    #Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
+
+    # Check if channel exists
     if channel is None:
         raise InputError('Channel_id does not exist')
 

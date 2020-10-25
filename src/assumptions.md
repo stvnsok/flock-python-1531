@@ -6,6 +6,8 @@
 ## Related to channel.py
     *   Only owners can add or remove other owners
     *   Messages are under the channels key
+    *   The order of the members in the dictionary are in the order the members 
+    were invited.
 
 ## Related to channels.py
     *   Channel names can have no characters ''
