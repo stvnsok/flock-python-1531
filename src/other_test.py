@@ -140,8 +140,8 @@ def test_other_search(_url):
 
     # Create new messages
     helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'hello!', _url)
-    helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say hello', _url)
     helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say goodbye', _url)
+    helper_test_functions.message_send(user['token'], new_channel['channel_id'], 'Just wanted to say hello', _url)
 
     messages = helper_test_functions.search(user['token'], "hello", _url)
 
