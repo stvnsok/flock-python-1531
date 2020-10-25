@@ -372,7 +372,6 @@ def test_channel_messages_invalid_channel_id(_url):
     )
    
     new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
-    channel_id = new_channel['channel_id']
 
     error = helper_test_functions.channel_messages(user_1['token'], new_channel['channel_id'], 0, _url)
 
