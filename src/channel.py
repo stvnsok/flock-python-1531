@@ -349,22 +349,3 @@ def channel_removeowner(token, channel_id, u_id):
 
 
 
-
-
-# user_1 = auth_register(
-#     "123@hotmail.com", 
-#     "password", 
-#     "Bobby", 
-#     "McBob",
-# )
-
-# new_channel = channels_create(user_1['token'], 'channel_1', True)
-# channel_id = new_channel['channel_id']
-
-# assert new_channel['channel_id'] == 1
-
-# all_channels = channels_listall(user_1['token'])
-
-
-# error = channel_messages(user_1['token'], new_channel['channel_id'], 100)
-
