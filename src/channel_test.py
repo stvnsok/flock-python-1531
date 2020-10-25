@@ -276,7 +276,7 @@ def test_channel_details_invalid_channel_id(_url):
 
     requests.delete(_url + '/clear')
 
-def test_channel_details_user_not_a_member(_url): #NOT DONE
+def test_channel_details_user_not_a_member(_url):
     '''
     This test uses the feature channel/detials with an user_id that is not in
     the channel. The expected outcome is error of 400 saying 'Authorised user is
@@ -312,13 +312,13 @@ def test_channel_details_user_not_a_member(_url): #NOT DONE
     assert error['message'] == '<p>Authorised user is not a member of the channel</p>'
     requests.delete(_url + '/clear')
 
-def test_channel_detail_working(_url): #NOT DONE
+def test_channel_detail_working(_url):
     '''
     This test uses the feature channel/detials with valid inputs. The expected
     outcome is providing basic details about the channel including: name,
     owner_members, all_members.
     '''
-'''    response = helper_test_functions.auth_register(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -333,10 +333,8 @@ def test_channel_detail_working(_url): #NOT DONE
     channel_id = new_channel['channel_id']
 
     response = helper_test_functions.channel_details(token_1, channel_id, _url)
-    print(response)
-    # getting {'code': 400, 'name': 'System Error', 'message': '<p>Channel_id does not exist</p>'}
-    assert response['owner_members'][0]['u_id'] == 1 
-'''
+    assert response['owner_members'][0]['name_first'] == 'marko'
+    assert response['all_members'][0]['name_first'] == 'marko'
 
 ######################### Tests for channel/messages ###########################
 def test_channel_messages_invalid_token(_url):
@@ -502,80 +500,95 @@ def test_channel_leave_invalid_token(_url):
 
     requests.delete(_url + '/clear')
 
-def test_channel_leave_invalid_channel_id(_url): #NOT DONE
+def test_channel_leave_invalid_channel_id(_url):
     '''
     This test uses the feature channel/leave with an invalid channel_id. The
     expected outcome is an error of 400 saying 'Channel_id does not exist'
     '''
-'''
+
     user_1 = helper_test_functions.auth_register(
-        "123@hotmail.com", 
-        "password", 
-        "Bobby", 
+        "123@hotmail.com",
+        "password",
+        "Bobby",
         "McBob",
         _url
     )
-    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
-    channel_id = new_channel['channel_id']
 
-    error = helper_test_functions.channel_leave(user_1['token'], channel_id,  _url)
+    error = helper_test_functions.channel_leave(user_1['token'], 1, _url)
     assert error['code'] == 400
     assert error['message'] == '<p>Channel_id does not exist</p>'
-    
+
     helper_test_functions.clear(_url)
-'''
-def test_channel_leave_user_not_a_member(_url): 
+
+def test_channel_leave_user_not_a_member(_url):
     '''
     This test uses the feature channel/leave with an user_id that is not in
     the channel. The expected outcome is error of 400 saying 'Authorised user is
     not a member of the channel'.
     '''
     user_1 = helper_test_functions.auth_register(
-        "123@hotmail.com", 
-        "password", 
-        "Bobby", 
+        "123@hotmail.com",
+        "password",
+        "Bobby",
         "McBob",
         _url
     )
     new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
-    
+
     user_2 = helper_test_functions.auth_register(
         "bestanime@hotmail.com",
-        "Goku is mid!", 
-        "mei", 
-        "wei", 
+        "Goku is mid!",
+        "mei",
+        "wei",
         _url
     )
     channel_id = new_channel['channel_id']
 
-    error = helper_test_functions.channel_leave(user_2['token'], channel_id,  _url)
+    error = helper_test_functions.channel_leave(user_2['token'], channel_id, _url)
     assert error['code'] == 400
     assert error['message'] == '<p>Authorised user is not a member of the channel</p>'
-    
+
     helper_test_functions.clear(_url)
 
-def test_channel_leave_working(_url): #NOT DONE
+def test_channel_leave_working(_url):
     '''
     This test uses the feature channel/leave with valid inputs. The expected
     outcome is that the database removes that user from the list of members for
     that channel.
     '''
-'''
-    user_1 = helper_test_functions.auth_register(
-        "123@hotmail.com", 
-        "password", 
-        "Bobby", 
+
+    response = helper_test_functions.auth_register(
+        "123@hotmail.com",
+        "password",
+        "Bobby",
         "McBob",
         _url
     )
-    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
+    new_user_1 = response
+    token_1 = new_user_1['token']
+    new_channel = helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
     channel_id = new_channel['channel_id']
 
-    response = helper_test_functions.channel_leave(user_1['token'], channel_id,  _url)
-    assert len(response['channels'][0]['members']) == 0
-    
+    response = helper_test_functions.auth_register(
+        "markowong2@hotmail.com",
+        "markowong2",
+        "marko2",
+        "wong2",
+        _url
+    )
+    new_user_2 = response
+    token_2 = new_user_2['token']
+    u_id_2 = new_user_2['u_id']
+
+
+    helper_test_functions.channel_invite(token_1, channel_id, u_id_2, _url)
+    helper_test_functions.channel_leave(token_2, channel_id, _url)
+
+    response = helper_test_functions.channel_details(token_1, channel_id, _url)
+    assert len(response['all_members']) == 1
+
     helper_test_functions.clear(_url)
-'''
+
 ########################### Tests for channel/join #############################
 def test_channel_join_invalid_token(_url):
     '''
@@ -629,47 +642,75 @@ def test_channel_join_invalid_channel_id(_url):
 
     requests.delete(_url + '/clear')
 
-def test_channel_join_user_not_a_member(_url): #NOT DONE
+def test_channel_join_user_not_a_member(_url):
     '''
     This test uses the feature channel/join with an user_id that is not in
-    the channel. The expected outcome is error of 400 saying 'Channel_id refers 
+    the channel. The expected outcome is error of 400 saying 'Channel_id refers
     to a channel that is private
     '''
-'''    
+
     user_1 = helper_test_functions.auth_register(
-        "123@hotmail.com", 
-        "password", 
-        "Bobby", 
+        "123@hotmail.com",
+        "password",
+        "Bobby",
         "McBob",
         _url
     )
-    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
-    
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', False, _url)
+
     user_2 = helper_test_functions.auth_register(
         "bestanime@hotmail.com",
-        "Goku is mid!", 
-        "mei", 
-        "wei", 
+        "Goku is mid!",
+        "mei",
+        "wei",
         _url
     )
     channel_id = new_channel['channel_id']
 
-    error = helper_test_functions.channel_join(user_2['token'], channel_id,  _url)
+    error = helper_test_functions.channel_join(user_2['token'], channel_id, _url)
     assert error['code'] == 400
     assert error['message'] == '<p>Channel_id refers to a channel that is private</p>'
-    requests.delete(_url + '/clear')
-'''
-def test_channel_join_working(_url): #NOT DONE
+
+    helper_test_functions.clear(_url)
+
+def test_channel_join_working(_url): 
     '''
     This test uses the feature channel/join with valid inputs. The expected
     outcome is that the database adds that user to the list of members for that
     public channel.
     '''
-    
+    response = helper_test_functions.auth_register(
+        "123@hotmail.com",
+        "password",
+        "Bobby",
+        "McBob",
+        _url
+    )
+    new_user_1 = response
+    token_1 = new_user_1['token']
+    new_channel = helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
+    channel_id = new_channel['channel_id']
+
+    response = helper_test_functions.auth_register(
+        "markowong2@hotmail.com",
+        "markowong2",
+        "marko2",
+        "wong2",
+        _url
+    )
+    new_user_2 = response
+    token_2 = new_user_2['token']
+
+    helper_test_functions.channel_join(token_2, channel_id, _url)
+
+    response = helper_test_functions.channel_details(token_1, channel_id, _url)
+    assert len(response['all_members']) == 2
+
+    helper_test_functions.clear(_url)
 
 ######################## Tests for channel/addowner ############################
-def test_channel_addowner_invalid_token(_url): 
-    ''' 
+def test_channel_addowner_invalid_token(_url):
+    '''
     This test uses the feature channel/addowner with an invalid token. The
     expected outcome is an error of 400 saying 'Token is incorrect'
     '''

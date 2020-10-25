@@ -161,7 +161,7 @@ def channel_leave(token, channel_id):
     '''
     Given a channel ID, the user removed as a member of this channel
     '''
-
+    channel_id = int(channel_id)
     channels = data['channels']
     users = data['users']
 
