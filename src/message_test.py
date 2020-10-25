@@ -1,5 +1,6 @@
 '''
 Tests for message.py
+Written on 15/10/2020
 '''
 
 import helper_test_functions as test_setup

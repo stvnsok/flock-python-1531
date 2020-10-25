@@ -1,5 +1,7 @@
-# Written on 24/09/2020
-# Purpose to test functions in channel.py
+'''
+Written on 24/09/2020
+Purpose to test functions in channel.py
+'''
 
 import helper_test_functions
 from fixture import url
