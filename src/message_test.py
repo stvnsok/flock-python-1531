@@ -3,7 +3,6 @@ Tests for message.py
 '''
 
 import helper_test_functions as test_setup
-import pytest
 from fixture import url
 
 
@@ -192,6 +191,10 @@ def test_message_edit_edited(url):
     old_message = "This is the old message"
     message_sent_john = test_setup.message_send(
         john['token'], john_channel['channel_id'], old_message, url)
+
+    message_in_data = test_setup.search(john['token'], "This is the", url) 
+
+    assert message_in_data['messages'][0]['message'] == old_message
 
     new_message = "This is the new message"
     test_setup.message_edit(

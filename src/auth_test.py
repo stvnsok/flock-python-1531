@@ -1,38 +1,9 @@
 '''
 Tests for user.py
 '''
-# import re
-# from subprocess import Popen, PIPE
-# import signal
-# from time import sleep
-import pytest
+
 import helper_test_functions as test_setup
 from fixture import url
-
-
-# @pytest.fixture
-# def url():
-#     '''
-#     Fixture to get the URL of server
-#     '''
-#     url_re = re.compile(r' \* Running on ([^ ]*)')
-#     server = Popen(["python3", "src/server.py"], stderr=PIPE, stdout=PIPE)
-#     line = server.stderr.readline()
-#     local_url = url_re.match(line.decode())
-#     if local_url:
-#         yield local_url.group(1)
-#         # Terminate the server
-#         server.send_signal(signal.SIGINT)
-#         waited = 0
-#         while server.poll() is None and waited < 5:
-#             sleep(0.1)
-#             waited += 0.1
-#         if server.poll() is None:
-#             server.kill()
-#     else:
-#         server.kill()
-#         raise Exception("Couldn't get URL from local server")
-
 
 def test_successful_registration(url):
     '''
@@ -202,8 +173,6 @@ def test_handle_too_long(url):
 
     register_response = test_setup.auth_register(
         "john@gmail.com", "qwe123!@#", "1234567890", "yoyoy123456789", url)
-
-    # response = requests.get(f'{url}users/all', json={"token":register_response["token"]})
 
     usersall_response = test_setup.users_all(register_response["token"], url)
 
