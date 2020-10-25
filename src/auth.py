@@ -1,41 +1,24 @@
 '''
-import regex library
+Auth function
 '''
 import re
 from flask import request
 from data import data
 from error import InputError
-#from server import APP
+from other import check
 
 def create_token(email):
     '''
     Creates a token for each user
     '''
-    # creates a hash using in built python hash function
     return str(hash(email))
 
 
-def check(email):
-    '''
-    Checks that the entered email is valid based on regex expression
-    '''
-    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-
-    # Make a regular expression for validating an Email
-    if re.search(regex, email):
-        return True
-
-    return False
-
 #@APP.route("/auth/login", methods=['POST'])
-def auth_login():
+def auth_login(email, password):
     '''
     Login and authenticate existing user
     '''
-    payload = request.get_json()
-    email = payload['email']
-    password = payload['password']
-
     # Check email is valid format
     if (check(email)) is not True:
         raise InputError('Invalid email')
@@ -48,7 +31,7 @@ def auth_login():
 
     # If the was not found based on email, throw exception
     if user is None:
-        raise InputError('Incorrect email')
+        raise InputError('Email does not belong to a user')
 
     # If password matches send back id and token
     # Else throw exception
@@ -60,12 +43,10 @@ def auth_login():
 
     raise InputError('Incorrect password')
 #@APP.route("/auth/logout", methods=['POST'])
-def auth_logout():
+def auth_logout(token):
     '''
     Logout authenticated user
     '''
-    payload = request.get_json()
-    token = payload['token']
     # Get users from data
     users = data['users']
 
@@ -76,16 +57,11 @@ def auth_logout():
     return {'is_success': False}
 
 #@APP.route("/auth/register", methods=['POST'])
-def auth_register():
+def auth_register(email, password, name_first, name_last):
     '''
     Register a new user
     '''
-    payload = request.get_json()
-    email = payload['email']
-    password = payload['password']
-    name_first = payload['name_first']
-    name_last = payload['name_last']
-    # checks for valid email
+    # Check email is valid format
     if check(email) is not True:
         raise InputError('Invalid email')
 
@@ -122,7 +98,8 @@ def auth_register():
         'name_first': name_first,
         'name_last': name_last,
         'handle_str': handle,
-        'token': create_token(email)
+        'token': create_token(email),
+        'permission_id' : 1 if len(users) == 0 else 2
     }
 
     # Auto Increment the next user

@@ -3,18 +3,15 @@ import data dictionary from data.py
 '''
 from data import data
 from error import InputError, AccessError
-from flask import request
 
+from auth import *
+from channels import *
 
-def channel_invite():
+def channel_invite(token, channel_id, u_id):
     '''
     Invites a user (with user id u_id) to join a channel with ID channel_id.
     Once invited the user is added to the channel immediately
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    u_id = payload['u_id']
 
     channels = data['channels']
     users = data['users']
@@ -29,6 +26,10 @@ def channel_invite():
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
+    
+    #Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
 
     # Check if channel exists
     if channel is None:
@@ -36,7 +37,7 @@ def channel_invite():
 
     # Check if user exists
     if user is None:
-        raise InputError('U_id does not exist')
+        raise InputError('user_id does not exist')
 
     # Check if authorised user is a member of the channel
     if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
@@ -55,16 +56,14 @@ def channel_invite():
     return {}
 
 
-def channel_details():
+def channel_details(token, channel_id):
     '''
     Given a Channel with ID channel_id that the authorised user is part of,
     provide basic details about the channel
     '''
-    token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
-
     channels = data['channels']
     users = data['users']
+    channel_id = int(channel_id)
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
@@ -73,8 +72,12 @@ def channel_details():
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
+    
+    #Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
 
-    # Check channel exists
+    # Check if channel exists
     if channel is None:
         raise InputError('Channel_id does not exist')
 
@@ -94,7 +97,7 @@ def channel_details():
     }
 
 
-def channel_messages():
+def channel_messages(token, channel_id, start):
     '''
     Given a Channel with ID channel_id that the authorised user is part of,
     return up to 50 messages between index "start" and "start + 50". Message with
@@ -103,13 +106,11 @@ def channel_messages():
     the least recent messages in the channel, returns -1 in "end" to indicate there are
     no more messages to load after this return.
     '''
-    token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
-    start = request.args.get('start')
-
+    channel_id = int(channel_id)
+    start = int(start)
+    
     channels = data['channels']
     users = data['users']
-    messages = data['messages']
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
@@ -118,6 +119,10 @@ def channel_messages():
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
+    
+    #Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
 
     # Check if channel exists
     if channel is None:
@@ -129,8 +134,7 @@ def channel_messages():
             'Authorised user is not a member of the channel')
 
     # Gets all the messages for the given channel
-    messages_from_channel = [
-        message for message in messages if message['channel_id'] == channel['channel_id']]
+    messages_from_channel = channel['messages']
 
     # sets the index for the last message
     end = start + 50
@@ -156,16 +160,21 @@ def channel_messages():
     }
 
 
-def channel_leave():
+def channel_leave(token, channel_id):
     '''
     Given a channel ID, the user removed as a member of this channel
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-
+    channel_id = int(channel_id)
     channels = data['channels']
     users = data['users']
+
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+
+    #Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
@@ -174,10 +183,6 @@ def channel_leave():
     # Check if channel exists
     if channel is None:
         raise InputError('Channel_id does not exist')
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
 
     # Find the authorised user from the channel
     user = next((member for member in channel['members']
@@ -195,17 +200,22 @@ def channel_leave():
     return {}
 
 
-def channel_join():
+def channel_join(token, channel_id):
     '''
     Given a channel_id of a channel that the authorised user can join,
     adds them to that channel
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
 
     channels = data['channels']
     users = data['users']
+
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+
+    # Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
@@ -214,10 +224,6 @@ def channel_join():
     # Check if channel exists
     if channel is None:
         raise InputError('Channel_id does not exist')
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
 
     # Determine whether channel is public or private
     # If channel is public, add them to the channel
@@ -237,17 +243,21 @@ def channel_join():
     return {}
 
 
-def channel_addowner():
+def channel_addowner(token, channel_id, u_id):
     '''
     Make user with user id u_id an owner of this channel
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    u_id = payload['u_id']
 
     channels = data['channels']
     users = data['users']
+
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+        
+    # Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
@@ -256,10 +266,6 @@ def channel_addowner():
     # Check if channel exists
     if channel is None:
         raise InputError('Channel_id does not exist')
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
 
     # Check if authorisated user is an owner of the channel
     if not any(authorised_user['u_id'] == member['u_id'] and
@@ -293,17 +299,21 @@ def channel_addowner():
     return {}
 
 
-def channel_removeowner():
+def channel_removeowner(token, channel_id, u_id):
     '''
     Remove user with user id u_id an owner of this channel
     '''
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    u_id = payload['u_id']
 
     channels = data['channels']
     users = data['users']
+
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+        
+    # Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
 
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
@@ -313,23 +323,20 @@ def channel_removeowner():
     if channel is None:
         raise InputError('Channel_id does not exist')
 
-    # Finds the user, if it doesn't exists assigns None
-    user = next(
-        (user for user in users if user['u_id'] == u_id), None)
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
     # Check if authorisated user is an owner of the channel
     if not any(authorised_user['u_id'] == member['u_id']
                and member['is_owner'] for member in channel['members']):
         raise AccessError(
             'Authorised user is not an owner of the channel')
 
+    # Finds the user, if it doesn't exists assigns None
+    user = next(
+        (user for user in users if user['u_id'] == u_id), None)
+
+
     # Find the user from the selected channel, if user does not exists assigns None
-    owner = next((member for member in channel['members']
-                  if user['u_id'] == member['u_id'] and member['is_owner']), None)
+    owner = next(
+        (member for member in channel['members'] if user['u_id'] == member['u_id'] and member['is_owner']), None)
 
     # If user is not an owner of the channel throw exception
     if owner is None:
@@ -339,3 +346,6 @@ def channel_removeowner():
     owner['is_owner'] = False
 
     return {}
+
+
+

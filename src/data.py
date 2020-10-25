@@ -13,6 +13,7 @@ User 0bject :  {
                     'name_last' : string,
                     'handle_str' : string,
                     'token' : string
+                    'permission_id' : integer
                }
 
 Channel Object : {
@@ -24,21 +25,23 @@ Channel Object : {
                                         'u_id': integer,
                                         'name_first': string,
                                         'name_last': string,
-                                        'is_owner': boolean
+                                        'is_owner': bool
                                     }
 
-                                ]
+                                ],
+                    'messages' : [
+                                    {
+                                        'message_id' : integer,
+                                        'u_id' : integer,
+                                        'message' : string,
+                                        'time_created' : integer (unix timestamp),
+                                    }
+
+                                ],
                  }
 
-Message Object : {
-                    'message_id' : integer,
-                    'u_id' : integer,
-                    'message' : string,
-                    'time_created' : integer (unix timestamp),
-                  }
 '''
 data = {
     'users': [],
     'channels': [],
-    'messages': [],
 }
