@@ -611,7 +611,6 @@ def test_channel_join_invalid_channel_id(_url):
     token_1 = new_user_1['token']
 
     response = helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
-    new_channel = response
 
     response = helper_test_functions.channel_join(token_1, 909, _url)
 
@@ -705,7 +704,6 @@ def test_channel_addowner_invalid_channel_id(_url):
     token_1 = new_user_1['token']
 
     response = helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
-    new_channel = response
 
     response = helper_test_functions.channel_addowner(token_1, 909, u_id_1, _url)
 
