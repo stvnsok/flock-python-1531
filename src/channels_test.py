@@ -1,6 +1,7 @@
-#26/9/2020
-#Purpose: Test functions in channels.py
-
+'''
+26/9/2020
+Purpose: Test functions in channels.py
+'''
 import helper_test_functions
 from fixture import url as url
 
