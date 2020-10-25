@@ -8,7 +8,7 @@ from fixture import url as url
 #---------------------Testing channels_list function with:---------------------#
 def test_channels_list_invalid_token(url):
     '''
-    Invalid token
+    Invalid token sent
     '''
   
     response = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', url)
