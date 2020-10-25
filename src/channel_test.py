@@ -717,13 +717,13 @@ def test_channel_addowner_invalid_channel_id(_url):
     assert error['message'] == '<p>Channel_id does not exist</p>'
 
     requests.delete(_url + '/clear')
-def test_channel_addowner_user_not_a_member(_url): #NOT DONE
+def test_channel_addowner_user_not_a_member(_url): 
     '''
     This test uses the feature channel/addowner with an user_id that is not in
     the channel. The expected outcome is error of 400 saying 'Authorised user is
     not an owner of the channel'.
     '''
-'''    
+  
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com", 
         "password", 
@@ -742,10 +742,12 @@ def test_channel_addowner_user_not_a_member(_url): #NOT DONE
     )
     channel_id = new_channel['channel_id']
 
-    error = helper_test_functions.channel_addowner(user_2['token'], channel_id,  _url)
+    error = helper_test_functions.channel_addowner(user_2['token'], channel_id, user_2['u_id'],  _url)
     assert error['code'] == 400
-    assert error['message'] == '<p>Authorised user is not a member of the channel</p>'
-'''
+    assert error['message'] == '<p>Authorised user is not an owner of the channel</p>'
+    
+    requests.delete(_url + '/clear')
+
 def test_channel_addowner_working(_url): #NOT DONE
     '''
     This test uses the feature channel/addowner with valid inputs. The expected
@@ -783,12 +785,12 @@ def test_channel_removeowner_invalid_token(_url):
 
     requests.delete(_url + '/clear')
 
-def test_channel_removeowner_invalid_channel_id(_url): #NOT DONE
+def test_channel_removeowner_invalid_channel_id(_url): 
     '''
     This test uses the feature channel/removeowner with an invalid channel_id. The
     expected outcome is an error of 400 saying 'Channel_id does not exist'
     '''
-'''   
+   
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com", 
         "password", 
@@ -804,15 +806,16 @@ def test_channel_removeowner_invalid_channel_id(_url): #NOT DONE
         "wei", 
         _url
     )
-    helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
+    channel_1 = helper_test_functions.channels_create(user_1['token'], "channel_1", True, _url)
     helper_test_functions.channel_addowner(user_1['token'], channel_1['channel_id'], user_2['u_id'],_url)
     
     response = helper_test_functions.channel_removeowner(user_1['token'], 909, user_2['u_id'],_url)
 
     assert response["code"] == 400
-    assert response["message"] == '<p>Channel_id does not exist<p>'
-'''
-def test_channel_removeowner_user_not_a_member(_url): #NOT 
+    assert response["message"] == '<p>Channel_id does not exist</p>'
+    requests.delete(_url + '/clear')
+    
+def test_channel_removeowner_user_not_a_member(_url):  
     '''
     This test uses the feature channel/removeowner with an user_id that is not in
     the channel. The expected outcome is error of 400 saying 'Authorised user is
