@@ -70,7 +70,7 @@ def test_channel_invite_token_incorrect(_url):
     assert error['message'] == '<p>Token is incorrect</p>'
 
     requests.delete(_url + '/clear')
-    
+
 def test_channel_invite_invalid_channel_id(_url):
     '''
     This test uses the feature channel/invite with an invalid channel_id. The
@@ -174,7 +174,7 @@ def test_channel_invite_user_not_in_channel(_url):
     requests.delete(_url + '/clear')
 
 
-def test_channel_invite_working(_url): 
+def test_channel_invite_working(_url):
     '''
     This test uses the feature channel/invite with valid inputs. The expected
     utcome is the invited user is added to the channel immediately.
@@ -217,7 +217,7 @@ def test_channel_invite_working(_url):
     # invite users to channel
     helper_test_functions.channel_invite(token_1, channel_id, u_id_2, _url)
     helper_test_functions.channel_invite(token_2, channel_id, u_id_3, _url)
-    
+
     # check that the users are in the channel
     response = helper_test_functions.channels_list(token_1, _url)
     memebers = response['channels'][0]['members']
@@ -673,7 +673,7 @@ def test_channel_join_user_not_a_member(_url):
 
     helper_test_functions.clear(_url)
 
-def test_channel_join_working(_url): 
+def test_channel_join_working(_url):
     '''
     This test uses the feature channel/join with valid inputs. The expected
     outcome is that the database adds that user to the list of members for that
@@ -762,22 +762,23 @@ def test_channel_addowner_invalid_channel_id(_url):
     assert error['message'] == '<p>Channel_id does not exist</p>'
 
     requests.delete(_url + '/clear')
-def test_channel_addowner_user_not_a_member(_url): 
+
+def test_channel_addowner_user_not_a_member(_url):
     '''
     This test uses the feature channel/addowner with an user_id that is not in
     the channel. The expected outcome is error of 400 saying 'Authorised user is
     not an owner of the channel'.
     '''
-  
+
     user_1 = helper_test_functions.auth_register(
-        "123@hotmail.com", 
-        "password", 
-        "Bobby", 
+        "123@hotmail.com",
+        "password",
+        "Bobby",
         "McBob",
         _url
     )
     new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
-    
+
     user_2 = helper_test_functions.auth_register(
         "bestanime@hotmail.com",
         "Goku is mid!", 
@@ -787,10 +788,10 @@ def test_channel_addowner_user_not_a_member(_url):
     )
     channel_id = new_channel['channel_id']
 
-    error = helper_test_functions.channel_addowner(user_2['token'], channel_id, user_2['u_id'],  _url)
+    error = helper_test_functions.channel_addowner(user_2['token'], channel_id, user_2['u_id'], _url)
     assert error['code'] == 400
     assert error['message'] == '<p>Authorised user is not an owner of the channel</p>'
-    
+
     requests.delete(_url + '/clear')
 
 def test_channel_addowner_working(_url): #NOT DONE
