@@ -16,32 +16,7 @@ from error import InputError, AccessError
 from other import clear
 from fixture import url as _url
 
-#@pytest.fixture
-#def _url():
-#    '''
-#    Use this fixture to get the URL of the server. It starts the server for you,
-#    so you don't need to.
-#    '''
-
-#    url_re = re.compile(r' \* Running on ([^ ]*)')
-#    server = Popen(["python3", "server.py"], stderr=PIPE, stdout=PIPE)
-#    line = server.stderr.readline()
-#    local_url = url_re.match(line.decode())
-#    if local_url:
-#        yield local_url.group(1)
-#        # Terminate the server
-#        server.send_signal(signal.SIGINT)
-#        waited = 0
-#        while server.poll() is None and waited < 5:
-#            sleep(0.1)
-#            waited += 0.1
-#        if server.poll() is None:
-#            server.kill()
-#    else:
-#        server.kill()
-#        raise Exception("Couldn't get URL from local server")
-
-######################### Tests for channel/invite #############################
+######################## Tests for channel/invite #############################
 def test_channel_invite_token_incorrect(_url):
     '''
     This test uses the feature channel/invite with an invalid token. The
@@ -395,7 +370,7 @@ def test_channel_messages_start_greater(_url): #NOT DONE
     expected outcome is an error of 400 saying 'Start is greater than total
     number of messages'.
     '''
-'''
+
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com", 
         "password", 
@@ -407,21 +382,28 @@ def test_channel_messages_start_greater(_url): #NOT DONE
     new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
     channel_id = new_channel['channel_id']
 
+    assert new_channel['channel_id'] == 1
+
+    all_channels = helper_test_functions.channels_listall(user_1['token'], _url)
+
+    # assert all_channels == 1
+
     error = helper_test_functions.channel_messages(user_1['token'], new_channel['channel_id'], 100, _url)
     
+    
+
     assert error['code'] == 400
     assert error['message'] == '<p>Start is greater than total number of messages</p>'
     requests.delete(_url + '/clear')
     
-    # getting {'code': 400, 'name': 'System Error', 'message': '<p>Channel_id does not exist</p>'}    
-'''    
+    
 def test_channel_messages_user_not_a_member(_url): #NOT DONE
     '''
     This test uses the feature channel/messages with an user_id that is not in
     the channel. The expected outcome is error of 400 saying 'Authorised user is
     not a member of the channel'.
     '''
-'''
+
     user_1 = helper_test_functions.auth_register(
         "markowong2@hotmail.com",
         "markowong2",
@@ -441,22 +423,19 @@ def test_channel_messages_user_not_a_member(_url): #NOT DONE
 
     new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
 
-
-   
     response = helper_test_functions.channel_messages(user_2['token'], new_channel['channel_id'],0, _url)
     error = response
     assert error['code'] == 400
     assert error['message'] == '<p>Authorised user is not a member of the channel</p>'
     requests.delete(_url + '/clear')
-     # getting {'code': 400, 'name': 'System Error', 'message': '<p>Channel_id does not exist</p>'} 
-'''
-def test_channel_messages_working(_url): #NOT DONE
+
+def test_channel_messages_less_than_50(_url):
     '''
-    This test uses the feature channel/messages with valid inputs. The expected
+    This test uses the feature channel/messages for messages below 50. The expected
     outcome is dictories of messages, start, end 
     '''
-'''
-     user_1 = helper_test_functions.auth_register(
+
+    user_1 = helper_test_functions.auth_register(
         "markowong2@hotmail.com",
         "markowong2",
         "marko2",
@@ -464,13 +443,58 @@ def test_channel_messages_working(_url): #NOT DONE
         _url
     )
 
-    
-    
     new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
-   
-    response = helper_test_functions.channel_messages(user_1['token'], new_channel['channel_id'],0, _url)
+
+    for i in range(20):
+        helper_test_functions.message_send(user_1['token'], new_channel['channel_id'], "Hello" ,_url)
     
-'''    
+    
+    response = helper_test_functions.channel_messages(user_1['token'], new_channel['channel_id'], 0, _url)
+    
+    assert response['end'] == -1
+    
+    for message in response['messages']:
+        assert message['message'] == "Hello"
+
+def test_channel_messages(_url):
+    '''
+    This test uses the feature channel/messages for messages 
+    above 50 and that all messages sent are stored correctly. 
+    The expected outcome is dictories of messages, start, end.
+    '''
+
+    user_1 = helper_test_functions.auth_register(
+        "markowong2@hotmail.com",
+        "markowong2",
+        "marko2",
+        "wong2",
+        _url
+    )
+
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, _url)
+
+    for i in range(20):
+        helper_test_functions.message_send(user_1['token'], new_channel['channel_id'], "Hello" ,_url)
+    
+
+    response = helper_test_functions.channel_messages(user_1['token'], new_channel['channel_id'], 0, _url)
+    
+    assert response['end'] == -1
+    
+    for message in response['messages']:
+        assert message['message'] == "Hello"
+    
+    for i in range(100):
+        helper_test_functions.message_send(user_1['token'], new_channel['channel_id'], "Goodbye" ,_url)
+    
+    response = helper_test_functions.channel_messages(user_1['token'], new_channel['channel_id'], 20, _url)
+    
+    assert response['end'] == 70
+    
+    for message in response['messages']:
+        assert message['message'] == "Goodbye"
+
+
 
 ########################## Tests for channel/leave #############################
 def test_channel_leave_invalid_token(_url):

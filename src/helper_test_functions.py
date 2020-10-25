@@ -67,6 +67,7 @@ def channel_messages(token, channel_id, start, url):
     response = requests.get(f'{url}channel/messages', params={
         "token": token,
         "channel_id": channel_id,
+        "start": start
     })
 
     return response.json()

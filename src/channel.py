@@ -4,6 +4,8 @@ import data dictionary from data.py
 from data import data
 from error import InputError, AccessError
 
+from auth import *
+from channels import *
 
 def channel_invite(token, channel_id, u_id):
     '''
@@ -104,7 +106,9 @@ def channel_messages(token, channel_id, start):
     the least recent messages in the channel, returns -1 in "end" to indicate there are
     no more messages to load after this return.
     '''
-
+    channel_id = int(channel_id)
+    start = int(start)
+    
     channels = data['channels']
     users = data['users']
 
@@ -112,7 +116,6 @@ def channel_messages(token, channel_id, start):
     channel = next(
         (channel for channel in channels if channel['channel_id'] == channel_id), None)
 
-    print(len(channels))
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
@@ -343,3 +346,25 @@ def channel_removeowner(token, channel_id, u_id):
     owner['is_owner'] = False
 
     return {}
+
+
+
+
+
+# user_1 = auth_register(
+#     "123@hotmail.com", 
+#     "password", 
+#     "Bobby", 
+#     "McBob",
+# )
+
+# new_channel = channels_create(user_1['token'], 'channel_1', True)
+# channel_id = new_channel['channel_id']
+
+# assert new_channel['channel_id'] == 1
+
+# all_channels = channels_listall(user_1['token'])
+
+
+# error = channel_messages(user_1['token'], new_channel['channel_id'], 100)
+

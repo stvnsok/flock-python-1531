@@ -125,7 +125,7 @@ def details():
 def messages():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
-    start = request.args.get('start')
+    start = (request.args.get('start'))
     result = channel.channel_messages(
         token, channel_id, start)
     return dumps(result)
