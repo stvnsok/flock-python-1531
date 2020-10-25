@@ -175,7 +175,7 @@ def test_channel_invite_working(_url): #NOT DONE
     This test uses the feature channel/invite with valid inputs. The expected
     utcome is the invited user is added to the channel immediately.
     '''
-'''    response = helper_test_functions.auth_register(
+    response = helper_test_functions.auth_register(
         "markowong@hotmail.com",
         "markowong",
         "marko",
@@ -207,7 +207,7 @@ def test_channel_invite_working(_url): #NOT DONE
     # getting {'code': 400, 'name': 'System Error', 'message': '<p>Channel_id does not exist</p>'} from channel_details
     print(ch_details)
     assert len(ch_details['owner_members']) == len(ch_details['all_members']) == 1
-'''
+
 ######################### Tests for channel/details ############################
 def test_channel_details_invalid_token(_url):
     '''
@@ -552,7 +552,27 @@ def test_channel_join_invalid_channel_id(_url): #NOT DONE
     This test uses the feature channel/join with an invalid channel_id. The
     expected outcome is an error of 400 saying 'Channel_id does not exist'
     '''
-    
+    response = helper_test_functions.auth_register(
+        "markowong@hotmail.com",
+        "markowong",
+        "marko",
+        "wong",
+        _url
+    )
+    new_user_1 = response
+    token_1 = new_user_1['token']
+
+    response = helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
+    new_channel = response
+    channel_id = new_channel['channel_id']
+
+    response = helper_test_functions.channel_join(token_1, 909, _url)
+
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>Channel_id does not exist</p>'
+
+    requests.delete(_url + '/clear')
 
 def test_channel_join_user_not_a_member(_url): #NOT DONE
     '''
@@ -624,7 +644,28 @@ def test_channel_addowner_invalid_channel_id(_url): #NOT DONE
     This test uses the feature channel/addowner with an invalid channel_id. The
     expected outcome is an error of 400 saying 'Channel_id does not exist'
     '''
+    response = helper_test_functions.auth_register(
+        "markowong@hotmail.com",
+        "markowong",
+        "marko",
+        "wong",
+        _url
+    )
+    new_user_1 = response
+    u_id_1 = new_user_1['token']
+    token_1 = new_user_1['token']
 
+    response = helper_test_functions.channels_create(token_1, 'channel_1', True, _url)
+    new_channel = response
+    channel_id = new_channel['channel_id']
+
+    response = helper_test_functions.channel_addowner(token_1, 909, u_id_1, _url)
+
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>Channel_id does not exist</p>'
+
+    requests.delete(_url + '/clear')
 def test_channel_addowner_user_not_a_member(_url): #NOT DONE
     '''
     This test uses the feature channel/addowner with an user_id that is not in
@@ -696,7 +737,7 @@ def test_channel_removeowner_invalid_channel_id(_url): #NOT DONE
     This test uses the feature channel/removeowner with an invalid channel_id. The
     expected outcome is an error of 400 saying 'Channel_id does not exist'
     '''
-    
+'''   
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com", 
         "password", 
@@ -719,7 +760,7 @@ def test_channel_removeowner_invalid_channel_id(_url): #NOT DONE
 
     assert response["code"] == 400
     assert response["message"] == '<p>Channel_id does not exist<p>'
-
+'''
 def test_channel_removeowner_user_not_a_member(_url): #NOT DONE
     '''
     This test uses the feature channel/removeowner with an user_id that is not in
@@ -739,7 +780,7 @@ def test_channel_removeowner_working(_url): #NOT DONE
 
 
 
-
+'''
 
 def test_channel():
     bruce = helper_test_functions.auth_register('bruce@gmail.com', 'batm4n23', 'Bruce', 'Wayne',_url)
@@ -873,7 +914,7 @@ def test_channel_public():
 def test_channel_private():
 
     # Register three users and have John set up a private channel
-    chicken = helper_test_functions.auth_register"hehe@hotmail.com", "qwerty", "Chicken", "Nugget", _url)
+    chicken = helper_test_functions.auth_register("hehe@hotmail.com", "qwerty", "Chicken", "Nugget", _url)
     john = helper_test_functions.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith', _url)
     bob = helper_test_functions.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', _url)
     private_cool_channel = helper_test_functions.channels_create(john['token'], 'private_cool_channel', False,_url)
@@ -978,7 +1019,7 @@ def test_channel_join_exceptions():
     bob = helper_test_functions.auth_register('bob@gmail.com', 'abc123!@#', 'Bob', 'Lime',_url)
     cool_channel = helper_test_functions.channels_create(john['token'], 'cool_channel', False,_url)
     
-    response = helper_test_functions.channels_join((john['token'], 9999,_url)
+    response = helper_test_functions.channels_join(john['token'], 9999,_url)
     assert response["code"] == 400
     assert response["message"] == "<p>Channel_id does not exist</p>"
     
@@ -1015,7 +1056,7 @@ def test_channel_removeowner_exceptions():
     lucy = helper_test_functions.auth_register('lucy@gmail.com', 'asd123!@#', 'Lucy', 'Lime',_url)
     cool_channel = helper_test_functions.channels_create(john['token'], 'cool_channel', True,_url)
     
-    response = helper_test_functions.channel_removeowner((john['token'], 9999 , bob['u_id'], _url)
+    response = helper_test_functions.channel_removeowner(john['token'], 9999 , bob['u_id'], _url)
     assert response["code"] == 400
     assert response["message"] == "<p>Channel_id does not exist</p>"
     
@@ -1057,5 +1098,5 @@ def test_channel_messages():
 
     helper_test_functions.clear(_url)
 
-
+'''
 
