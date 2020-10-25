@@ -16,7 +16,6 @@ from error import InputError, AccessError
 from other import clear
 from fixture import url as _url
 
-
 #@pytest.fixture
 #def _url():
 #    '''
