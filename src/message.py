@@ -2,29 +2,9 @@ from error import InputError, AccessError
 from data import data
 from other import get_timestamp
 import uuid
-from auth import *
-from channels import *
-from other import *
+from helper_functions import get_message, get_channel, update_message, channel_member
 
 
-def find_message(token, message_id):
-    '''
-    Find a message for a given id. If it can't be found return -1
-    '''
-    channels = data['channels']
-
-    authorised_user = next((user for user in users if user['token'] == token), None)
-
-    # Get each batch of messages from each channel where the user is a member
-    for channel in channels:
-        for member in channel['members']:
-            if member['u_id'] == authorised_user['u_id']:
-                for message in channel['messages']:
-                    if message['message_id'] == message_id:
-                        return message
-
-    # Not found so return -1
-    return -1
 
 def message_send(token, channel_id, message):
     '''
@@ -142,25 +122,24 @@ def message_react(token, message_id, react_id):
     if react_id != 1 or react_id != 0:
         raise InputError("React_id is not a valid React ID")
 
-    users = data['users']
-    channels = data['channels']
+    # Get the channel where the message is from a helper function
+    channel = get_channel(token, message_id)
 
-    # Verify authorised user
-    authorised_user = next((user for user in users if user['token'] == token), None)
+    # Throw error if no message, or user is not a member of that channel
+    if channel == -1 or not channel_member(token, channel):
+        raise InputError("Message_id is not a valid message within a channel that the authorised user has joined")
     
-    # Get each batch of messages from each channel where the user is a member
-    for channel in channels:
-        for member in channel['members']:
-            if member['u_id'] == authorised_user['u_id']:
-                for message in channel['messages']:
-                    if message['message_id'] == message_id:
-                        if message['react_id'] == 1:
-                            raise InputError("Message already contains an active react")
-                        else:
-                            message['react_id'] = 1
-                            return {}
+    # Get message from helper function
+    message = get_message(message_id, channel)
+
+    if message['react_id'] == 1:
+        raise InputError("Message already contains an active react")
     
-    raise InputError("Message_id is not a valid message within a channel that the authorised user has joined")
+    # Update react and return
+    message['react_id'] = 1
+    update_message(message_id, message, channel)
+    return {}
+
 
 def message_unreact(token, message_id, react_id):
     '''
@@ -171,27 +150,80 @@ def message_unreact(token, message_id, react_id):
     if react_id != 1 or react_id != 0:
         raise InputError("React_id is not a valid React ID")
 
-    users = data['users']
-    channels = data['channels']
+    # Get the channel where the message is from a helper function
+    channel = get_channel(token, message_id)
 
-    # Verify authorised user
-    authorised_user = next((user for user in users if user['token'] == token), None)
+    # Throw error if no message, or user is not a member of that channel
+    if channel == -1 or not channel_member(token, channel):
+        raise InputError("Message_id is not a valid message within a channel that the authorised user has joined")
     
-    # Get each batch of messages from each channel where the user is a member
-    for channel in channels:
-        for member in channel['members']:
-            if member['u_id'] == authorised_user['u_id']:
-                for message in channel['messages']:
-                    if message['message_id'] == message_id:
-                        if message['react_id'] == 0:
-                            raise InputError("Message does not already contains an active react")
-                        else:
-                            message['react_id'] = 0
-                            return {}
-    
-    raise InputError("Message_id is not a valid message within a channel that the authorised user has joined")
+    # Get message from helper function
+    message = get_message(message_id, channel)
 
+    if message['react_id'] == 0:
+        raise InputError("Message already does not contain an active react")
     
+    # Update react and return
+    message['react_id'] = 0
+    update_message(message_id, message, channel)
+    return {}
+    
+def message_pin(token, message_id):
+    '''
+    Given a message within a channel, mark it as "pinned" to be given special
+    display treatment by the frontend
+    '''  
+
+    # Get the channel where the message is from a helper function
+    channel = get_channel(token, message_id)
+
+    # Throw error if no message, or user is not a member of that channel
+    if channel == -1:
+        raise InputError("Message_id is not a valid message")
+    
+    # Throw error is user not member or owner of channel. By default an owner
+    # is a member of the channel
+    if not channel_member(token, channel):
+        raise AccessError("The authorised user is not a member/owner of the channel")
+
+    # Get message from helper function
+    message = get_message(message_id, channel)
+
+    if message['is_pinned']:
+        raise InputError("Message is already pinned")
+    
+    # Update react and return
+    message['is_pinned'] = True
+    update_message(message_id, message, channel)
+    return {}
+
+def message_unpin(token, message_id):
+    '''
+    Given a message within a channel, mark it as unpinned
+    '''  
+    # Get the channel where the message is from a helper function
+    channel = get_channel(token, message_id)
+
+    # Throw error if no message, or user is not a member of that channel
+    if channel == -1:
+        raise InputError("Message_id is not a valid message")
+    
+    # Throw error is user not member or owner of channel. By default an owner
+    # is a member of the channel
+    if not channel_member(token, channel):
+        raise AccessError("The authorised user is not a member/owner of the channel")
+
+    # Get message from helper function
+    message = get_message(message_id, channel)
+
+    if not message['is_pinned']:
+        raise InputError("Message is already unpinned")
+    
+    # Update react and return
+    message['is_pinned'] = False
+    update_message(message_id, message, channel)
+    return {} 
+
 
 
 
