@@ -6,6 +6,26 @@ from auth import *
 from channels import *
 from other import *
 
+
+def find_message(token, message_id):
+    '''
+    Find a message for a given id. If it can't be found return -1
+    '''
+    channels = data['channels']
+
+    authorised_user = next((user for user in users if user['token'] == token), None)
+
+    # Get each batch of messages from each channel where the user is a member
+    for channel in channels:
+        for member in channel['members']:
+            if member['u_id'] == authorised_user['u_id']:
+                for message in channel['messages']:
+                    if message['message_id'] == message_id:
+                        return message
+
+    # Not found so return -1
+    return -1
+
 def message_send(token, channel_id, message):
     '''
     Send a message from the authorised_user to the channel specified by channel_id 
@@ -111,4 +131,39 @@ def message_edit(token, message_id, message):
                 return {}
             else:
                 raise AccessError("Message to remove was not sent by authorised user. Authorised user is not an owner of the channel")
- 
+
+
+def message_react(token, message_id, react_id):
+    '''
+    Given a message with channel the authorised user is part of,
+    add a "react" to that particular message
+    '''
+    # For now there are only two possible reacts
+    if react_id != 1 or react_id != 0:
+        raise InputError("React_id is not a valid React ID")
+
+    users = data['users']
+    channels = data['channels']
+
+    # Verify authorised user
+    authorised_user = next((user for user in users if user['token'] == token), None)
+    
+    # Get each batch of messages from each channel where the user is a member
+    for channel in channels:
+        for member in channel['members']:
+            if member['u_id'] == authorised_user['u_id']:
+                for message in channel['messages']:
+                    if message['message_id'] == message_id:
+                        if message['react_id'] == 1:
+                            raise InputError("Message already contains an active react")
+                        else:
+                            message['react_id'] = 1
+                            return {}
+    
+    raise InputError("Message_id is not a valid message within a channel that the authorised user has joined")
+
+    
+
+
+
+
