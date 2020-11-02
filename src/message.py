@@ -43,7 +43,7 @@ def message_remove(token, message_id):
     '''
     Given a message_id for a message, this message is removed from the channel
     '''
-
+    # Get the user that is sending the request
     authorised_user = helper_functions.get_authorised_user(token)
 
     # Get the channel where the message exists
@@ -70,16 +70,13 @@ def message_edit(token, message_id, message):
     '''
     Given a message, update it's text with new text. If the new message is an empty string, the message is deleted
     '''    
-    users = data['users']
-    channels = data['channels']
     
     # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
+    authorised_user = helper_functions.get_authorised_user(token)
 
     # Get the channel where the message exists
-    channel = next((channel for channel in channels for message in channel['messages'] if message['message_id'] == message_id), None)
-
+    channel = helper_functions.get_channel_with_message(message_id)
+    
     # Raise input error is channel cannot be found
     if channel is None:
         raise InputError("Message does not exist")
@@ -92,13 +89,12 @@ def message_edit(token, message_id, message):
         channel['messages'].remove(message)
         return {}
     
-    for channel_message in channel['messages']:
-        if channel_message['message_id'] == message_id:
-            if channel_message['u_id'] == authorised_user['u_id'] or channel_owner:
-                channel_message['message'] = message
-                return {}
-            else:
-                raise AccessError("Message to remove was not sent by authorised user. Authorised user is not an owner of the channel")
+    channel_message = helper_functions.get_message(message_id, channel)
+    if channel_message['u_id'] == authorised_user['u_id'] or channel_owner:
+        channel_message['message'] = message
+        return {}
+    else:
+        raise AccessError("Message to remove was not sent by authorised user. Authorised user is not an owner of the channel")
 
 
 def message_react(token, message_id, react_id):
