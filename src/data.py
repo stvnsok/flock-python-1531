@@ -38,10 +38,9 @@ Channel Object : {
                                         'reacts': [
                                             {
                                                 'u_id': int,
-                                                'react_id': int,
-                                            }
+                                                'react_id':[ int],              0 -> n will act like an enum     
+                                            }                                   any number will represent a possible react
                                         ] 
-                                        'react_id': int,                             0 or 1
                                         'is_pinned': bool
                                     }
 

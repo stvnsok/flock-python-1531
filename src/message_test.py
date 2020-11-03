@@ -256,3 +256,34 @@ def test_react_invalid_react_id(url):
 
     test_setup.clear(url)
 
+def test_react(url):
+    '''
+    Integration test that will test whether reacts are working correctly
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+
+  
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+    
+    old_message = "React to my message"
+    message_sent_john = test_setup.message_send(
+        john['token'], john_channel['channel_id'], old_message, url)
+
+    response = test_setup.message_react(john['token'], message_sent_john['message_id'], 1, url)
+    
+    error_response = test_setup.message_react(john['token'], message_sent_john['message_id'], 1, url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Message already contains an active react with react_id</p>'
+
+    test_setup.message_unreact(john['token'], message_sent_john['message_id'], 1, url)
+    
+    error_response = test_setup.message_unreact(john['token'], message_sent_john['message_id'], 1, url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Message already does not contain an active react with react_id</p>'
+
+    test_setup.clear(url)
+

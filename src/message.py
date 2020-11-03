@@ -3,6 +3,8 @@ from data import data
 from other import get_timestamp
 import uuid
 import helper_functions 
+from auth import *
+from channel import *
 
 
 def message_send(token, channel_id, message):
@@ -29,7 +31,8 @@ def message_send(token, channel_id, message):
         'message_id' : str(uuid.uuid4()),
         'message' : message,
         'u_id': authorised_user['u_id'],
-        'time_created': get_timestamp()
+        'time_created': get_timestamp(),
+        'reacts': []
     }   
 
     # Add new message to dictionary
@@ -113,6 +116,8 @@ def message_react(token, message_id, react_id):
     if react_id not in reacts:
         raise InputError("React_id is not a valid React ID")
 
+    authorised_user = helper_functions.get_authorised_user(token)
+
     # Get the channel where the message is from a helper function
     channel = helper_functions.get_channel_with_message(message_id)
 
@@ -121,17 +126,33 @@ def message_react(token, message_id, react_id):
         raise InputError("Message_id is not a valid message within a channel that the authorised user has joined")
     
     # Get message from helper function
-    message = get_message(message_id, channel)
+    message = helper_functions.get_message(message_id, channel)
 
-    # Check if message already has react
-    if message['react_id'] == 1:
-        raise InputError("Message already contains an active react")
-    
-    # Update react and return
-    message['react_id'] = 1
+    react = None
+
+    if len(message['reacts']) > 0:
+        react = next((react for react in message['reacts'] if react['u_id'] == authorised_user['u_id']), None)
+
+    # Create new react
+    if react is None:
+        new_react = {
+            'u_id' : authorised_user['u_id'],
+            'react_id' : [react_id]
+        }
+        message['reacts'].append(new_react)
+        helper_functions.update_message(message_id, message, channel)
+        return {}
+
+    # Check if the react is already active
+    if react_id in react['react_id']:
+        raise InputError("Message already contains an active react with react_id")
+
+    # Update react 
+    react['react_id'].append(react_id)
     helper_functions.update_message(message_id, message, channel)
     return {}
-
+    
+    
 
 def message_unreact(token, message_id, react_id):
     '''
@@ -143,24 +164,32 @@ def message_unreact(token, message_id, react_id):
     if react_id not in reacts:
         raise InputError("React_id is not a valid React ID")
 
+    authorised_user = helper_functions.get_authorised_user(token)
     # Get the channel where the message is from a helper function
-    channel = helper_functions.get_channel(message_id)
+    channel = helper_functions.get_channel_with_message(message_id)
 
     # Throw error if no message, or user is not a member of that channel
     if channel is None or not helper_functions.channel_member(token, channel):
         raise InputError("Message_id is not a valid message within a channel that the authorised user has joined")
     
     # Get message from helper function
-    message = get_message(message_id, channel)
+    message = helper_functions.get_message(message_id, channel)
+
+    react = None
+
+    if len(message['reacts']) > 0:
+        react = next((react for react in message['reacts'] if react['u_id'] == authorised_user['u_id']), None)
+
+    # Cannot react to something that has no react
+    if react is None or react_id not in react['react_id']:
+        raise InputError("Message already does not contain an active react with react_id")
     
-    # Check if message already has no react
-    if message['react_id'] == 0:
-        raise InputError("Message already does not contain an active react")
-    
-    # Update react and return
-    message['react_id'] = 0
+
+    # Update react
+    react['react_id'].remove(react_id)
     helper_functions.update_message(message_id, message, channel)
     return {}
+    
     
 def message_pin(token, message_id):
     '''
@@ -217,7 +246,5 @@ def message_unpin(token, message_id):
     message['is_pinned'] = False
     helper_functions.update_message(message_id, message, channel)
     return {} 
-
-
 
 
