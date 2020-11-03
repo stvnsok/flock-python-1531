@@ -206,3 +206,53 @@ def test_message_edit_edited(url):
 
     assert message_in_data['messages'][0]['message'] == new_message
     test_setup.clear(url)
+
+def test_react_invalid_message(url):
+    '''
+    Tests that error is thrown then message_id is not within channel
+    BOTH FOR REACT AND UNREACT
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+
+    error_response = test_setup.message_react(john['token'], 9999999, 1, url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Message_id is not a valid message within a channel that the authorised user has joined</p>'
+
+
+    error_response = test_setup.message_unreact(john['token'], 9999999, 1, url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Message_id is not a valid message within a channel that the authorised user has joined</p>'
+
+    test_setup.clear(url)
+
+def test_react_invalid_react_id(url):
+    '''
+    Tests that error is thrown when react_id is not correct
+    BOTH FOR REACT AND UNREACT
+    '''
+    
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+
+    error_response = test_setup.message_react(john['token'], 9999999, 100, url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>React_id is not a valid React ID</p>'
+
+
+    error_response = test_setup.message_unreact(john['token'], 9999999, 100, url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>React_id is not a valid React ID</p>'
+
+    test_setup.clear(url)
+

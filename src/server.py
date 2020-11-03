@@ -223,6 +223,43 @@ def edit():
         data['token'], data['message_id'], data['message'])
     return dumps(result)
 
+@APP.route("/message/sendlater", methods=['POST'])
+def sendlater():
+    data = request.get_json()
+    result = message.message_sendlater(
+        data['token'], data['channel_id'], data['message'], data['time_sent']
+    )
+    return dumps(result)
+
+@APP.route("/message/react", methods=['POST'])
+def react():
+    data = request.get_json()
+    result = message.message_react(
+        data['token'], data['message_id'], data['react_id'])
+    return dumps(result)
+
+@APP.route("/message/unreact", methods=['POST'])
+def unreact():
+    data = request.get_json()
+    result = message.message_unreact(
+        data['token'], data['message_id'], data['react_id'])
+    return dumps(result)
+
+@APP.route("/message/pin", methods=['POST'])
+def pin():
+    data = request.get_json()
+    result = message.message_pin(
+        data['token'], data['message_id'])
+    return dumps(result)
+
+@APP.route("/message/unpin", methods=['POST'])
+def unpin():
+    data = request.get_json()
+    result = message.message_unpin(
+        data['token'], data['message_id'])
+    return dumps(result)
+
+
 
 '''
 Other Endpoints

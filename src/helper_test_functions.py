@@ -191,7 +191,7 @@ def message_react(token, message_id, react_id, url):
     response = requests.post(f'{url}message/react', json={
         "token": token,
         "message_id": message_id,
-        "message" : message
+        "react_id" : react_id
     })
 
     return response.json()
@@ -200,7 +200,7 @@ def message_unreact(token, message_id, react_id, url):
     response = requests.post(f'{url}message/unreact', json={
         "token": token,
         "message_id": message_id,
-        "message" : message
+        "react_id" : react_id
     })
 
     return response.json()

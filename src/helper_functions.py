@@ -6,6 +6,9 @@ themselves
 from data import data
 
 def get_authorised_user(token):
+    '''
+    Get an authorised user based on token
+    '''
     return next((user for user in data['users'] if user['token'] == token), None)
 
 def get_message(message_id, channel):
@@ -30,6 +33,13 @@ def update_message(message_id, new_message, channel):
             message = new_message
             return 
 
+def get_channel(channel_id):
+    '''
+    Get the channel associated with the given channel_id
+    '''
+    
+    return next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), None)
+
 
 def get_channel_with_message(message_id):
     '''
@@ -37,7 +47,6 @@ def get_channel_with_message(message_id):
     '''    
     
     return next((channel for channel in data['channels'] for message in channel['messages'] if message['message_id'] == message_id), None)
-
 
 
 def channel_member(token, channel):
@@ -50,9 +59,4 @@ def channel_member(token, channel):
     return any(user['u_id'] == member['u_id'] for member in channel['members'])
 
 
-def get_channel(token, channel_id):
-    '''
-    Get the channel associated with the given channel_id
-    '''
-    
-    return next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), None)
+

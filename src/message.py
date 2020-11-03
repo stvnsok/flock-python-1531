@@ -14,7 +14,7 @@ def message_send(token, channel_id, message):
     authorised_user = helper_functions.get_authorised_user(token)
     
     # Get the selected channel
-    channel = helper_functions.get_channel(token, channel_id)
+    channel = helper_functions.get_channel(channel_id)
     
     # Check if authorised user is a member of the channel    
     if not helper_functions.channel_member(token, channel):
@@ -96,32 +96,40 @@ def message_edit(token, message_id, message):
     else:
         raise AccessError("Message to remove was not sent by authorised user. Authorised user is not an owner of the channel")
 
+def message_sendlater(token, channel_id, message, time_sent):
+    '''
+    Send a message by an authenticated user to the channel with channel_id at 
+    a specified time 
+    '''
+
 
 def message_react(token, message_id, react_id):
     '''
     Given a message with channel the authorised user is part of,
     add a "react" to that particular message
     '''
+    reacts = [0,1]
     # For now there are only two possible reacts
-    if react_id != 1 or react_id != 0:
+    if react_id not in reacts:
         raise InputError("React_id is not a valid React ID")
 
     # Get the channel where the message is from a helper function
-    channel = get_channel(token, message_id)
+    channel = helper_functions.get_channel_with_message(message_id)
 
     # Throw error if no message, or user is not a member of that channel
-    if channel == -1 or not channel_member(token, channel):
+    if channel is None or not helper_functions.channel_member(token, channel):
         raise InputError("Message_id is not a valid message within a channel that the authorised user has joined")
     
     # Get message from helper function
     message = get_message(message_id, channel)
 
+    # Check if message already has react
     if message['react_id'] == 1:
         raise InputError("Message already contains an active react")
     
     # Update react and return
     message['react_id'] = 1
-    update_message(message_id, message, channel)
+    helper_functions.update_message(message_id, message, channel)
     return {}
 
 
@@ -130,26 +138,28 @@ def message_unreact(token, message_id, react_id):
     Given a message with channel the authorised user is part of,
     remove "react" to that particular message
     '''
+    reacts = [0,1]
     # For now there are only two possible reacts
-    if react_id != 1 or react_id != 0:
+    if react_id not in reacts:
         raise InputError("React_id is not a valid React ID")
 
     # Get the channel where the message is from a helper function
-    channel = get_channel(token, message_id)
+    channel = helper_functions.get_channel(message_id)
 
     # Throw error if no message, or user is not a member of that channel
-    if channel == -1 or not channel_member(token, channel):
+    if channel is None or not helper_functions.channel_member(token, channel):
         raise InputError("Message_id is not a valid message within a channel that the authorised user has joined")
     
     # Get message from helper function
     message = get_message(message_id, channel)
-
+    
+    # Check if message already has no react
     if message['react_id'] == 0:
         raise InputError("Message already does not contain an active react")
     
     # Update react and return
     message['react_id'] = 0
-    update_message(message_id, message, channel)
+    helper_functions.update_message(message_id, message, channel)
     return {}
     
 def message_pin(token, message_id):
@@ -159,26 +169,26 @@ def message_pin(token, message_id):
     '''  
 
     # Get the channel where the message is from a helper function
-    channel = get_channel(token, message_id)
+    channel = helper_functions.get_channel(message_id)
 
     # Throw error if no message, or user is not a member of that channel
-    if channel == -1:
+    if channel is None:
         raise InputError("Message_id is not a valid message")
     
     # Throw error is user not member or owner of channel. By default an owner
     # is a member of the channel
-    if not channel_member(token, channel):
+    if not helper_functions.channel_member(token, channel):
         raise AccessError("The authorised user is not a member/owner of the channel")
 
     # Get message from helper function
-    message = get_message(message_id, channel)
+    message = helper_functions.get_message(message_id, channel)
 
     if message['is_pinned']:
         raise InputError("Message is already pinned")
     
     # Update react and return
     message['is_pinned'] = True
-    update_message(message_id, message, channel)
+    helper_functions.update_message(message_id, message, channel)
     return {}
 
 def message_unpin(token, message_id):
@@ -186,26 +196,26 @@ def message_unpin(token, message_id):
     Given a message within a channel, mark it as unpinned
     '''  
     # Get the channel where the message is from a helper function
-    channel = get_channel(token, message_id)
+    channel = helper_functions.get_channel(message_id)
 
     # Throw error if no message, or user is not a member of that channel
-    if channel == -1:
+    if channel is None:
         raise InputError("Message_id is not a valid message")
     
     # Throw error is user not member or owner of channel. By default an owner
     # is a member of the channel
-    if not channel_member(token, channel):
+    if not helper_functions.channel_member(token, channel):
         raise AccessError("The authorised user is not a member/owner of the channel")
 
     # Get message from helper function
-    message = get_message(message_id, channel)
+    message = helper_functions.get_message(message_id, channel)
 
     if not message['is_pinned']:
         raise InputError("Message is already unpinned")
     
     # Update react and return
     message['is_pinned'] = False
-    update_message(message_id, message, channel)
+    helper_functions.update_message(message_id, message, channel)
     return {} 
 
 
