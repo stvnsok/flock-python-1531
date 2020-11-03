@@ -35,6 +35,12 @@ Channel Object : {
                                         'u_id' : integer,
                                         'message' : string,
                                         'time_created' : integer (unix timestamp),
+                                        'reacts': [
+                                            {
+                                                'u_id': int,
+                                                'react_id': int,
+                                            }
+                                        ] 
                                         'react_id': int,                             0 or 1
                                         'is_pinned': bool
                                     }
