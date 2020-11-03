@@ -1,9 +1,16 @@
+'''
+User.py
+16/10/2020
+'''
 from data import data
 from error import InputError, AccessError
 from other import check
 
 def user_profile(token, u_id):
-
+    '''
+    For a valid user, returns information about their user_id, email, first name,
+    last name, and handle
+    '''
     # Get users from data
     users = data['users']
 
@@ -28,7 +35,7 @@ def user_profile(token, u_id):
     print(len(users))
     if users_checked == len(users):
         raise InputError('No users with the entered u_id was found')
-        
+
     return {
         'u_id': profile['u_id'],
         'email': profile['email'],
@@ -38,10 +45,12 @@ def user_profile(token, u_id):
     }
 
 def user_profile_sethandle(token, handle_str):
-
+    '''
+    Update the authorised user's handle (i.e. display name)
+    '''
     # Grabs all users from data
     users = data['users']
-    
+
     # Get the user that is sending the request
     authorised_user = next(
         (user for user in users if user['token'] == token), None)
@@ -53,20 +62,21 @@ def user_profile_sethandle(token, handle_str):
     # checking if length of handle_str is between 3 and 20 inclusive
     if len(handle_str) < 3 or len(handle_str) > 20:
         raise InputError("Handle length needs to be between 3 and 20")
-    
+
     # Cycles through all users to check if given handle already exists
     for user_handle in users:
         if user_handle['handle_str'] == handle_str:
             raise InputError('Handle already in use by another user')
-    
-    
+
     # Update the handle_str of user
     authorised_user['handle_str'] = handle_str
-            
+
     return {}
 
 def user_profile_setname(token, name_first, name_last):
-
+    '''
+    Update the authorised user's first and last name
+    '''
     # Grabs all users from data
     users = data['users']
 
@@ -91,6 +101,9 @@ def user_profile_setname(token, name_first, name_last):
     return {}
 
 def user_profile_setemail(token, email):
+    '''
+    Update the authorised user's email address
+    '''
     # Grabs all users from data
     users = data['users']
 
