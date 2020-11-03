@@ -3,8 +3,7 @@ from data import data
 from other import get_timestamp
 import uuid
 import helper_functions 
-from auth import *
-from channel import *
+
 
 
 def message_send(token, channel_id, message):
