@@ -2,9 +2,44 @@
 User.py
 16/10/2020
 '''
+import urllib.request
+from PIL import Image
 from data import data
 from error import InputError, AccessError
 from other import check
+
+
+def user_profile_photo(token, img_url, x_start, y_start, x_end, y_end):
+    '''
+    Given a URL of an image on the internet, crops the image within bounds
+    (x_start, y_start) and (x_end, y_end). Position (0,0) is the top left.
+    '''
+    # Get users from data
+    users = data['users']
+
+    # Get the user that is sending the request
+    authorised_user = next(
+        (user for user in users if user['token'] == token), None)
+
+    #Check if user exists/ token is correct
+    if authorised_user is None:
+        raise AccessError('Token is incorrect')
+
+    # fetch image via url
+    image_name = 'user_profile_pic.jpg'
+    urllib.request.urlretrieve(img_url, image_name)
+
+    # crop image
+    image_object = Image.open(image_name)
+    cropped = image_object.crop((x_start, y_start, x_end, y_end))
+    cropped.save(image_name)
+
+    # serve image
+    # @app.route('/static/<path:path>')
+    # def send_js(path):
+    #     return send_from_directory('', path)
+
+    return{}
 
 def user_profile(token, u_id):
     '''
