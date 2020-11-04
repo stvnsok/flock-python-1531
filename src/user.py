@@ -68,9 +68,9 @@ def user_profile_photo(token, img_url, x_start, y_start, x_end, y_end):
     cropped = image_object.crop((int(x_start), int(y_start), int(x_end), int(y_end)))
     cropped.save(image_name)
 
-    # input user profile to user database
-    curr_url = request.host_url
-    authorised_user['profile_img_url'] = f'{curr_url}static/user_profile_pic_{u_id}.jpg'
+    # input user profile_pic to user database
+    curr_url = request.host
+    authorised_user['profile_img_url'] = f'http://localhost:{curr_url[10:]}/static/user_profile_pic_{u_id}.jpg'
 
     return{}
 
