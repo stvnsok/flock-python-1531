@@ -3,7 +3,9 @@ from data import data
 from other import get_timestamp
 import uuid
 import helper_functions 
-
+from auth import *
+from channel import *
+from other import *
 
 
 def message_send(token, channel_id, message):
@@ -31,7 +33,8 @@ def message_send(token, channel_id, message):
         'message' : message,
         'u_id': authorised_user['u_id'],
         'time_created': get_timestamp(),
-        'reacts': []
+        'reacts': [],
+        'is_pinned': False
     }   
 
     # Add new message to dictionary
@@ -197,7 +200,7 @@ def message_pin(token, message_id):
     '''  
 
     # Get the channel where the message is from a helper function
-    channel = helper_functions.get_channel(message_id)
+    channel = helper_functions.get_channel_with_message(message_id)
 
     # Throw error if no message, or user is not a member of that channel
     if channel is None:
@@ -224,7 +227,7 @@ def message_unpin(token, message_id):
     Given a message within a channel, mark it as unpinned
     '''  
     # Get the channel where the message is from a helper function
-    channel = helper_functions.get_channel(message_id)
+    channel = helper_functions.get_channel_with_message(message_id)
 
     # Throw error if no message, or user is not a member of that channel
     if channel is None:

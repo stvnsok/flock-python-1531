@@ -287,3 +287,89 @@ def test_react(url):
 
     test_setup.clear(url)
 
+def test_pin_invalid_message(url):
+    '''
+    Tests that error is thrown then message_id is not within channel
+    BOTH FOR PIN AND UNPIN
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+
+    error_response = test_setup.message_pin(john['token'], 9999999, url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Message_id is not a valid message</p>'
+
+
+    error_response = test_setup.message_unpin(john['token'], 9999999, url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Message_id is not a valid message</p>'
+
+    test_setup.clear(url)
+
+def test_pin_invalid_user(url):
+    '''
+    Tests that error is thrown then user is not within channel
+    BOTH FOR PIN AND UNPIN
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+
+    bob = test_setup.auth_register(
+        'bob@gmail.com', 'qwe123!@#', 'Bob', 'Brown', url)
+
+    message = "Try to pin this bob ;)"
+    message_sent_john = test_setup.message_send(
+        john['token'], john_channel['channel_id'], message, url)
+
+    error_response = test_setup.message_pin(bob['token'], message_sent_john['message_id'], url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>The authorised user is not a member/owner of the channel</p>'
+
+
+    error_response = test_setup.message_unpin(bob['token'], message_sent_john['message_id'], url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>The authorised user is not a member/owner of the channel</p>'
+
+    test_setup.clear(url)
+
+
+def test_pin(url):
+    '''
+    Integration test that will test whether pin is working correctly
+    '''
+
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+    
+    message = "Pin this message"
+    message_sent_john = test_setup.message_send(
+        john['token'], john_channel['channel_id'], message, url)
+
+    test_setup.message_pin(john['token'], message_sent_john['message_id'], url)
+
+    error_response = test_setup.message_pin(john['token'], message_sent_john['message_id'], url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Message is already pinned</p>'
+
+    test_setup.message_unpin(john['token'], message_sent_john['message_id'], url)
+
+    error_response = test_setup.message_unpin(john['token'], message_sent_john['message_id'], url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Message is already unpinned</p>'
+
+    test_setup.clear(url)
