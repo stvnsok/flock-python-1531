@@ -99,7 +99,8 @@ def auth_register(email, password, name_first, name_last):
         'name_last': name_last,
         'handle_str': handle,
         'token': create_token(email),
-        'permission_id' : 1 if len(users) == 0 else 2
+        'permission_id' : 1 if len(users) == 0 else 2,
+        'profile_img_url': '',
     }
 
     # Auto Increment the next user

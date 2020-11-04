@@ -4,10 +4,23 @@ User.py
 '''
 import urllib.request
 from PIL import Image
+import requests
+from flask import request
 from data import data
 from error import InputError, AccessError
 from other import check
 
+def is_url_image(image_url):
+    '''
+    Tests if the image_url was a valid url and if the url is an jpg image
+    '''
+    image_formats = ("image/jpeg", "image/jpg") # for png images "image/png"
+    response = requests.head(image_url)
+    img_type = response.headers["content-type"]
+    if img_type in image_formats:
+        #print(f"image type was {temp}")
+        return True
+    return False
 
 def user_profile_photo(token, img_url, x_start, y_start, x_end, y_end):
     '''
@@ -25,21 +38,42 @@ def user_profile_photo(token, img_url, x_start, y_start, x_end, y_end):
     if authorised_user is None:
         raise AccessError('Token is incorrect')
 
+    #Check if url is an image_url with image type jpg or jpeg
+    if is_url_image(img_url) is False:
+        raise InputError('provided url is not a valid jpg image url')
+
     # fetch image via url
-    image_name = 'user_profile_pic.jpg'
+    u_id = authorised_user['u_id']
+    image_name = f'static/user_profile_pic_{u_id}.jpg'
     urllib.request.urlretrieve(img_url, image_name)
 
     # crop image
     image_object = Image.open(image_name)
-    cropped = image_object.crop((x_start, y_start, x_end, y_end))
+    image_size = image_object.size
+    if (
+            int(x_start) > image_size[0] or
+            int(x_start) < 0 or
+            int(x_end) > image_size[0] or
+            int(x_end) < 0 or
+            int(y_start) > image_size[1] or
+            int(y_start) < 0 or
+            int(y_end) > image_size[1] or
+            int(y_end) < 0
+    ):
+        raise InputError(
+            f"Invalid crop size, the image has dimensions {image_size[0]} x {image_size[1]}"
+        )
+
+    #print(image_size)
+    cropped = image_object.crop((int(x_start), int(y_start), int(x_end), int(y_end)))
     cropped.save(image_name)
 
-    # serve image
-    # @app.route('/static/<path:path>')
-    # def send_js(path):
-    #     return send_from_directory('', path)
+    # input user profile to user database
+    curr_url = request.host_url
+    authorised_user['profile_img_url'] = f'{curr_url}static/user_profile_pic_{u_id}.jpg'
 
     return{}
+
 
 def user_profile(token, u_id):
     '''
@@ -66,8 +100,6 @@ def user_profile(token, u_id):
             users_checked += 1
 
     # If list reaches end then raise error for no user found
-    print(users_checked)
-    print(len(users))
     if users_checked == len(users):
         raise InputError('No users with the entered u_id was found')
 
@@ -77,6 +109,7 @@ def user_profile(token, u_id):
         'name_first': profile['name_first'],
         'name_last': profile['name_last'],
         'handle_str': profile['handle_str'],
+        'profile_img_url': profile['profile_img_url'],
     }
 
 def user_profile_sethandle(token, handle_str):

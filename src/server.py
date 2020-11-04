@@ -3,7 +3,7 @@ imports
 '''
 import sys
 from json import dumps
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from error import InputError
 import auth
@@ -164,6 +164,10 @@ def removeowner():
 '''
 User Endpoints
 '''
+# For view images in static folder
+# @APP.route('/static/<path:path>')
+# def send_js(path):
+#     return send_from_directory('', path)
 
 @APP.route("/user/profile/uploadphoto", methods=['POST'])
 def uploadphoto():
@@ -271,4 +275,4 @@ def clear():
 
 
 if __name__ == "__main__":
-    APP.run(port=0)  # Do not edit this port
+    APP.run(port=3901)  # Do not edit this port
