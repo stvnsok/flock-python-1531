@@ -215,7 +215,7 @@ def test_react_invalid_message(url):
     john = test_setup.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
 
-    john_channel = test_setup.channels_create(
+    test_setup.channels_create(
         john['token'], 'john_channel', True, url)
 
     error_response = test_setup.message_react(john['token'], 9999999, 1, url)
@@ -240,7 +240,7 @@ def test_react_invalid_react_id(url):
     john = test_setup.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
 
-    john_channel = test_setup.channels_create(
+    test_setup.channels_create(
         john['token'], 'john_channel', True, url)
 
     error_response = test_setup.message_react(john['token'], 9999999, 100, url)
@@ -271,7 +271,7 @@ def test_react(url):
     message_sent_john = test_setup.message_send(
         john['token'], john_channel['channel_id'], old_message, url)
 
-    response = test_setup.message_react(john['token'], message_sent_john['message_id'], 1, url)
+    test_setup.message_react(john['token'], message_sent_john['message_id'], 1, url)
     
     error_response = test_setup.message_react(john['token'], message_sent_john['message_id'], 1, url)
 
@@ -295,7 +295,7 @@ def test_pin_invalid_message(url):
     john = test_setup.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
 
-    john_channel = test_setup.channels_create(
+    test_setup.channels_create(
         john['token'], 'john_channel', True, url)
 
     error_response = test_setup.message_pin(john['token'], 9999999, url)
