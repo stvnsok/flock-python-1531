@@ -3,9 +3,7 @@ from data import data
 from other import get_timestamp
 import uuid
 import helper_functions 
-from auth import *
-from channel import *
-from other import *
+
 
 
 def message_send(token, channel_id, message):
@@ -27,21 +25,23 @@ def message_send(token, channel_id, message):
     if len(message) > 1000:
         raise InputError("Message is more than 1000 characters")
     
-
     # Create new message object
     new_message = {
-        'message_id' : str(uuid.uuid4()),
+        'message_id' : 0,
         'message' : message,
         'u_id': authorised_user['u_id'],
         'time_created': get_timestamp(),
         'reacts': [],
         'is_pinned': False
     }   
+    
+    all_messages = helper_functions.get_all_messages()
+    
+    if len(all_messages) == 0:
+        new_message['message_id'] = 0
+    else:
+        new_message['message_id'] = all_messages[-1]['message_id'] + 1
 
-    # if len(channels) == 0:
-    #     new_channel['channel_id'] = 1
-    # else:
-    #     new_channel['channel_id'] = channels[-1]['channel_id'] + 1
     # Add new message to dictionary
     channel['messages'].append(new_message)
 

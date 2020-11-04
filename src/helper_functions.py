@@ -58,5 +58,14 @@ def channel_member(token, channel):
 
     return any(user['u_id'] == member['u_id'] for member in channel['members'])
 
+def get_all_messages():
+    '''
+    Returns a list containing all the messages across all channels
+    '''
 
+    messages = []
 
+    for channel in data['channels']:
+        messages += channel['messages']
+    
+    return messages
