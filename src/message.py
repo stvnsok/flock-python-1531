@@ -26,6 +26,7 @@ def message_send(token, channel_id, message):
     # Check if message is too long
     if len(message) > 1000:
         raise InputError("Message is more than 1000 characters")
+    
 
     # Create new message object
     new_message = {
@@ -37,6 +38,10 @@ def message_send(token, channel_id, message):
         'is_pinned': False
     }   
 
+    # if len(channels) == 0:
+    #     new_channel['channel_id'] = 1
+    # else:
+    #     new_channel['channel_id'] = channels[-1]['channel_id'] + 1
     # Add new message to dictionary
     channel['messages'].append(new_message)
 
@@ -106,7 +111,7 @@ def message_sendlater(token, channel_id, message, time_sent):
     Send a message by an authenticated user to the channel with channel_id at 
     a specified time 
     '''
-
+    return {}
 
 def message_react(token, message_id, react_id):
     '''
