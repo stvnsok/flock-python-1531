@@ -170,8 +170,8 @@ def test_profile_upload_correct_crop_size(url):
     response = helper_test_functions.user_profile(token, 1, url)
     profile = response
     profile_img_url = profile['profile_img_url']
-    # omit the first 21 characters as the port number is part of the name
-    assert profile_img_url[21:] == '/static/user_profile_pic_1.jpg'
+    # omit the url as it will be different everytime
+    assert profile_img_url.split('/',3)[3] == 'static/user_profile_pic_1.jpg'
 
     # clears data
     helper_test_functions.clear(url)
