@@ -17,8 +17,10 @@ def test_standup_start_invalid_channel_id(url){
 def test_standup_start_invalid_length(url) {
 }
 
-def test_standup_start_working(url) {
+def test_standup_start_standup_active(url) {
 }
+
+
 
 ######################## Tests for standup/active #############################
 def test_standup_active_token_incorrect(url) {
@@ -39,6 +41,12 @@ def test_standup_send_token_incorrect(url) {
 }
 
 def test_standup_send_invalid_channel_id(url){
+}
+
+def test_standup_send_unauthorised_user(url) {
+}
+
+def test_standup_send_standup_active(url) {
 }
 
 def test_standup_send_working(url) {
