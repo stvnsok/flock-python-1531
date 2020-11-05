@@ -2,7 +2,8 @@
 User.py
 16/10/2020
 '''
-import urllib.request
+#import urllib.request
+import shutil # to save it locally
 from PIL import Image
 import requests
 from flask import request
@@ -18,7 +19,7 @@ def is_url_image(image_url):
     response = requests.head(image_url)
     img_type = response.headers["content-type"]
     if img_type in image_formats:
-        #print(f"image type was {temp}")
+        #print(f"image type was {img_type}")
         return True
     return False
 
@@ -38,14 +39,31 @@ def user_profile_photo(token, img_url, x_start, y_start, x_end, y_end):
     if authorised_user is None:
         raise AccessError('Token is incorrect')
 
-    #Check if url is an image_url with image type jpg or jpeg
-    if is_url_image(img_url) is False:
-        raise InputError('provided url is not a valid jpg image url')
-
     # fetch image via url
     u_id = authorised_user['u_id']
-    image_name = f'static/user_profile_pic_{u_id}.jpg'
-    urllib.request.urlretrieve(img_url, image_name)
+    image_name = f'src/static/user_profile_pic_{u_id}.jpg'
+
+    # Open the url image, and return the stream content.
+    response = requests.get(img_url, stream=True)
+
+    # Check if the image was retrieved successfully
+    if response.status_code == 200:
+
+        # Allow the image size to be bigger than 0.
+        response.raw.decode_content = True
+
+        # Open a local file with wb for the image to be copied into
+        with open(image_name, 'wb') as img:
+            shutil.copyfileobj(response.raw, img)
+        #print('Image sucessfully Downloaded: ', image_name)
+
+    else:
+        raise InputError('img_url returned an HTTP status other than 200')
+        #print('Image Couldn\'t be retreived')
+
+    #Check if url is an image_url with image type jpg or jpeg
+    if is_url_image(img_url) is False:
+        raise InputError('Provided url is not a valid jpg image url')
 
     # crop image
     image_object = Image.open(image_name)
@@ -73,6 +91,7 @@ def user_profile_photo(token, img_url, x_start, y_start, x_end, y_end):
     authorised_user['profile_img_url'] = f'http://localhost:{curr_url[10:]}/static/user_profile_pic_{u_id}.jpg'
 
     return{}
+
 
 
 def user_profile(token, u_id):

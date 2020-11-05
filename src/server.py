@@ -178,7 +178,7 @@ def uploadphoto():
         data['x_start'],
         data['y_start'],
         data['x_end'],
-        data['y_end']
+        data['y_end'],
     )
     return dumps(result)
 
