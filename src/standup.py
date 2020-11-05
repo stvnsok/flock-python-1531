@@ -114,6 +114,11 @@ def standup_active(token, channel_id):
     }
 
 def standup_send(token, channel_id, message):
+
+    '''
+    Sending a message to get buffered in the standup queue, 
+    assuming a standup is currently active
+    '''
     # Get users from data
     users = data['users']
 
@@ -127,7 +132,7 @@ def standup_send(token, channel_id, message):
 
     # Get channel from data
     channels = data['channels']
-
+    
     # Finds the Channel, if it doesn't exists assigns None
     channel = next(
         (channel for channel in channels if channel['channel_id'] == channel_id), None)
@@ -135,7 +140,20 @@ def standup_send(token, channel_id, message):
     # Check if channel exists
     if channel is None:
         raise InputError('Channel_id does not exist')
+        
+    # Check if there is an active standup
+    response = standup_active(token, channel_id)
+    if response['is_active'] is True:
+    raise InputError('An active standup is currently running in this channel')
+    
+    #Check if authorised user is a member of the channel that the message is within
+    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
+        raise AccessError('Authorised user is not a member of the channel')
 
+    #standup = {authorised_user['u_id']: messages
+    
+    #channel['standup'].append(standup)
+    
     # Note to steven, I except the following things from this function:
     # - messages send into here will be converted to the format of " 'handle': 'message' "
     #where the handle will the be user who called this function. 
