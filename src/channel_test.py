@@ -940,6 +940,3 @@ def test_channel_removeowner_working(url): #NOT DONE
 
     helper_test_functions.clear(url)
 
-
-
-

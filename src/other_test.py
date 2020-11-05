@@ -169,5 +169,3 @@ def test_other_search_none(_url):
     assert messages['messages'] == []
 
     helper_test_functions.clear(_url)
-
-
