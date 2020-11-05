@@ -12,6 +12,7 @@ import channel
 import user
 import other
 import message
+import standup
 
 def defaultHandler(err):
     response = err.get_response()
@@ -239,6 +240,28 @@ def edit():
         data['token'], data['message_id'], data['message'])
     return dumps(result)
 
+'''
+Standup Endpoints
+'''
+
+@APP.route("/standup/start", method=['POST'])
+def standup_start():
+    data = request.get_json()
+    result = standup.standup_start(data['token'], data['channel_id'], data['length'])
+    return dumps(result)
+    
+@APP.route("/standup/active", method=['GET'])
+def standup_active():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    result = standup.standup_active(token, channel_id)
+    return dumps(result)
+
+@APP.route("/standup/send", method=['POST'])
+def standup_send():
+    data = request.get_json()
+    result = standup.standup_start(data['token'], data['channel_id'], data['message'])
+    return dumps(result)
 
 '''
 Other Endpoints

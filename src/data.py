@@ -39,6 +39,11 @@ Channel Object : {
                                     }
 
                                 ],
+                    'standup': ['marko: here are the instructions',
+                                'steven: 'I'm confused',
+                                'marko: dw so am I,
+                               ],
+                    'standup_active': True,
                  }
 
 '''

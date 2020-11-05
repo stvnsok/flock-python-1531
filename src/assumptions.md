@@ -25,6 +25,10 @@
     *   The profile pics stored in the static folder will never be deleted but will be
     overwitten, as the naming convention allows only have one pic per user.
 
+## Related to standup.py
+    *   The standup functions can be used by authorised users that is not part of the channel.
+    *   Assuming standup/send will replace any message_send during active standup
+
 ## Related to message.py and messages
     *   For message/edit an empty string is a string that has no white space at all, therefore will have a length of zero without performing any stripping
 
