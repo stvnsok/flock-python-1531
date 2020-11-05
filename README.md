@@ -207,14 +207,21 @@ When you demonstrate this iteration in your week 10 lab, it will consist of a 15
 ### 5.8. Extra Features Suggestions
 
 #### Frontend
+<<<<<<< HEAD
 ​
 **Hangman on Frontend**
 ​
+=======
+?
+**Hangman on Frontend**
+?
+>>>>>>> added updated README.MD
 After a game of Hangman has been started any user in the channel can type /guess X where X is an individual letter. If that letter is contained in the word or phrase they're trying to guess, the app should indicate where it occurs. If it does not occur, more of the hangman is drawn. There is a lot of flexibility in how you achieve this. It can be done only by modifying the backend and relying on messages to communicate the state of the game (e.g. after making a guess, the "Hangman" posts a message with a drawing of the hangman in ASCII/emoji art). Alternatively you can modify the frontend, if you want to experiment with fancier graphics.
 
 The app should use words and phrases from an external source, not just a small handful hardcoded into the app. One suitable source is /usr/share/dict/words available on Unix-based systems. Alternatively, the python wikiquote module is available via pip and can be used to retrieve quotes and phrases from Wikiquote.
 
 Note that this part of the specification is deliberately open-ended. You're free to make your own creative choices in exactly how the game should work, as long as the end result is something that could be fairly described as Hangman.
+<<<<<<< HEAD
 ​
 **admin/user/remove full implementation (frontend and backend)**
 ​
@@ -237,6 +244,30 @@ Refactor your code so it is stored in objects instead of dictionaries (if it's n
 ​
 #### Deployment
 ​
+=======
+?
+**admin/user/remove full implementation (frontend and backend)**
+?
+`admin/user/remove       DELETE      (token, u_id)           {}`
+?
+InputError when:u_id does not refer to a valid user
+AccessError whenThe authorised user is not an owner of the slackr
+?
+Given a User by their user ID, remove the user from the slackr.
+?
+#### Databases
+?
+Implementing persistence using a form of database. Ways to do this in python include:
+    * Using the `sqlite3` or `peewee` or `psycopg2` modules to run SQL queries on a local .db file, for people studying/have studied COMP3311 may find this integrates well
+    * Using the `sqlite3` or `peewee` or `psycopg2` to run SQL queries on a local .db file OR a remote database (using Postgresql or MySQL)
+?
+#### Object-Oriented Programming
+?
+Refactor your code so it is stored in objects instead of dictionaries (if it's not already) and make use of OO concepts taught in lectures to pass data around the backend.
+?
+#### Deployment
+?
+>>>>>>> added updated README.MD
 Deploying your project using heroku or something similar (not sure if this is possible/allowed)
 
 ## 6. Interface specifications

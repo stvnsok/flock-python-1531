@@ -1,3 +1,7 @@
+'''
+26/9/2020
+Tests for user.py
+'''
 
 import helper_test_functions as test_setup
 from fixture import url

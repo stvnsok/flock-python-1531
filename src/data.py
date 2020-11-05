@@ -12,8 +12,9 @@ User 0bject :  {
                     'name_first' : string,
                     'name_last' : string,
                     'handle_str' : string,
-                    'token' : string
-                    'permission_id' : integer
+                    'token' : string,
+                    'profile_img_url' : string,
+                    'permission_id' : integer,
                }
 
 Channel Object : {
