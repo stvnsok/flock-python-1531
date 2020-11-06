@@ -17,8 +17,7 @@ def test_standup_start_token_incorrect(url):
         "McBob",
         url
     )
-    response = helper_test_functions.channels_create(token_1, 'channel_1', True, url)
-    new_channel = response
+    new_channel = helper_test_functions.channels_create(token_1, 'channel_1', True, url)
     channel_id = new_channel['channel_id']
     
     error = helper_test_functions.standup_start(user_1['token'],channel_id, 10,  url)
@@ -64,11 +63,10 @@ def test_standup_active_token_incorrect(url):
         url
     )
     
-    response = helper_test_functions.channels_create(token_1, 'channel_1', True, url)
-    new_channel = response
+    new_channel = helper_test_functions.channels_create(token_1, 'channel_1', True, url)
     channel_id = new_channel['channel_id']
     
-    error = helper_test_functions.standup_active(user_1['token'],channel_id, 10,  url)
+    error = helper_test_functions.standup_active(user_1['token'],channel_id, url)
     assert error['code'] == 400
     assert error['message'] == '<p>Token is incorrect</p>'
 
@@ -84,9 +82,9 @@ def test_standup_active_invalid_channel_id(url):
         "McBob",
         url
     )
-
     
-    error = helper_test_functions.standup_active(user_1['token'], 1, 10,  url)
+
+    error = helper_test_functions.standup_active(user_1['token'], 1, url)
     assert error['code'] == 400
     assert error['message'] == '<p>Channel_id does not exist</p>'
 
@@ -94,7 +92,22 @@ def test_standup_active_invalid_channel_id(url):
 
 
 def test_standup_active_working(url): 
+    user_1 = helper_test_functions.auth_register(
+        "123@hotmail.com",
+        "password",
+        "Bobby",
+        "McBob",
+        url
+    )
     
+    new_channel = helper_test_functions.channels_create(token_1, 'channel_1', True, url)
+    channel_id = new_channel['channel_id']
+    
+    response = helper_test_functions.standup_active(user_1['token'], channel_id, url)
+    
+    assert response['channels'][0]['standup_active'] == 'True'
+    
+    helper_test_functions.clear(url)
     
 
 
