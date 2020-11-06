@@ -141,18 +141,31 @@ def standup_send(token, channel_id, message):
     if channel is None:
         raise InputError('Channel_id does not exist')
         
-    # Check if there is an active standup
+    # Check if there is no active standup
     response = standup_active(token, channel_id)
-    if response['is_active'] is True:
-    raise InputError('An active standup is currently running in this channel')
+    if response['is_active'] is False:
+    raise InputError('An active standup is currently not running in this channel')
     
     #Check if authorised user is a member of the channel that the message is within
     if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
         raise AccessError('Authorised user is not a member of the channel')
-
-    #standup = {authorised_user['u_id']: messages
     
-    #channel['standup'].append(standup)
+    #Get the message 
+    '''
+    for message in channel['messages']:
+        if message['message_id'] == message_id:
+            if message['u_id'] == authorised_user['u_id']:
+                standup = {authorised_used['u_id']: message['message'] }
+    '''
+    
+    # Check if message is more than 1000 characters 
+    if len(message) > 1000:   
+        raise InputError('Message is more than 1000 characters')
+        
+    standup = {authorised_used['u_id']: message['message'] }
+    
+    # Append the message to the end of list
+    channel['standup'].append(standup)
     
     # Note to steven, I except the following things from this function:
     # - messages send into here will be converted to the format of " 'handle': 'message' "
