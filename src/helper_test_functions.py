@@ -292,7 +292,7 @@ def standup_active(token, channel_id, url):
     
 
 def standup_start(token, channel_id, length, url):
-    response = requests.post(f'{url}standup/active', json={
+    response = requests.post(f'{url}standup/start', json={
         "token": token,
         "channel_id": channel_id,
         "length": length
