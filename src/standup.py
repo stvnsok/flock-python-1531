@@ -162,7 +162,7 @@ def standup_send(token, channel_id, message):
     if len(message) > 1000:   
         raise InputError('Message is more than 1000 characters')
         
-    standup = {authorised_used['u_id']: message['message'] }
+    standup = {authorised_used['handle_str']: message['message'] }
     
     # Append the message to the end of list
     channel['standup'].append(standup)

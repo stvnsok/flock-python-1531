@@ -183,6 +183,10 @@ def test_standup_send_standup_active(url):
 
 
 def test_standup_send_invalid_length(url):
+
+    
+    #Throws an input error if the message is longer than 1000 characters
+    
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
@@ -214,10 +218,24 @@ def test_standup_send_invalid_length(url):
     assert error['code'] == 400
     assert error['message'] == '<p>Message is more than 1000 characters</p>'
     
-    
+    helper_test_functions.clear(url)
 
 
 def test_standup_send_working(url): 
-
-
+    user_1 = helper_test_functions.auth_register(
+        "123@hotmail.com",
+        "password",
+        "Bobby",
+        "McBob",
+        url
+    )
+    
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
+    channel_id = new_channel['channel_id']
+    
+    message = "Hello"
+    response = helper_test_functions.standup_send(user_1['token'], channel_id, message, url)
+    assert response['standup'][0] == {user_1['handle_str']: messages['message'] }
+    
+    helper_test_functions.clear(url)
 '''
