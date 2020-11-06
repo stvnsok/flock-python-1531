@@ -265,3 +265,28 @@ def search(token, query_str, url):
 
 def clear(url):
     requests.delete(f'{url}clear')
+    
+
+'''
+---------------------Standup Functions---------------------
+'''
+
+def standup_send(token, channel_id, message, url):
+    response = requests.post(f'{url}standup/send', json={
+        "token": token,
+        "channel_id": channel_id,
+        "message": message
+    })
+
+    return response.json()
+    
+
+def standup_active(token, channel_id, url):
+    response = requests.post(f'{url}standup/active', json={
+        "token": token,
+        "channel_id": channel_id,
+        
+    })
+
+    return response.json()
+
