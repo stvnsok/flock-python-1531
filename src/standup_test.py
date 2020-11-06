@@ -17,10 +17,10 @@ def test_standup_start_token_incorrect(url):
         "McBob",
         url
     )
-    new_channel = helper_test_functions.channels_create(token_1, 'channel_1', True, url)
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
     channel_id = new_channel['channel_id']
     
-    error = helper_test_functions.standup_start(user_1['token'],channel_id, 10,  url)
+    error = helper_test_functions.standup_start(0, channel_id, 10,  url)
     assert error['code'] == 400
     assert error['message'] == '<p>Token is incorrect</p>'
 
@@ -63,10 +63,10 @@ def test_standup_active_token_incorrect(url):
         url
     )
     
-    new_channel = helper_test_functions.channels_create(token_1, 'channel_1', True, url)
+    new_channel = helper_test_functions.channels_create(user_1['token'] 'channel_1', True, url)
     channel_id = new_channel['channel_id']
     
-    error = helper_test_functions.standup_active(user_1['token'],channel_id, url)
+    error = helper_test_functions.standup_active(0, channel_id, url)
     assert error['code'] == 400
     assert error['message'] == '<p>Token is incorrect</p>'
 
@@ -100,7 +100,7 @@ def test_standup_active_working(url):
         url
     )
     
-    new_channel = helper_test_functions.channels_create(token_1, 'channel_1', True, url)
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
     channel_id = new_channel['channel_id']
     
     response = helper_test_functions.standup_active(user_1['token'], channel_id, url)
@@ -116,13 +116,69 @@ def test_standup_active_working(url):
 
 def test_standup_send_token_incorrect(url): 
         
-
+    user_1 = helper_test_functions.auth_register(
+        "123@hotmail.com",
+        "password",
+        "Bobby",
+        "McBob",
+        url
+    )
+    
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
+    channel_id = new_channel['channel_id']
+    
+    message = "Hello"
+    response = helper_test_functions.standup_send(0, channel_id, message, url)
+    assert error['code'] == 400
+    assert error['message'] == '<p>Token is incorrect</p>'
+    
+    helper_test_functions.clear(url)
 
 def test_standup_send_invalid_channel_id(url):
-
+    user_1 = helper_test_functions.auth_register(
+        "123@hotmail.com",
+        "password",
+        "Bobby",
+        "McBob",
+        url
+    )
+    
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
+    channel_id = new_channel['channel_id']
+    
+    message = "Hello"
+    response = helper_test_functions.standup_send(user_1['token'], 0, message, url)
+    assert error['code'] == 400
+    assert error['message'] == '<p>Channel_id does not exist</p>'
+    
+    helper_test_functions.clear(url)
 
 def test_standup_send_unauthorised_user(url): 
-
+    user_1 = helper_test_functions.auth_register(
+        "123@hotmail.com",
+        "password",
+        "Bobby",
+        "McBob",
+        url
+    )
+    
+    user_2 = helper_test_functions.auth_register(
+        "bestanime@hotmail.com",
+        "Goku is mid!",
+        "mei",
+        "wei",
+        url
+    )
+    
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
+    channel_id = new_channel['channel_id']
+    
+    message = "Hello"
+    response = helper_test_functions.standup_send(user_2['token'], channel_id, message, url)
+    assert error['code'] == 400
+    assert error['message'] == '<p>Channel_id does not exist</p>'
+    
+    helper_test_functions.clear(url)
 
 def test_standup_send_standup_active(url): 
 
