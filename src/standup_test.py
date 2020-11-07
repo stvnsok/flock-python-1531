@@ -179,8 +179,27 @@ def test_standup_send_unauthorised_user(url):
     
     helper_test_functions.clear(url)
 
-def test_standup_send_standup_active(url): 
+def test_standup_send_standup_isactive(url): 
 
+    #Throws an input error if there is an active standup not currently in the channel
+    
+    user_1 = helper_test_functions.auth_register(
+        "123@hotmail.com",
+        "password",
+        "Bobby",
+        "McBob",
+        url
+    )
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
+    channel_id = new_channel['channel_id']
+    message = "Hello"
+    response = helper_test_functions.standup_send(user_1['token'], channel_id, message, url)
+    
+    if response['channels'][0]['standup_active'] == 'False':
+        assert error['code'] == 400
+        assert error['message'] == '<p>'An active standup is currently not running in this channel'</p>'
+    
+    
 
 def test_standup_send_invalid_length(url):
 
