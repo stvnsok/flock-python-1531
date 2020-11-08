@@ -5,6 +5,7 @@ Written on 15/10/2020
 
 import helper_test_functions as test_setup
 from fixture import url
+from datetime import datetime, timedelta
 
 
 def test_message_send_length(url):
@@ -206,6 +207,70 @@ def test_message_edit_edited(url):
 
     assert message_in_data['messages'][0]['message'] == new_message
     test_setup.clear(url)
+
+
+def test_message_sendlater_invalid_time(url):
+    '''
+    Test that a message sent with past timestamp throws error
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+
+    future_message = "This is a message from the past"
+    future_date = datetime.now() + timedelta(days=-4) 
+    future_date = future_date.timestamp()
+
+    error_response = test_setup.message_sendlater(john['token'], john_channel['channel_id'], future_message, future_date,url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Time sent is a time in the past</p>'
+
+    test_setup.clear(url)
+
+def test_message_sendlater_invalid_user(url):
+    '''
+    Test that a message sent from unauthorised user throws error
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    bob = test_setup.auth_register(
+        'bob@gmail.com', 'qwe123!@#', 'Bob', 'Smith', url)
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+
+    future_message = "This is a message from the past"
+    future_date = datetime.now() + timedelta(days=4) 
+    future_date = future_date.timestamp()
+
+    error_response = test_setup.message_sendlater(bob['token'], john_channel['channel_id'], future_message, future_date,url)
+
+    assert error_response['code'] == 400
+    assert error_response['message'] == '<p>Authorised user has not joined the channel</p>'
+
+    test_setup.clear(url)
+
+def test_message_sendlater(url):
+    '''
+    Test that a message sent with past timestamp throws error
+    '''
+    john = test_setup.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+
+    john_channel = test_setup.channels_create(
+        john['token'], 'john_channel', True, url)
+
+    future_message = "This is a message for the future"
+    future_date = datetime.now() + timedelta(days=4) 
+    future_date = future_date.timestamp()
+
+    response = test_setup.message_sendlater(john['token'], john_channel['channel_id'], future_message, future_date,url)
+
+    assert response['message_id'] == 0
+
+    test_setup.clear(url)
+
 
 def test_react_invalid_message(url):
     '''

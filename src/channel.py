@@ -133,7 +133,7 @@ def channel_messages(token, channel_id, start):
 
     time_now = get_timestamp()
     # Gets all the messages for the given channel excluding messages that are yet to be sent
-    messages_from_channel = [message for message in channel['messages'] if message['time_created'] < time_now] 
+    messages_from_channel = [message for message in channel['messages'] if message['time_created'] <= time_now] 
 
     # sets the index for the last message
     end = start + 50

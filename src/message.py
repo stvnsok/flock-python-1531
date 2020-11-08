@@ -4,6 +4,7 @@ from other import get_timestamp
 import uuid
 import helper_functions 
 
+
 def message_send(token, channel_id, message):
     '''
     Send a message from the authorised_user to the channel specified by channel_id 
@@ -137,7 +138,7 @@ def message_sendlater(token, channel_id, message, time_sent):
     if len(message) > 1000:
         raise InputError(description="Message is more than 1000 characters")
 
-    if not helper_functions.channel_member(token, channel['channel_id']):
+    if not helper_functions.channel_member(token, channel):
         raise AccessError(description="Authorised user has not joined the channel")
 
     # Create new message object
@@ -331,5 +332,4 @@ def message_unpin(token, message_id):
     message['is_pinned'] = False
     helper_functions.update_message(message_id, message, channel)
     return {} 
-
 
