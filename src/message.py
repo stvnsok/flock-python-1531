@@ -164,9 +164,6 @@ def message_sendlater(token, channel_id, message, time_sent):
         'message_id': new_message['message_id'],
     }
     
-
-    return {}
-
 def message_react(token, message_id, react_id):
     '''
     Given a message with channel the authorised user is part of,
