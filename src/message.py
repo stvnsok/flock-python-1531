@@ -111,6 +111,53 @@ def message_sendlater(token, channel_id, message, time_sent):
     Send a message by an authenticated user to the channel with channel_id at 
     a specified time 
     '''
+    # Get the user that is sending the request
+    authorised_user = helper_functions.get_authorised_user(token)
+
+    if authorised_user is None:
+        raise AccessError(description="Invalid token")
+
+    channel = helper_functions.get_channel(channel_id)
+
+    if channel is None:
+        raise InputError(description="Invalid channel")
+
+    time_now = get_timestamp()
+
+    if time_sent < time_now:
+        raise InputError(description="Time sent is a time in the past")
+
+    if len(message) > 1000:
+        raise InputError(description="Message is more than 1000 characters")
+
+    if not helper_functions.channel_member(token, channel['channel_id']):
+        raise AccessError(description="Authorised user has not joined the channel")
+
+    # Create new message object
+    new_message = {
+        'message_id' : 0,
+        'message' : message,
+        'u_id': authorised_user['u_id'],
+        'time_created': time_now,
+        'reacts': [],
+        'is_pinned': False
+    }   
+    
+    all_messages = helper_functions.get_all_messages()
+    
+    if len(all_messages) == 0:
+        new_message['message_id'] = 0
+    else:
+        new_message['message_id'] = all_messages[-1]['message_id'] + 1
+
+    # Add new message to dictionary
+    channel['messages'].append(new_message)
+
+    return {
+        'message_id': new_message['message_id'],
+    }
+    
+
     return {}
 
 def message_react(token, message_id, react_id):
