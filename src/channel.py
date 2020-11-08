@@ -3,9 +3,7 @@ import data dictionary from data.py
 '''
 from data import data
 from error import InputError, AccessError
-
-from auth import *
-from channels import *
+from other import get_timestamp
 
 def channel_invite(token, channel_id, u_id):
     '''
@@ -133,8 +131,9 @@ def channel_messages(token, channel_id, start):
         raise AccessError(
             'Authorised user is not a member of the channel')
 
-    # Gets all the messages for the given channel
-    messages_from_channel = channel['messages']
+    time_now = get_timestamp()
+    # Gets all the messages for the given channel excluding messages that are yet to be sent
+    messages_from_channel = [message for message in channel['messages'] if message['time_created'] < time_now] 
 
     # sets the index for the last message
     end = start + 50
