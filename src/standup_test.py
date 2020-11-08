@@ -7,7 +7,7 @@ from fixture import url
 
 
 ######################## Tests for standup/start #############################
-'''
+
 def test_standup_start_token_incorrect(url):
     
     user_1 = helper_test_functions.auth_register(
@@ -45,11 +45,29 @@ def test_standup_start_invalid_channel_id(url):
     helper_test_functions.clear(url)
 
 
-
+'''
 
 def test_standup_start_standup_active(url): 
+    
+    user_1 = helper_test_functions.auth_register(
+        "123@hotmail.com",
+        "password",
+        "Bobby",
+        "McBob",
+        url
+    )
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
+    channel_id = new_channel['channel_id']
+    
+    helper_test_functions.standup_start(user_1['token'], channel_id, 10, url)
+    
+    
+    if response['channels'][0]['standup_active'] == 'True':
+        assert error['code'] == 400
+        assert error['message'] == '<p>'An active standup is currently running in this channel'</p>'
+    
 
-
+    helper_test_functions.clear(url)
 
 
 ######################## Tests for standup/active #############################
@@ -104,7 +122,7 @@ def test_standup_active_working(url):
     
     response = helper_test_functions.standup_active(user_1['token'], channel_id, url)
     
-    assert response['channels'][0]['standup_active'] == 'True'
+    assert response['is_active'] == 'True'
     
     helper_test_functions.clear(url)
     
