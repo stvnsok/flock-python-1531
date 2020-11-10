@@ -45,7 +45,7 @@ def test_standup_start_invalid_channel_id(url):
     helper_test_functions.clear(url)
 
 
-'''
+
 
 def test_standup_start_standup_active(url): 
     
@@ -64,7 +64,7 @@ def test_standup_start_standup_active(url):
     
     if response['channels'][0]['standup_active'] == 'True':
         assert error['code'] == 400
-        assert error['message'] == '<p>'An active standup is currently running in this channel'</p>'
+        assert error['message'] == '<p>An active standup is currently running in this channel</p>'
     
 
     helper_test_functions.clear(url)
@@ -215,7 +215,7 @@ def test_standup_send_standup_isactive(url):
     
     if response['channels'][0]['standup_active'] == 'False':
         assert error['code'] == 400
-        assert error['message'] == '<p>'An active standup is currently not running in this channel'</p>'
+        assert error['message'] == '<p>An active standup is currently not running in this channel</p>'
     
     
 
@@ -235,20 +235,7 @@ def test_standup_send_invalid_length(url):
     new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
     channel_id = new_channel['channel_id']
     
-    long_message = "But I must explain to you how all this mistaken idea of,
-    denouncing pleasure and praising pain was born and I will give you a complete 
-    account of the system, and expound the actual teachings of the great explorer 
-    of the truth, the master-builder of human happiness. No one rejects, dislikes, 
-    or avoids pleasure itself, because it is pleasure, but because those who do not 
-    know how to pursue pleasure rationally encounter consequences that are extremely 
-    painful. Nor again is there anyone who loves or pursues or desires to obtain 
-    pain of itself, because it is pain, but because occasionally circumstances 
-    occur in which toil and pain can procure him some great pleasure. To take a 
-    trivial example, which of us ever undertakes laborious physical exercise, 
-    except to obtain some advantage from it? But who has any right to find fault
-    with a man who chooses to enjoy a pleasure that has no annoying consequences,
-    or one who avoids a pain that produces no resultant pleasure? On the other 
-    hand, we denounce"
+    long_message = "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find faultwith a man who chooses to enjoy a pleasure that has no annoying consequences,or one who avoids a pain that produces no resultant pleasure? On the other hand, we denounce"
     
     
     response = helper_test_functions.standup_send(user_1['token'], channel_id, long_message, url)
@@ -275,4 +262,4 @@ def test_standup_send_working(url):
     assert response['standup'][0] == {user_1['handle_str']: messages['message'] }
     
     helper_test_functions.clear(url)
-'''
+
