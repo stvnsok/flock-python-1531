@@ -9,6 +9,10 @@ from fixture import url
 ######################## Tests for standup/start #############################
 
 def test_standup_start_token_incorrect(url):
+    '''
+    Test for incorrect token
+    '''
+
     
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
@@ -29,6 +33,9 @@ def test_standup_start_token_incorrect(url):
 
 
 def test_standup_start_invalid_channel_id(url):
+    '''
+    Test for incorrect channel_id
+    '''
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
@@ -48,6 +55,9 @@ def test_standup_start_invalid_channel_id(url):
 
 
 def test_standup_start_standup_active(url): 
+    '''
+    Throws an error code if there is currently an active standup running
+    '''
     
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
@@ -72,6 +82,11 @@ def test_standup_start_standup_active(url):
 
 ######################## Tests for standup/active #############################
 def test_standup_active_token_incorrect(url):
+
+    '''
+    Throws an error code if the token is incorrect
+    '''
+    
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
@@ -92,6 +107,10 @@ def test_standup_active_token_incorrect(url):
 
 def test_standup_active_invalid_channel_id(url):
 
+    '''
+    Throws an error code if the channel_id is incorrect
+    '''
+
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
@@ -109,6 +128,10 @@ def test_standup_active_invalid_channel_id(url):
 
 
 def test_standup_active_working(url): 
+
+    '''
+    Test to stand up active is working
+    '''
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
@@ -132,6 +155,10 @@ def test_standup_active_working(url):
 ######################## Tests for standup/send #############################
 
 def test_standup_send_token_incorrect(url): 
+
+    '''
+    Throws an error code if the token is incorrect
+    '''
         
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
@@ -152,6 +179,10 @@ def test_standup_send_token_incorrect(url):
     helper_test_functions.clear(url)
 
 def test_standup_send_invalid_channel_id(url):
+
+    '''
+    Throws an error code if the channel_id is incorrect
+    '''
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
@@ -171,6 +202,10 @@ def test_standup_send_invalid_channel_id(url):
     helper_test_functions.clear(url)
 
 def test_standup_send_unauthorised_user(url): 
+
+    '''
+    Throws an error code if the user is not a member of the channel
+    '''
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
@@ -193,14 +228,14 @@ def test_standup_send_unauthorised_user(url):
     message = "Hello"
     response = helper_test_functions.standup_send(user_2['token'], channel_id, message, url)
     assert error['code'] == 400
-    assert error['message'] == '<p>Channel_id does not exist</p>'
+    assert error['message'] == '<p>Authorised user is not a member of the channel</p>'
     
     helper_test_functions.clear(url)
 
 def test_standup_send_standup_isactive(url): 
-
-    #Throws an input error if there is an active standup not currently in the channel
-    
+    '''
+    Throws an input error if there is an active standup not currently in the channel
+    '''
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
@@ -221,9 +256,9 @@ def test_standup_send_standup_isactive(url):
 
 def test_standup_send_invalid_length(url):
 
-    
-    #Throws an input error if the message is longer than 1000 characters
-    
+    '''
+    Throws an input error if the message is longer than 1000 characters
+    '''
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
@@ -246,6 +281,9 @@ def test_standup_send_invalid_length(url):
 
 
 def test_standup_send_working(url): 
+    '''
+    Test to check if standup_send is working
+    '''
     user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
