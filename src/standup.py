@@ -144,7 +144,7 @@ def standup_send(token, channel_id, message):
     # Check if there is no active standup
     response = standup_active(token, channel_id)
     if response['is_active'] is False:
-    raise InputError('An active standup is currently not running in this channel')
+        raise InputError('An active standup is currently not running in this channel')
     
     #Check if authorised user is a member of the channel that the message is within
     if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):

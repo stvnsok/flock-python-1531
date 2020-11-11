@@ -108,7 +108,8 @@ def channels_create(token, name, is_public):
         'u_id': authorised_user['u_id'],
         'name_first': authorised_user['name_first'],
         'name_last': authorised_user['name_last'],
-        'is_owner': True
+        'is_owner': True,
+        'profile_img_url': authorised_user['profile_img_url'],
     }
 
     # Add creator of channel to channel

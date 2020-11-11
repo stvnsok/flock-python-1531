@@ -69,7 +69,7 @@ def user_profile_photo(token, img_url, x_start, y_start, x_end, y_end):
     image_object = Image.open(image_name)
     image_size = image_object.size
     if (
-            int(x_start) > image_size[0] or
+            x_start > image_size[0] or
             int(x_start) < 0 or
             int(x_end) > image_size[0] or
             int(x_end) < 0 or
@@ -122,7 +122,7 @@ def user_profile(token, u_id):
     if users_checked == len(users):
         raise InputError('No users with the entered u_id was found')
 
-    return {
+    target_user = {
         'u_id': profile['u_id'],
         'email': profile['email'],
         'name_first': profile['name_first'],
@@ -130,6 +130,15 @@ def user_profile(token, u_id):
         'handle_str': profile['handle_str'],
         'profile_img_url': profile['profile_img_url'],
     }
+
+    return {'user': {'u_id': profile['u_id'],
+        'email': profile['email'],
+        'name_first': profile['name_first'],
+        'name_last': profile['name_last'],
+        'handle_str': profile['handle_str'],
+        'profile_img_url': profile['profile_img_url'],}
+    }
+    
 
 def user_profile_sethandle(token, handle_str):
     '''

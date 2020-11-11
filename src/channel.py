@@ -49,7 +49,8 @@ def channel_invite(token, channel_id, u_id):
         'u_id': user['u_id'],
         'name_first': user['name_first'],
         'name_last': user['name_last'],
-        'is_owner': False
+        'is_owner': False,
+        'profile_img_url': user['profile_img_url'],
     }
 
     channel['members'].append(new_member)
@@ -233,7 +234,8 @@ def channel_join(token, channel_id):
             'u_id': authorised_user['u_id'],
             'name_first': authorised_user['name_first'],
             'name_last': authorised_user['name_last'],
-            'is_owner': False
+            'is_owner': False, 
+            'profile_img_url': authorised_user['profile_img_url'],
         }
         channel['members'].append(member)
     else:
@@ -284,7 +286,8 @@ def channel_addowner(token, channel_id, u_id):
             'u_id': user['u_id'],
             'name_first': user['name_first'],
             'name_last': user['name_last'],
-            'is_owner': True
+            'is_owner': True,
+            'profile_img_url': user['profile_img_url'],
         }
         channel['members'].append(new_owner)
     # Else check if the user is an owner, if they are throw and exception,

@@ -244,20 +244,20 @@ def edit():
 Standup Endpoints
 '''
 
-@APP.route("/standup/start", method=['POST'])
+@APP.route("/standup/start", methods=['POST'])
 def standup_start():
     data = request.get_json()
     result = standup.standup_start(data['token'], data['channel_id'], data['length'])
     return dumps(result)
     
-@APP.route("/standup/active", method=['GET'])
+@APP.route("/standup/active", methods=['GET'])
 def standup_active():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
     result = standup.standup_active(token, channel_id)
     return dumps(result)
 
-@APP.route("/standup/send", method=['POST'])
+@APP.route("/standup/send", methods=['POST'])
 def standup_send():
     data = request.get_json()
     result = standup.standup_start(data['token'], data['channel_id'], data['message'])
