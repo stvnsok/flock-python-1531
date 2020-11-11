@@ -95,7 +95,7 @@ def test_standup_active_token_incorrect(url):
         url
     )
     
-    new_channel = helper_test_functions.channels_create(user_1['token'] 'channel_1', True, url)
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
     channel_id = new_channel['channel_id']
     
     error = helper_test_functions.standup_active(0, channel_id, url)

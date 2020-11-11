@@ -168,7 +168,7 @@ def test_profile_upload_correct_crop_size(url):
     assert image_size[1] == 200
 
     response = helper_test_functions.user_profile(token, 1, url)
-    profile = response
+    profile = response['user']
     profile_img_url = profile['profile_img_url']
     # omit the url as it will be different everytime
     assert profile_img_url.split('/',3)[3] == 'static/user_profile_pic_1.jpg'
@@ -250,7 +250,7 @@ def test_profile_display_correct_info(url):
     # display profile of the caller
     response = helper_test_functions.user_profile(token, u_id, url)
 
-    profile = response
+    profile = response['user']
     assert profile['u_id'] == u_id
     assert profile['email'] == "markowong@hotmail.com"
     assert profile['name_first'] == "marko"
@@ -270,7 +270,7 @@ def test_profile_display_correct_info(url):
 
     # display profile of another user called from the first user
     response = helper_test_functions.user_profile(token, u_id, url)
-    profile = response
+    profile = response['user']
     assert profile['u_id'] == u_id
     assert profile['email'] == "markowong2@hotmail.com"
     assert profile['name_first'] == "marko2"
@@ -627,7 +627,11 @@ def test_profile_setemail_not_valid(url):
     helper_test_functions.clear(url)
 
 def test_set_email_used(url):
-
+    '''
+    This test uses the feature user/profile/setemail with an duplicate email.
+    The expected outcome is an error of 400 saying 'Email address is already in
+    use.
+    '''
     # Register user
     response = helper_test_functions.auth_register(
         "markowong@hotmail.com",

@@ -2,12 +2,12 @@
 Tests for user.py
 16/10/20
 '''
-from PIL import Image
 import pytest
 import channel
 import channels
 import auth
 import user
+from data import data
 from error import InputError, AccessError
 from other import clear
 
@@ -28,527 +28,348 @@ def test_profile_upload_invalid_token():
 
 # The rest of the profile photo tests are in user_test_http.py
 
-# ########################### Tests for user/profile #############################
+########################### Tests for user/profile #############################
 
-def test_profile_invalid_user_token(url):
+def test_profile_invalid_user_token():
     '''
     This test uses the feature user/profile with an invalid token. The expected
     outcome is giving an error of 400 saying 'Token is incorrect'.
     '''
     # register first user
-    response = helper_test_functions.auth_register(
-        "markowong@hotmail.com",
-        "markowong",
-        "marko",
-        "wong",
-        url
-    )
-    new_user = response
-    u_id = new_user["u_id"]
+    jack = auth.auth_register('jack@gmail.com', 'jkrsfunland', 'Jack', 'Napier')
 
     # input invalid token into user/profile
-    response = helper_test_functions.user_profile("token", u_id, url)
-    error = response
-    assert error['code'] == 400
-    assert error['message'] == '<p>Token is incorrect</p>'
+    with pytest.raises(AccessError) as e:
+        user.user_profile("token", 1)
+    assert str(e.value) == '400 Bad Request: Token is incorrect'
 
     # clears data
-    helper_test_functions.clear(url)
+    clear()
 
-def test_profile_u_id_not_found(url):
+def test_profile_u_id_not_found():
     '''
     This test uses the feature user/profile with an invalid u_id. The expected
     outcome is giving an error of 400 saying 'No users with the entered u_id was
     found'.
     '''
     # register first user
-    response = helper_test_functions.auth_register(
-        "markowong@hotmail.com",
-        "markowong",
-        "marko",
-        "wong",
-        url
-    )
-    new_user = response
-    token = new_user['token']
+    jack = auth.auth_register('jack@gmail.com', 'jkrsfunland', 'Jack', 'Napier')
 
-    #request an invalid u_id
-    response = helper_test_functions.user_profile(token, 2, url)
-    error = response
-    assert error['code'] == 400
-    assert error['message'] == '<p>No users with the entered u_id was found</p>'
+    # input invalid token into user/profile
+    with pytest.raises(InputError) as e:
+        user.user_profile(jack['token'], 2)
+    assert str(e.value) == '400 Bad Request: No users with the entered u_id was found'
 
     # clears data
-    helper_test_functions.clear(url)
-
-# def test_profile_display_correct_info(url):
-#     '''
-#     This test uses the feature user/profile with an valid inputs. The expected
-#     outcome is an dictonary of u_id, email, first name, last name and handle of
-#     the user with the inputted u_id.
-#     '''
-#     # register first user
-#     response = helper_test_functions.auth_register(
-#         "markowong@hotmail.com",
-#         "markowong",
-#         "marko",
-#         "wong",
-#         url
-#     )
-#     new_user = response
-#     u_id = new_user['u_id']
-#     token = new_user['token']
-
-#     # display profile of the caller
-#     response = helper_test_functions.user_profile(token, u_id, url)
-
-#     profile = response
-#     assert profile['u_id'] == u_id
-#     assert profile['email'] == "markowong@hotmail.com"
-#     assert profile['name_first'] == "marko"
-#     assert profile['name_last'] == "wong"
-#     assert profile['handle_str'] == "markowong"
-
-#     # register second user
-#     response = helper_test_functions.auth_register(
-#         "markowong2@hotmail.com",
-#         "markowong",
-#         "marko2",
-#         "wong2",
-#         url
-#     )
-#     new_user = response
-#     u_id = new_user['u_id']
-
-#     # display profile of another user called from the first user
-#     response = helper_test_functions.user_profile(token, u_id, url)
-#     profile = response
-#     assert profile['u_id'] == u_id
-#     assert profile['email'] == "markowong2@hotmail.com"
-#     assert profile['name_first'] == "marko2"
-#     assert profile['name_last'] == "wong2"
-#     assert profile['handle_str'] == "marko2wong2"
-
-#     # clears data
-#     helper_test_functions.clear(url)
-
-# ###################### Tests for user/profile/sethandle ########################
-
-# def test_profile_handle_invalid_user_token(url):
-#     '''
-#     This test uses the feature user/profile/sethandle with an invalid token. The
-#     expected outcome is an error of 400 saying 'Token is incorrect'
-#     '''
-#     # input invalid token into user/profile/sethandle
-#     response = helper_test_functions.user_profile_sethandle('token', "Mr.cool", url)
-
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Token is incorrect</p>'
-
-#     # clears data
-#     helper_test_functions.clear(url)
-
-# def test_profile_handle_too_short(url):
-#     '''
-#     This test uses the feature user/profile/sethandle with an invalid handle that
-#     is too short. Theexpected outcome is an error of 400 saying 'Handle length
-#     needs to be between 3 and 20.
-#     '''
-#     # register first user
-#     response = helper_test_functions.auth_register(
-#         "markowong@hotmail.com",
-#         "markowong",
-#         "marko",
-#         "wong",
-#         url
-#     )
-#     new_user = response
-#     token = new_user['token']
-
-#     # input invalid handle into user/profile/sethandle
-#     response = helper_test_functions.user_profile_sethandle(token, "Mr", url)
-
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Handle length needs to be between 3 and 20</p>'
-
-#     # clears data
-#     helper_test_functions.clear(url)
-
-
-# def test_profile_handle_too_long(url):
-#     '''
-#     This test uses the feature user/profile/sethandle with an invalid handle that
-#     is too long. The expected outcome is an error of 400 saying 'Handle length
-#     needs to be between 3 and 20.
-#     '''
-#     # register first user
-#     response = helper_test_functions.auth_register(
-#         "markowong@hotmail.com",
-#         "markowong",
-#         "marko",
-#         "wong",
-#         url
-#     )
-#     new_user = response
-#     token = new_user['token']
-
-#     # input invalid handle into user/profile/sethandle
-#     response = helper_test_functions.user_profile_sethandle(
-#         token,
-#         "soo...how is your day",
-#         url
-#     )
-
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Handle length needs to be between 3 and 20</p>'
-
-#     # clears data
-#     helper_test_functions.clear(url)
-
-# def test_profile_handle_exisiting(url):
-#     '''
-#     This test uses the feature user/profile/sethandle with an duplicate handle.
-#     The expected outcome is an error of 400 saying 'Handle already in use by
-#     another user.
-#     '''
-#     # register first user
-#     response = helper_test_functions.auth_register(
-#         "markowong@hotmail.com",
-#         "markowong",
-#         "marko",
-#         "wong",
-#         url
-#     )
-#     new_user = response
-#     u_id = new_user['u_id']
-#     token = new_user['token']
-
-#     # input valid handle_str into user/profile
-#     helper_test_functions.user_profile_sethandle(token, '10/10?', url)
-
-#     users = helper_test_functions.users_all(token, url)
-
-#     for user in users['users']:
-#         if user['u_id'] == u_id:
-#             assert user['handle_str'] == "10/10?"
-
-#     # register second user
-#     response = helper_test_functions.auth_register(
-#         "markowong2@hotmail.com",
-#         "markowong",
-#         "marko2",
-#         "wong2",
-#         url
-#     )
-#     new_user = response
-#     u_id = new_user['u_id']
-#     token = new_user['token']
-
-#     # input a valid duplicate handle_str into user/profile
-#     response = helper_test_functions.user_profile_sethandle(token, '10/10?', url)
-
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Handle already in use by another user</p>'
-
-#     # clears data
-#     helper_test_functions.clear(url)
-
-# def test_profile_handle_correct_update(url):
-#     '''
-#     This test uses the feature user/profile/sethandle with valid inputs. The
-#     expected outcome is that the handle string stored in the database will change
-#     to the input handle string.
-#     '''
-#     # register first user
-#     response = helper_test_functions.auth_register(
-#         "markowong@hotmail.com",
-#         "markowong",
-#         "marko",
-#         "wong",
-#         url
-#     )
-#     new_user = response
-#     u_id = new_user['u_id']
-#     token = new_user['token']
-
-#     # input valid handle_str into user/profile
-#     helper_test_functions.user_profile_sethandle(token, '10/10?', url)
-
-#     users = helper_test_functions.users_all(token, url)
-
-#     for user in users['users']:
-#         if user['u_id'] == u_id:
-#             assert user['handle_str'] == "10/10?"
-
-#     # clears data
-#     helper_test_functions.clear(url)
-
-# ###################### Tests for user/profile/setname ##########################
-
-# def test_profile_setname_correct_update(url):
-#     '''
-#     This test uses the feature user/profile/setname with valid inputs. The
-#     expected outcome is the name_first string and name_last string stored in the
-#     database will change to the inputted strings.
-#     '''
-#     # register first user
-#     response = helper_test_functions.auth_register(
-#         "markowong@hotmail.com",
-#         "markowong",
-#         "marko",
-#         "wong",
-#         url
-#     )
-#     new_user = response
-#     u_id = new_user['u_id']
-#     token = new_user['token']
-
-#     # input valid name into user/profile/setname
-#     helper_test_functions.user_profile_setname(
-#         token,
-#         "Nikhil",
-#         "wongsta",
-#         url
-#     )
-
-#     users = helper_test_functions.users_all(token, url)
-
-#     for user in users['users']:
-#         if user['u_id'] == u_id:
-#             assert user['name_first'] == "Nikhil"
-#             assert user['name_last'] == "wongsta"
-
-#     # clears data
-#     helper_test_functions.clear(url)
-
-# def test_profile_setname_last_name_too_short(url):
-#     '''
-#     This test uses the feature user/profile/setname with an invalid name_last
-#     that is too short. The expected outcome is an error of 400 saying 'Handle
-#     length needs to be between 3 and 20.
-#     '''
-#     # register first user
-#     payload = helper_test_functions.auth_register(
-#         "brucewayne@hotmail.com",
-#         "batm4n",
-#         "bruce",
-#         "wayne",
-#         url
-#     )
-#     new_user = payload
-#     token = new_user['token']
-
-#     # call setname function
-#     response = helper_test_functions.user_profile_setname(token, "Jac", "", url)
-
-#     error = response
-
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Last name must be between 1 and 50 characters in length</p>'
-#     helper_test_functions.clear(url)
-
-# def test_profile_setname_last_name_too_long(url):
-#     '''
-#     This test uses the feature user/profile/setname with an invalid name_last
-#     that is too long. The expected outcome is an error of 400 saying 'Handle
-#     length needs to be between 3 and 20.
-#     '''
-#     # register first user
-#     payload = helper_test_functions.auth_register(
-#         "brucewayne@hotmail.com",
-#         "batm4n",
-#         "bruce",
-#         "wayne",
-#         url
-#     )
-#     new_user = payload
-#     token = new_user['token']
-
-#     # call setname function
-#     response = helper_test_functions.user_profile_setname(
-#         token,
-#         "Jack",
-#         "is this enough tests yet??? no?... eeeee fine, here's more",
-#         url
-#     )
-
-#     error = response
-
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Last name must be between 1 and 50 characters in length</p>'
-#     helper_test_functions.clear(url)
-
-# def test_profile_setname_first_name_too_short(url):
-#     '''
-#     This test uses the feature user/profile/setname with an invalid name_first
-#     that is too short. The expected outcome is an error of 400 saying 'Handle
-#     length needs to be between 3 and 20.
-#     '''
-#     payload = helper_test_functions.auth_register(
-#         "brucewayne@hotmail.com",
-#         "batm4n",
-#         "bruce",
-#         "wayne",
-#         url
-#     )
-#     new_user = payload
-#     token = new_user['token']
-
-#     response = helper_test_functions.user_profile_setname(token, "", "Nar", url)
-
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>First name must be between 1 and 50 characters in length</p>'
-
-#     helper_test_functions.clear(url)
-
-# def test_profile_setname_first_name_too_long(url):
-#     '''
-#     This test uses the feature user/profile/setname with an invalid name_first
-#     that is too long. The expected outcome is an error of 400 saying 'Handle
-#     length needs to be between 3 and 20.
-#     '''
-#     payload = helper_test_functions.auth_register(
-#         "brucewayne@hotmail.com",
-#         "batm4n",
-#         "bruce",
-#         "wayne",
-#         url
-#     )
-#     new_user = payload
-#     token = new_user['token']
-
-#     response = helper_test_functions.user_profile_setname(
-#         token,
-#         "My name is .... I forgot so what is your name? I am very ...",
-#         "Napier",
-#         url
-#     )
-
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>First name must be between 1 and 50 characters in length</p>'
-
-#     helper_test_functions.clear(url)
-
-
-# def test_profile_setname_token_incorrect(url):
-#     '''
-#     This test uses the feature user/profile/setname with an invalid token. The
-#     expected outcome is an error of 400 saying 'Token is incorrect'
-#     '''
-#     response = helper_test_functions.user_profile_setname("0", "Jack", "N", url)
-
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Token is incorrect</p>'
-
-#     helper_test_functions.clear(url)
-
-# ###################### Tests for user/profile/setemail #########################
-
-# def test_profile_setemail_not_valid(url):
-#     '''
-#     This test uses the feature user/profile/setemail with an invalid email. The
-#     expected outcome is an error of 400 saying 'Email is not valid'
-#     '''
-#     payload = helper_test_functions.auth_register(
-#         "brucewayne@hotmail.com",
-#         "batm4n",
-#         "bruce",
-#         "wayne",
-#         url
-#     )
-#     new_user = payload
-#     token = new_user['token']
-
-#     response = helper_test_functions.user_profile_setemail(
-#         token,
-#         "jacknapier.com",
-#         url
-#     )
-
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Email is not valid</p>'
-
-#     helper_test_functions.clear(url)
-
-# def test_set_email_used(url):
-
-#     # Register user
-#     response = helper_test_functions.auth_register(
-#         "markowong@hotmail.com",
-#         "markowong",
-#         "marko",
-#         "wong",
-#         url
-#     )
-#     new_user = response
-#     token = new_user['token']
-
-#     # Register second user
-#     response = helper_test_functions.auth_register(
-#         "markowong2@hotmail.com",
-#         "markowong2",
-#         "marko2",
-#         "wong2",
-#         url
-#     )
+    clear()
+
+def test_profile_display_correct_info():
+    '''
+    This test uses the feature user/profile with an valid inputs. The expected
+    outcome is an dictonary of u_id, email, first name, last name and handle of
+    the user with the inputted u_id.
+    '''
+    # register first user
+    marko = auth.auth_register('markowong@hotmail.com', 'jkrsfunland', 'marko', 'wong')
+
+    # display profile of the caller
+    response = user.user_profile(marko['token'], 1)
+
+    profile = response['user']
+    assert profile['u_id'] == marko['u_id']
+    assert profile['email'] == "markowong@hotmail.com"
+    assert profile['name_first'] == "marko"
+    assert profile['name_last'] == "wong"
+    assert profile['handle_str'] == "markowong"
+
+    # register second user
+    marko2 = auth.auth_register('markowong2@hotmail.com', 'jkrsfunland', 'marko2', 'wong2')
+
+    # display profile of another user called from the first user
+    response = user.user_profile(marko['token'], 2)
+    profile = response['user']
+    assert profile['u_id'] == marko2['u_id']
+    assert profile['email'] == "markowong2@hotmail.com"
+    assert profile['name_first'] == "marko2"
+    assert profile['name_last'] == "wong2"
+    assert profile['handle_str'] == "marko2wong2"
+
+    # clears data
+    clear()
+
+###################### Tests for user/profile/sethandle ########################
+
+def test_profile_handle_invalid_user_token():
+    '''
+    This test uses the feature user/profile/sethandle with an invalid token. The
+    expected outcome is an error of 400 saying 'Token is incorrect'
+    '''
+    # input invalid token into user/profile/sethandle
+    with pytest.raises(AccessError) as e:
+        user.user_profile_sethandle("token", 1)
+    assert str(e.value) == '400 Bad Request: Token is incorrect'
+
+    # clears data
+    clear()
+
+def test_profile_handle_too_short():
+    '''
+    This test uses the feature user/profile/sethandle with an invalid handle that
+    is too short. Theexpected outcome is an error of 400 saying 'Handle length
+    needs to be between 3 and 20.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
+
+    # input invalid handle into user/profile/sethandle
+    with pytest.raises(InputError) as e:
+        user.user_profile_sethandle(marko['token'], "Mr")
+    assert str(e.value) == '400 Bad Request: Handle length needs to be between 3 and 20'
+
+    # clears data
+    clear()
     
-#     response = helper_test_functions.user_profile_setemail(token, "markowong2@hotmail.com", url)
-    
-#     # Check server response aligns with error messages
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Email address is already in use</p>'
+def test_profile_handle_too_long():
+    '''
+    This test uses the feature user/profile/sethandle with an invalid handle that
+    is too long. The expected outcome is an error of 400 saying 'Handle length
+    needs to be between 3 and 20.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
 
-#     helper_test_functions.clear(url)
+    # input invalid handle into user/profile/sethandle
+    with pytest.raises(InputError) as e:
+        user.user_profile_sethandle(marko['token'], "MrCooloMrcoolface123456789")
+    assert str(e.value) == '400 Bad Request: Handle length needs to be between 3 and 20'
 
-# def test_profile_setemail_token_incorrect(url):
-#     '''
-#     This test uses the feature user/profile/setemail with an invalid token. The
-#     expected outcome is an error of 400 saying 'Token is incorrect'
-#     '''
-#     response = helper_test_functions.user_profile_setemail('0', "j@hotmail.com", url)
+    # clears data
+    clear()
 
-#     error = response
-#     assert error['code'] == 400
-#     assert error['message'] == '<p>Token is incorrect</p>'
+def test_profile_handle_exisiting():
+    '''
+    This test uses the feature user/profile/sethandle with an duplicate handle.
+    The expected outcome is an error of 400 saying 'Handle already in use by
+    another user.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
 
-#     helper_test_functions.clear(url)
+    # input valid handle_str into user/profile
+    user.user_profile_sethandle(marko['token'], "Yes plz 10/10")
 
-# def test_profile_setemail_correct_update(url):
-#     '''
-#     This test uses the feature user/profile/setemail with valid inputs. The
-#     expected outcome is the email assoicate the user who calls this function will
-#     have their email changed in the database.
-#     '''
-#     # register first user
-#     response = helper_test_functions.auth_register(
-#         "markowong@hotmail.com",
-#         "markowong",
-#         "marko",
-#         "wong",
-#         url
-#     )
-#     new_user = response
-#     u_id = new_user['u_id']
-#     token = new_user['token']
+    # register second user
+    marko2 = auth.auth_register('marko2@hotmail.com', 'jkrsfund', 'marko2', 'wong2')
 
-#     # input valid handle_str into user/profile
-#     error = helper_test_functions.user_profile_setemail(token, "jay@gmail.com", url)
+    # input a valid duplicate handle_str into user/profile/sethandle
+    with pytest.raises(InputError) as e:
+        user.user_profile_sethandle(marko['token'], "Yes plz 10/10")
+    assert str(e.value) == '400 Bad Request: Handle already in use by another user'
 
-#     assert error == {}
-#     users = helper_test_functions.users_all(token, url)
+    # clears data
+    clear()
 
-#     for user in users['users']:
-#         if user['u_id'] == u_id:
-#             assert user['email'] == "jay@gmail.com"
+def test_profile_handle_correct_update():
+    '''
+    This test uses the feature user/profile/sethandle with valid inputs. The
+    expected outcome is that the handle string stored in the database will change
+    to the input handle string.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
 
-#     # clears data
-#     helper_test_functions.clear(url)
+    # input valid handle_str into user/profile/sethandle
+    user.user_profile_sethandle(marko['token'], "Yes plz 10/10")
+
+    #users = other.users_all(marko['token'])
+    # Grabs all users from data
+    users = data['users']
+    for curr_user in users:
+        if curr_user['u_id'] == marko['u_id']:
+            assert curr_user['handle_str'] == "Yes plz 10/10"
+
+    # clears data
+    clear()
+
+###################### Tests for user/profile/setname ##########################
+
+def test_profile_setname_correct_update():
+    '''
+    This test uses the feature user/profile/setname with valid inputs. The
+    expected outcome is the name_first string and name_last string stored in the
+    database will change to the inputted strings.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
+
+    # input valid handle_str into user/profile/setname
+    user.user_profile_setname(marko['token'], "Nikhil", "wongsta")
+
+    #users = other.users_all(marko['token'])
+    # Grabs all users from data
+    users = data['users']
+    for curr_user in users:
+        if curr_user['u_id'] == marko['u_id']:
+            assert curr_user['name_first'] == "Nikhil"
+            assert curr_user['name_last'] == "wongsta"
+
+    # clears data
+    clear()
+
+def test_profile_setname_last_name_too_short():
+    '''
+    This test uses the feature user/profile/setname with an invalid name_last
+    that is too short. The expected outcome is an error of 400 saying 'Handle
+    length needs to be between 3 and 20.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
+
+    # input invalid handle into user/profile/setname
+    with pytest.raises(InputError) as e:
+        user.user_profile_setname(marko['token'], "soko", "")
+    assert str(e.value) == '400 Bad Request: Last name must be between 1 and 50 characters in length'
+
+    # clears data
+    clear()
+
+def test_profile_setname_last_name_too_long():
+    '''
+    This test uses the feature user/profile/setname with an invalid name_last
+    that is too long. The expected outcome is an error of 400 saying 'Handle
+    length needs to be between 3 and 20.
+    '''
+     # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
+
+    # input invalid handle into user/profile/setname
+    with pytest.raises(InputError) as e:
+        user.user_profile_setname(marko['token'], "soko", "pkadsngkpnqkfnkpasmkfmpkqjef padjdfpj apsdfasfaesfasf qw")
+    assert str(e.value) == '400 Bad Request: Last name must be between 1 and 50 characters in length'
+
+    # clears data
+    clear()
+
+def test_profile_setname_first_name_too_short():
+    '''
+    This test uses the feature user/profile/setname with an invalid name_first
+    that is too short. The expected outcome is an error of 400 saying 'Handle
+    length needs to be between 3 and 20.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
+
+    # input invalid handle into user/profile/setname
+    with pytest.raises(InputError) as e:
+        user.user_profile_setname(marko['token'], "", "yoko")
+    assert str(e.value) == '400 Bad Request: First name must be between 1 and 50 characters in length'
+
+    # clears data
+    clear()
+
+def test_profile_setname_first_name_too_long():
+    '''
+    This test uses the feature user/profile/setname with an invalid name_first
+    that is too long. The expected outcome is an error of 400 saying 'Handle
+    length needs to be between 3 and 20.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
+
+    # input invalid handle into user/profile/setname
+    with pytest.raises(InputError) as e:
+        user.user_profile_setname(marko['token'], "", "pkwqfp[osaf apos[of qqfaposfmqealfknqeafszk;xfm")
+    assert str(e.value) == '400 Bad Request: First name must be between 1 and 50 characters in length'
+
+    # clears data
+    clear()
+
+
+def test_profile_setname_token_incorrect():
+    '''
+    This test uses the feature user/profile/setname with an invalid token. The
+    expected outcome is an error of 400 saying 'Token is incorrect'
+    '''
+    # input invalid token into user/profile
+    with pytest.raises(AccessError) as e:
+        user.user_profile_setname("token", "soko", "yoko")
+    assert str(e.value) == '400 Bad Request: Token is incorrect'
+
+    # clears data
+    clear()
+
+###################### Tests for user/profile/setemail #########################
+
+def test_profile_setemail_not_valid():
+    '''
+    This test uses the feature user/profile/setemail with an invalid email. The
+    expected outcome is an error of 400 saying 'Email is not valid'
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
+
+    # input invalid handle into user/profile/setemail
+    with pytest.raises(InputError) as e:
+        user.user_profile_setemail(marko['token'], "jacknapier.com")
+    assert str(e.value) == '400 Bad Request: Email is not valid'
+
+    # clears data
+    clear()
+
+def test_set_email_used():
+    '''
+    This test uses the feature user/profile/setemail with an duplicate email.
+    The expected outcome is an error of 400 saying 'Email address is already in
+    use.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
+
+    # input valid handle_str into user/profile/setemail
+    user.user_profile_setemail(marko['token'], "marko3@hotmail.com")
+
+    # register second user
+    marko2 = auth.auth_register('marko2@hotmail.com', 'jkrsfund', 'marko2', 'wong2')
+
+    # input a valid duplicate handle_str into user/profile/setemail
+    with pytest.raises(InputError) as e:
+        user.user_profile_setemail(marko2['token'], "marko3@hotmail.com")
+    assert str(e.value) == '400 Bad Request: Email address is already in use'
+
+    # clears data
+    clear()
+
+def test_profile_setemail_token_incorrect():
+    '''
+    This test uses the feature user/profile/setemail with an invalid token. The
+    expected outcome is an error of 400 saying 'Token is incorrect'
+    '''
+     # input invalid token into user/profile/setemail
+    with pytest.raises(AccessError) as e:
+        user.user_profile_setemail("token", "validemail@email.com")
+    assert str(e.value) == '400 Bad Request: Token is incorrect'
+
+    # clears data
+    clear()
+
+def test_profile_setemail_correct_update():
+    '''
+    This test uses the feature user/profile/setemail with valid inputs. The
+    expected outcome is the email assoicate the user who calls this function will
+    have their email changed in the database.
+    '''
+    # register first user
+    marko = auth.auth_register('marko@hotmail.com', 'jkrsfund', 'marko', 'wong')
+
+    # input valid handle_str into user/profile/sethandle
+    user.user_profile_setemail(marko['token'], "yesplz@10outof10.com")
+
+    #users = other.users_all(marko['token'])
+    # Grabs all users from data
+    users = data['users']
+    for curr_user in users:
+        if curr_user['u_id'] == marko['u_id']:
+            assert curr_user['email'] == "yesplz@10outof10.com"
+
+    # clears data
+    clear()

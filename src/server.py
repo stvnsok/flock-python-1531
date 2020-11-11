@@ -298,4 +298,4 @@ def clear():
 
 
 if __name__ == "__main__":
-    APP.run(port=0)  # Do not edit this port
+    APP.run(port=3939)  # Do not edit this port

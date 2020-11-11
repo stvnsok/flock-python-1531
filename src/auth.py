@@ -2,7 +2,7 @@
 Auth function
 '''
 import re
-from flask import request
+#from flask import request
 from data import data
 from error import InputError
 from other import check
@@ -91,7 +91,7 @@ def auth_register(email, password, name_first, name_last):
         handle = handle[0:20]
 
     # Grabs the current url
-    curr_url = request.host
+    #curr_url = request.host #uncpmment for default pic
 
     # Creating a new dictionary for new user
     new_user = {
@@ -103,7 +103,7 @@ def auth_register(email, password, name_first, name_last):
         'handle_str': handle,
         'token': create_token(email),
         'permission_id' : 1 if len(users) == 0 else 2,
-        'profile_img_url': f'http://localhost:{curr_url[10:]}/static/default_profile_pic.jpg',
+        'profile_img_url': '', #f'http://localhost:{curr_url[10:]}/static/default_profile_pic.jpg',
     }
 
     # Auto Increment the next user
