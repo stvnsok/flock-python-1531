@@ -2,84 +2,82 @@
 6/11/2020
 
 '''
-
-import pytest
-import auth
-import channel
-import channels
-import standup
-from data import data 
-from other import clear
-from error import InputError, AccessError
-
+import helper_test_functions
+from fixture import url
 
 
 ######################## Tests for standup/start #############################
 
-def test_standup_start_token_incorrect():
+def test_standup_start_token_incorrect(url):
     '''
     Test for incorrect token
     '''
 
     
-    user_1 = auth.auth_register(
+    user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
         "Bobby",
-        "McBob"
+        "McBob",
+        url
     )
-    new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
     channel_id = new_channel['channel_id']
     
-   
-    with pytest.raises(AccessError) as e:
-        standup.standup_start("invalid_token", channel_id, 10)
-    assert 'Token is incorrect/user does not exist' == str(e.value)
-    clear()
+    error = helper_test_functions.standup_start(0, channel_id, 10,  url)
+    assert error['code'] == 400
+    assert error['message'] == '<p>Token is incorrect</p>'
+
+    helper_test_functions.clear(url)
 
 
 
-def test_standup_start_invalid_channel_id():
+def test_standup_start_invalid_channel_id(url):
     '''
     Test for incorrect channel_id
     '''
-    user_1 = auth.auth_register(
+    user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
         "Bobby",
-        "McBob"
+        "McBob",
+        url
     )
 
-    with pytest.raises(AccessError) as e:
-        standup.standup_start(user_1['token'], 1, 10)
-    assert 'Channel_id does not exist' == str(e.value)
-    clear()
+    
+    error = helper_test_functions.standup_start(user_1['token'], 1, 10,  url)
+    assert error['code'] == 400
+    assert error['message'] == '<p>Channel_id does not exist</p>'
+
+    helper_test_functions.clear(url)
 
 
 
-def test_standup_start_standup_active(): 
+
+def test_standup_start_standup_active(url): 
     '''
     Throws an error code if there is currently an active standup running
     '''
     
-    user_1 = auth.auth_register(
+    user_1 = helper_test_functions.auth_register(
         "123@hotmail.com",
         "password",
         "Bobby",
-        "McBob"
+        "McBob",
+        url
     )
-    new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
+    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
     channel_id = new_channel['channel_id']
     
-    standup.standup_start(user_1['token'], channel_id, 10)
+    helper_test_functions.standup_start(user_1['token'], channel_id, 10, url)
     
     
     if response['channels'][0]['standup_active'] == 'True':
-        with pytest.raises(AccessError) as e:
-            standup.standup_start(user_1['token'], channel_id, 10)
-        assert 'An active standup is currently running in this channel' == str(e.value)
+        assert error['code'] == 400
+        assert error['message'] == '<p>An active standup is currently running in this channel</p>'
+    
 
-    clear()
+    helper_test_functions.clear(url)
 
 
 ######################## Tests for standup/active #############################
