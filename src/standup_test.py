@@ -57,9 +57,36 @@ def test_standup_start_invalid_channel_id():
 
 
 
-def test_standup_start_standup_active(): 
+#def test_standup_start_standup_active(): 
+#    '''
+#    Throws an error code if there is currently an active standup running
+#    '''
+#    
+#    user_1 = auth.auth_register(
+#        "123@hotmail.com",
+#        "password",
+#        "Bobby",
+#        "McBob"
+#    )
+#    new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
+#    channel_id = new_channel['channel_id']
+#    
+#    standup.standup_start(user_1['token'], channel_id, 10)
+#    
+#    
+#    if response['channels'][0]['standup_active'] == 'True':
+#        with pytest.raises(AccessError) as e:
+#            standup.standup_start(user_1['token'], channel_id, 10)
+#        assert 'An active standup is currently running in this channel' == str(e.value)
+#
+#    clear()
+
+
+######################## Tests for standup/active #############################
+def test_standup_active_token_incorrect():
+
     '''
-    Throws an error code if there is currently an active standup running
+    Throws an error code if the token is incorrect
     '''
     
     user_1 = auth.auth_register(
@@ -68,88 +95,56 @@ def test_standup_start_standup_active():
         "Bobby",
         "McBob"
     )
+    
     new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
     channel_id = new_channel['channel_id']
     
-    standup.standup_start(user_1['token'], channel_id, 10)
-    
-    
-    if response['channels'][0]['standup_active'] == 'True':
-        with pytest.raises(AccessError) as e:
-            standup.standup_start(user_1['token'], channel_id, 10)
-        assert 'An active standup is currently running in this channel' == str(e.value)
-
+    with pytest.raises(AccessError) as e:
+        standup.standup_active("invalid_token", channel_id)
+    assert 'Token is incorrect' == str(e.value)
     clear()
 
 
-######################## Tests for standup/active #############################
-def test_standup_active_token_incorrect(url):
-
-    '''
-    Throws an error code if the token is incorrect
-    '''
-    
-    user_1 = helper_test_functions.auth_register(
-        "123@hotmail.com",
-        "password",
-        "Bobby",
-        "McBob",
-        url
-    )
-    
-    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
-    channel_id = new_channel['channel_id']
-    
-    error = helper_test_functions.standup_active(0, channel_id, url)
-    assert error['code'] == 400
-    assert error['message'] == '<p>Token is incorrect</p>'
-
-    helper_test_functions.clear(url)
-
-
-def test_standup_active_invalid_channel_id(url):
+def test_standup_active_invalid_channel_id():
 
     '''
     Throws an error code if the channel_id is incorrect
     '''
 
-    user_1 = helper_test_functions.auth_register(
+    user_1 = auth_functions.auth_register(
         "123@hotmail.com",
         "password",
         "Bobby",
-        "McBob",
-        url
+        "McBob"    
     )
     
+    with pytest.raises(AccessError) as e:
+        standup.standup_active(user['token'], 1)
+    assert 'Channel_id does not exist'
+    
+    clear()
 
-    error = helper_test_functions.standup_active(user_1['token'], 1, url)
-    assert error['code'] == 400
-    assert error['message'] == '<p>Channel_id does not exist</p>'
 
-    helper_test_functions.clear(url)
-
-
-def test_standup_active_working(url): 
+def test_standup_active_working(): 
 
     '''
     Test to stand up active is working
     '''
-    user_1 = helper_test_functions.auth_register(
+    user_1 = auth.auth_register(
         "123@hotmail.com",
         "password",
         "Bobby",
-        "McBob",
-        url
+        "McBob"
     )
     
-    new_channel = helper_test_functions.channels_create(user_1['token'], 'channel_1', True, url)
+    new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
     channel_id = new_channel['channel_id']
     
-    response = helper_test_functions.standup_active(user_1['token'], channel_id, url)
+    standup.standup_active(user_1['token'], channel_id)
     
     assert response['is_active'] == 'True'
     
-    helper_test_functions.clear(url)
+    clear()
     
 
 
