@@ -68,6 +68,7 @@ def get_user(u_id):
     '''
     Given a u_id returns a user
     '''
+    u_id = int(u_id)
     return next((user for user in data['users'] if user['u_id'] == u_id), None)
 
 def get_message(message_id, channel):
@@ -75,7 +76,7 @@ def get_message(message_id, channel):
     Helper function that allows a message to be retrieved from a channel.
     Assumes message does exist and previous exceptions have been handled.
     '''
-    
+    message_id = int(message_id)
     for message in channel['messages']:
         if message['message_id'] == message_id:
             return message
@@ -86,7 +87,7 @@ def update_message(message_id, new_message, channel):
     Helper function to update a message quickly.
     Assumes message does exist and previous exceptions have been handled.
     '''
-
+    message_id = int(message_id)
     for message in channel['messages']:
         if message['message_id'] == message_id:
             message = new_message
@@ -96,15 +97,15 @@ def get_channel(channel_id):
     '''
     Get the channel associated with the given channel_id
     '''
-    
-    return next((channel for channel in data['channels'] if channel['channel_id'] == int(channel_id)), None)
+    channel_id = int(channel_id)
+    return next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), None)
 
 
 def get_channel_with_message(message_id):
     '''
     Get the channel where the given message is.
     '''    
-    
+    message_id = int(message_id)
     return next((channel for channel in data['channels'] for message in channel['messages'] if message['message_id'] == message_id), None)
 
 
@@ -114,6 +115,8 @@ def channel_member(user, channel):
     '''
     
     return any(user['u_id'] == member['u_id'] for member in channel['members'])
+
+
 
 def get_all_messages():
     '''

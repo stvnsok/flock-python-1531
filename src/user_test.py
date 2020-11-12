@@ -36,7 +36,7 @@ def test_profile_invalid_user_token():
     outcome is giving an error of 400 saying 'Token is incorrect'.
     '''
     # register first user
-    jack = auth.auth_register('jack@gmail.com', 'jkrsfunland', 'Jack', 'Napier')
+    auth.auth_register('jack@gmail.com', 'jkrsfunland', 'Jack', 'Napier')
 
     # input invalid token into user/profile
     with pytest.raises(AccessError) as e:
@@ -159,7 +159,7 @@ def test_profile_handle_exisiting():
     user.user_profile_sethandle(marko['token'], "Yes plz 10/10")
 
     # register second user
-    marko2 = auth.auth_register('marko2@hotmail.com', 'jkrsfund', 'marko2', 'wong2')
+    auth.auth_register('marko2@hotmail.com', 'jkrsfund', 'marko2', 'wong2')
 
     # input a valid duplicate handle_str into user/profile/sethandle
     with pytest.raises(InputError) as e:
