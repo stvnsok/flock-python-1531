@@ -17,7 +17,7 @@ def test_message_send_length():
     Throws an InputError if they message is longer than 1000 characters
     '''
     other.clear()
-    
+
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
     john_channel = channels.channels_create(
@@ -433,3 +433,53 @@ def test_pin():
 
     assert str(e.value) == '400 Bad Request: Message is already unpinned'
 
+
+def test_token_auth():
+    '''
+    Tests that Access error is throw back for all message functions if incorrect
+    token passed
+    '''
+    other.clear()
+
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+
+    with pytest.raises(AccessError) as e:
+        message.message_send(333, 555, "message")
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_remove(333, 555)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_edit(333, 555, "message")
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_sendlater(333, 555, "message", datetime.now())
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_react(333, 555, 999)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_unreact(333, 555, 999)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_pin(333, 555)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_unpin(333, 555)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
