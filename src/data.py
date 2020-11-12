@@ -64,6 +64,12 @@ def get_authorised_user(token):
     '''
     return next((user for user in data['users'] if user['token'] == token), None)
 
+def get_user(u_id):
+    '''
+    Given a u_id returns a user
+    '''
+    return next((user for user in data['users'] if user['u_id'] == u_id), None)
+
 def get_message(message_id, channel):
     '''
     Helper function that allows a message to be retrieved from a channel.
@@ -91,7 +97,7 @@ def get_channel(channel_id):
     Get the channel associated with the given channel_id
     '''
     
-    return next((channel for channel in data['channels'] if channel['channel_id'] == channel_id), None)
+    return next((channel for channel in data['channels'] if channel['channel_id'] == int(channel_id)), None)
 
 
 def get_channel_with_message(message_id):
@@ -102,13 +108,11 @@ def get_channel_with_message(message_id):
     return next((channel for channel in data['channels'] for message in channel['messages'] if message['message_id'] == message_id), None)
 
 
-def channel_member(token, channel):
+def channel_member(user, channel):
     '''
     See if a user is part of a channel
     '''
     
-    user = next((user for user in data['users'] if user['token'] == token), None)
-
     return any(user['u_id'] == member['u_id'] for member in channel['members'])
 
 def get_all_messages():

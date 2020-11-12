@@ -4,26 +4,25 @@ import data dictionary from data.py
 from data import data
 from error import InputError, AccessError
 from other import get_timestamp
+from data import (
+                    data, get_channel, channel_member, get_all_messages, 
+                    get_authorised_user, get_channel_with_message, 
+                    update_message, get_message, get_user)
 
 def channel_invite(token, channel_id, u_id):
     '''
     Invites a user (with user id u_id) to join a channel with ID channel_id.
     Once invited the user is added to the channel immediately
     '''
-
-    channels = data['channels']
-    users = data['users']
-
+    
     # Finds the Channel, if it doesn't exists assigns None
-    channel = next(
-        (channel for channel in channels if channel['channel_id'] == channel_id), None)
+    channel = get_channel(channel_id)
 
     # Finds the user, if it doesn't exists assigns None
-    user = next((user for user in users if user['u_id'] == u_id), None)
+    user = get_user(u_id)
 
     # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
+    authorised_user = get_authorised_user(token)
     
     #Check if user exists/ token is correct
     if authorised_user is None:
@@ -38,7 +37,7 @@ def channel_invite(token, channel_id, u_id):
         raise InputError('user_id does not exist')
 
     # Check if authorised user is a member of the channel
-    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
+    if not channel_member(authorised_user, channel):
         raise AccessError(
             'Authorised user is not a member of the channel')
 
@@ -59,28 +58,23 @@ def channel_details(token, channel_id):
     Given a Channel with ID channel_id that the authorised user is part of,
     provide basic details about the channel
     '''
-    channels = data['channels']
-    users = data['users']
-    channel_id = int(channel_id)
-
-    # Finds the Channel, if it doesn't exists assigns None
-    channel = next(
-        (channel for channel in channels if channel['channel_id'] == channel_id), None)
-
+    
     # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
+    authorised_user = get_authorised_user(token)
     
     #Check if user exists/ token is correct
     if authorised_user is None:
         raise AccessError('Token is incorrect')
+
+    # Finds the Channel, if it doesn't exists assigns None
+    channel = get_channel(channel_id)
 
     # Check if channel exists
     if channel is None:
         raise InputError('Channel_id does not exist')
 
     # Check if authorised user is a member of the channel
-    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
+    if not channel_member(authorised_user, channel):
         raise AccessError(
             'Authorised user is not a member of the channel')
 

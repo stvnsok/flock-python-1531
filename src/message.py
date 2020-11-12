@@ -1,7 +1,9 @@
 from error import InputError, AccessError
-from data import data, get_channel, channel_member, get_all_messages, get_authorised_user, get_channel_with_message, update_message, get_message
 from other import get_timestamp
 import uuid
+from data import ( data, get_channel, channel_member, get_all_messages, 
+                    get_authorised_user, get_channel_with_message, 
+                    update_message, get_message)
 
 
 def message_send(token, channel_id, message):
@@ -19,7 +21,7 @@ def message_send(token, channel_id, message):
     channel = get_channel(channel_id)
     
     # Check if authorised user is a member of the channel    
-    if not channel_member(token, channel):
+    if not channel_member(authorised_user, channel):
         raise AccessError(description="Authorised user has not joined this channel yet")
 
     # Check if message is too long
@@ -138,7 +140,7 @@ def message_sendlater(token, channel_id, message, time_sent):
     if len(message) > 1000:
         raise InputError(description="Message is more than 1000 characters")
 
-    if not channel_member(token, channel):
+    if not channel_member(authorised_user, channel):
         raise AccessError(description="Authorised user has not joined the channel")
 
     # Create new message object
@@ -182,13 +184,11 @@ def message_react(token, message_id, react_id):
     if react_id not in reacts:
         raise InputError(description="React_id is not a valid React ID")
 
-    authorised_user = get_authorised_user(token)
-
     # Get the channel where the message is from a helper function
     channel = get_channel_with_message(message_id)
 
     # Throw error if no message, or user is not a member of that channel
-    if channel is None or not channel_member(token, channel):
+    if channel is None or not channel_member(authorised_user, channel):
         raise InputError(description="Message_id is not a valid message within a channel that the authorised user has joined")
     
     # Get message from helper function
@@ -237,12 +237,11 @@ def message_unreact(token, message_id, react_id):
     if react_id not in reacts:
         raise InputError(description="React_id is not a valid React ID")
 
-    authorised_user = get_authorised_user(token)
     # Get the channel where the message is from a helper function
     channel = get_channel_with_message(message_id)
 
     # Throw error if no message, or user is not a member of that channel
-    if channel is None or not channel_member(token, channel):
+    if channel is None or not channel_member(authorised_user, channel):
         raise InputError(description="Message_id is not a valid message within a channel that the authorised user has joined")
     
     # Get message from helper function
@@ -285,7 +284,7 @@ def message_pin(token, message_id):
     
     # Throw error is user not member or owner of channel. By default an owner
     # is a member of the channel
-    if not channel_member(token, channel):
+    if not channel_member(authorised_user, channel):
         raise AccessError(description="The authorised user is not a member/owner of the channel")
 
     # Get message from helper function
@@ -319,7 +318,7 @@ def message_unpin(token, message_id):
     
     # Throw error is user not member or owner of channel. By default an owner
     # is a member of the channel
-    if not channel_member(token, channel):
+    if not channel_member(authorised_user, channel):
         raise AccessError(description="The authorised user is not a member/owner of the channel")
 
     # Get message from helper function
