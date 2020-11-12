@@ -38,7 +38,7 @@ def message_send(token, channel_id, message):
     }   
     
     all_messages = helper_functions.get_all_messages()
-    
+
     if len(all_messages) == 0:
         new_message['message_id'] = 0
     else:
@@ -104,7 +104,8 @@ def message_edit(token, message_id, message):
     
     # If the message is an empty message, delete the message
     if len(message) == 0:   
-        channel['messages'].remove(message)
+        message_to_remove = helper_functions.get_message(message_id, channel)
+        channel['messages'].remove(message_to_remove)
         return {}
     
     channel_message = helper_functions.get_message(message_id, channel)

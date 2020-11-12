@@ -204,6 +204,32 @@ def test_message_edit_edited():
 
     assert message_in_data['messages'][0]['message'] == new_message
 
+def test_message_edit_delete():
+    '''
+    Test that a message sent can be deleted successfully if nothing is passed
+    '''
+    other.clear()
+
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
+
+    old_message = "This is the old message"
+    message_sent_john = message.message_send(
+        john['token'], john_channel['channel_id'], old_message)
+
+    message_in_data = other.search(john['token'], "This is the") 
+
+    assert message_in_data['messages'][0]['message'] == old_message
+
+    new_message = ""
+    assert message.message_edit(
+        john['token'], message_sent_john['message_id'], new_message) == {}
+
+    message_in_data = other.search(john['token'], new_message) 
+
+    assert len(message_in_data['messages']) == 0
 
 def test_message_sendlater_invalid_time():
     '''
@@ -483,3 +509,23 @@ def test_token_auth():
         message.message_unpin(333, 555)
     
     assert str(e.value) == '400 Bad Request: Invalid token'
+
+def test_message_send_multiple():
+    '''
+    Test that messages are being sent and assigned m_id's correctly
+    '''
+    other.clear()
+
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
+    
+    message_1 = message.message_send(john['token'], john_channel['channel_id'], "hello")
+
+    assert message_1['message_id'] == 0
+
+    message_2 = message.message_send(john['token'], john_channel['channel_id'], "hello")
+
+    assert message_2['message_id'] == message_1['message_id'] + 1
