@@ -467,9 +467,6 @@ def test_token_auth():
     '''
     other.clear()
 
-    john = auth.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-
     with pytest.raises(AccessError) as e:
         message.message_send(333, 555, "message")
     
