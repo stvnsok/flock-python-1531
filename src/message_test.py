@@ -2,21 +2,26 @@
 Tests for message.py
 Written on 15/10/2020
 '''
-
-import helper_test_functions as test_setup
-from fixture import url
+import pytest
 from datetime import datetime, timedelta
+import auth
+import channel
+import channels
+import message
+from error import InputError, AccessError
+import other
 
 
-def test_message_send_length(url):
+def test_message_send_length():
     '''
     Throws an InputError if they message is longer than 1000 characters
     '''
-
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    john_channel = test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    other.clear()
+    
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
 
     long_message = """Lorem ipsum dolor sit amet, consectetur adipiscing elit,
     sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
@@ -39,402 +44,392 @@ def test_message_send_length(url):
     qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum 
     qui dolorem eum fugiat quo voluptas nulla pariatur?"""
 
-    error_response = test_setup.message_send(
-        john['token'], john_channel['channel_id'], long_message, url)
-    
-    assert error_response["code"] == 400
-    assert error_response["message"] == "<p>Message is more than 1000 characters</p>"
+    with pytest.raises(InputError) as e:
+        message.message_send(
+            john['token'], john_channel['channel_id'], long_message)
 
-    test_setup.clear(url)
+    assert str(e.value) == '400 Bad Request: Message is more than 1000 characters'    
 
 
-def test_message_uninvited_user(url):
+def test_message_uninvited_user():
     '''
     Throws an access error if a user that has not joined the channel tries to post a message
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    bob = test_setup.auth_register(
-        'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
+    other.clear()
+    
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    bob = auth.auth_register(
+        'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
 
-    bob_channel = test_setup.channels_create(
-        bob['token'], 'bob_channel', True, url)
+    bob_channel = channels.channels_create(
+        bob['token'], 'bob_channel', True)
 
     impossible_message = "I dont think I belong here"
        
-    error_response = test_setup.message_send(
-            john['token'], bob_channel['channel_id'], impossible_message, url)
+    with pytest.raises(AccessError) as e:
+        message.message_send(
+            john['token'], bob_channel['channel_id'], impossible_message)
 
-    assert error_response["code"] == 400
-    assert error_response["message"] == "<p>Authorised user has not joined this channel yet</p>"
-
-    
-    test_setup.clear(url)
+    assert str(e.value) == '400 Bad Request: Authorised user has not joined this channel yet'    
 
 
-def test_message_send_and_remove(url):
+def test_message_send_and_remove():
     '''
     Tests whether a valid message is stored correctly and can be removed
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    john_channel = test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    other.clear()
+
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
     
     valid_message = "Hello"
-    message_sent_john = test_setup.message_send(
-        john['token'], john_channel['channel_id'], valid_message, url)
+    message_sent_john = message.message_send(
+        john['token'], john_channel['channel_id'], valid_message)
 
-    response = test_setup.message_remove(john['token'], message_sent_john['message_id'], url)
+    response = message.message_remove(john['token'], message_sent_john['message_id'])
 
     assert response == {}
 
-    test_setup.clear(url)
 
-
-def test_message_remove_invalid_id(url):
+def test_message_remove_invalid_id():
     '''
     Throws an Input error if the message based on ID no longer exists
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-
-    error_response =  test_setup.message_remove(john['token'], 9999, url)
-
-    assert error_response["code"] == 400
-    assert error_response["message"] == "<p>Message does not exist</p>"
-
-    error_response =  test_setup.message_edit(john['token'], 9999, "Goodbye", url)
-
-    assert error_response["code"] == 400
-    assert error_response["message"] == "<p>Message does not exist</p>"
+    other.clear()
     
-    test_setup.clear(url)
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
 
+    with pytest.raises(InputError) as e:
+        message.message_remove(john['token'], 9999)
 
-def test_message_unauthorised_user(url):
+    assert str(e.value) == '400 Bad Request: Message does not exist'
+
+    with pytest.raises(InputError) as e:
+        message.message_edit(john['token'], 9999, "Goodbye")
+
+    assert str(e.value) == '400 Bad Request: Message does not exist'
+    
+
+def test_message_unauthorised_user():
     '''
     Throws an AccessError if the message id does not map to a message 
     sent by the authorised user
     '''
-    test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    bob = test_setup.auth_register(
-        'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
-    sally = test_setup.auth_register(
-        'sally@gmail.com', 'Helo123!', 'Sally', 'Lemon', url
-    )
+    other.clear()
 
-    bob_channel = test_setup.channels_create(
-        bob['token'], 'bob_channel', True, url)
-    test_setup.channel_addowner(
-        bob['token'], bob_channel['channel_id'], bob['u_id'], url)
-    
+    bob = auth.auth_register(
+        'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
+    sally = auth.auth_register(
+        'sally@gmail.com', 'Helo123!', 'Sally', 'Lemon')
 
-    message_sent = test_setup.message_send(
-        bob['token'], bob_channel['channel_id'], "Hello", url)
+    bob_channel = channels.channels_create(
+        bob['token'], 'bob_channel', True)
+   
+    message_sent = message.message_send(
+        bob['token'], bob_channel['channel_id'], "Hello")
 
-    error_response = test_setup.message_remove(
-            sally['token'], message_sent['message_id'], url)
+    with pytest.raises(AccessError) as e:
+        message.message_remove(
+            sally['token'], message_sent['message_id'])
 
-    assert error_response["code"] == 400
-    assert error_response["message"] == "<p>Message to remove was not sent by authorised user. Authorised user is not an owner of the channel</p>"
+    assert str(e.value) == '400 Bad Request: Message to remove was not sent by authorised user. Authorised user is not an owner of the channel'
 
-    error_response = test_setup.message_edit(
-            sally['token'], message_sent['message_id'], "Goodbye",url)
+    with pytest.raises(AccessError) as e:
+        message.message_edit(
+            sally['token'], message_sent['message_id'], "Goodbye")
 
-    assert error_response["code"] == 400
-    assert error_response["message"] == "<p>Message to remove was not sent by authorised user. Authorised user is not an owner of the channel</p>"
-
-    test_setup.clear(url)
+    assert str(e.value) == '400 Bad Request: Message to remove was not sent by authorised user. Authorised user is not an owner of the channel'
 
 
-def test_message_user_permissions(url):
+def test_message_user_permissions():
     '''
     Test that John as an owner of Flockr cannot delete/edit messages even though he has global
     permissions because he is not in the channel Bob set up
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    bob = test_setup.auth_register(
-        'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime', url)
+    other.clear()
 
-    bob_channel = test_setup.channels_create(
-        bob['token'], 'bob_channel', True, url)
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    bob = auth.auth_register(
+        'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
 
-    message_sent = test_setup.message_send(
-        bob['token'], bob_channel['channel_id'], "Hello", url)
+    bob_channel = channels.channels_create(
+        bob['token'], 'bob_channel', True)
 
-    error_response = test_setup.message_remove(
-            john['token'], message_sent['message_id'], url)
+    message_sent = message.message_send(
+        bob['token'], bob_channel['channel_id'], "Hello")
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == "<p>Message to remove was not sent by authorised user. Authorised user is not an owner of the channel</p>"
-    
-    error_response = test_setup.message_edit(
-            john['token'], message_sent['message_id'], "Goodbye", url)
+    with pytest.raises(AccessError) as e:
+        message.message_remove(
+            john['token'], message_sent['message_id'])
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == "<p>Message to remove was not sent by authorised user. Authorised user is not an owner of the channel</p>"
+    assert str(e.value) == '400 Bad Request: Message to remove was not sent by authorised user. Authorised user is not an owner of the channel'
 
-    test_setup.clear(url)
+    with pytest.raises(AccessError) as e:
+        message.message_edit(
+            john['token'], message_sent['message_id'], "Goodbye")
+
+    assert str(e.value) == '400 Bad Request: Message to remove was not sent by authorised user. Authorised user is not an owner of the channel'
 
 
-
-def test_message_edit_edited(url):
+def test_message_edit_edited():
     '''
     Test that a message sent can be edited successfully and correctly
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    john_channel = test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    other.clear()
+
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
 
     old_message = "This is the old message"
-    message_sent_john = test_setup.message_send(
-        john['token'], john_channel['channel_id'], old_message, url)
+    message_sent_john = message.message_send(
+        john['token'], john_channel['channel_id'], old_message)
 
-    message_in_data = test_setup.search(john['token'], "This is the", url) 
+    message_in_data = other.search(john['token'], "This is the") 
 
     assert message_in_data['messages'][0]['message'] == old_message
 
     new_message = "This is the new message"
-    test_setup.message_edit(
-        john['token'], message_sent_john['message_id'], new_message, url)
+    message.message_edit(
+        john['token'], message_sent_john['message_id'], new_message)
 
 
-    message_in_data = test_setup.search(john['token'], "This is the new message", url) 
+    message_in_data = other.search(john['token'], "This is the new message") 
 
     assert message_in_data['messages'][0]['message'] == new_message
-    test_setup.clear(url)
 
 
-def test_message_sendlater_invalid_time(url):
+def test_message_sendlater_invalid_time():
     '''
     Test that a message sent with past timestamp throws error
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    john_channel = test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    other.clear()
+
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
 
     future_message = "This is a message from the past"
     future_date = datetime.now() + timedelta(days=-4) 
     future_date = future_date.timestamp()
 
-    error_response = test_setup.message_sendlater(john['token'], john_channel['channel_id'], future_message, future_date,url)
+    with pytest.raises(InputError) as e:
+        message.message_sendlater(john['token'], john_channel['channel_id'], future_message, future_date)
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Time sent is a time in the past</p>'
+    assert str(e.value) == '400 Bad Request: Time sent is a time in the past'
 
-    test_setup.clear(url)
 
-def test_message_sendlater_invalid_user(url):
+def test_message_sendlater_invalid_user():
     '''
     Test that a message sent from unauthorised user throws error
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    bob = test_setup.auth_register(
-        'bob@gmail.com', 'qwe123!@#', 'Bob', 'Smith', url)
-    john_channel = test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    other.clear()
+
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+    bob = auth.auth_register(
+        'bob@gmail.com', 'qwe123!@#', 'Bob', 'Smith')
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
 
     future_message = "This is a message from the past"
     future_date = datetime.now() + timedelta(days=4) 
     future_date = future_date.timestamp()
 
-    error_response = test_setup.message_sendlater(bob['token'], john_channel['channel_id'], future_message, future_date,url)
+    with pytest.raises(AccessError) as e:
+        message.message_sendlater(bob['token'], john_channel['channel_id'], future_message, future_date)
+    
+    assert str(e.value) == '400 Bad Request: Authorised user has not joined the channel'
+    
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Authorised user has not joined the channel</p>'
-
-    test_setup.clear(url)
-
-def test_message_sendlater(url):
+def test_message_sendlater():
     '''
     Test that a message sent with past timestamp throws error
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    other.clear()
 
-    john_channel = test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
 
     future_message = "This is a message for the future"
     future_date = datetime.now() + timedelta(days=4) 
     future_date = future_date.timestamp()
 
-    response = test_setup.message_sendlater(john['token'], john_channel['channel_id'], future_message, future_date,url)
+    response = message.message_sendlater(john['token'], john_channel['channel_id'], future_message, future_date)
 
     assert response['message_id'] == 0
 
-    test_setup.clear(url)
 
-
-def test_react_invalid_message(url):
+def test_react_invalid_message():
     '''
     Tests that error is thrown then message_id is not within channel
     BOTH FOR REACT AND UNREACT
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    other.clear()
 
-    test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
 
-    error_response = test_setup.message_react(john['token'], 9999999, 1, url)
+    channels.channels_create(
+        john['token'], 'john_channel', True)
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Message_id is not a valid message within a channel that the authorised user has joined</p>'
+    with pytest.raises(InputError) as e:
+        message.message_react(john['token'], 9999999, 1)
 
+    assert str(e.value) == '400 Bad Request: Message_id is not a valid message within a channel that the authorised user has joined'
 
-    error_response = test_setup.message_unreact(john['token'], 9999999, 1, url)
+    with pytest.raises(InputError) as e:
+        message.message_unreact(john['token'], 9999999, 1)
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Message_id is not a valid message within a channel that the authorised user has joined</p>'
+    assert str(e.value) == '400 Bad Request: Message_id is not a valid message within a channel that the authorised user has joined'
 
-    test_setup.clear(url)
+    
 
-def test_react_invalid_react_id(url):
+def test_react_invalid_react_id():
     '''
     Tests that error is thrown when react_id is not correct
     BOTH FOR REACT AND UNREACT
     '''
+    other.clear()
+
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+
+    with pytest.raises(InputError) as e:
+        message.message_react(john['token'], 9999999, 100)
+
+    assert str(e.value) == '400 Bad Request: React_id is not a valid React ID'
     
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    with pytest.raises(InputError) as e:
+        message.message_unreact(john['token'], 9999999, 100)
 
-    test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    assert str(e.value) == '400 Bad Request: React_id is not a valid React ID'
 
-    error_response = test_setup.message_react(john['token'], 9999999, 100, url)
+    
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>React_id is not a valid React ID</p>'
-
-
-    error_response = test_setup.message_unreact(john['token'], 9999999, 100, url)
-
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>React_id is not a valid React ID</p>'
-
-    test_setup.clear(url)
-
-def test_react(url):
+def test_react():
     '''
     Integration test that will test whether reacts are working correctly
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    other.clear()
 
-  
-    john_channel = test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
+
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
     
     old_message = "React to my message"
-    message_sent_john = test_setup.message_send(
-        john['token'], john_channel['channel_id'], old_message, url)
+    message_sent_john = message.message_send(
+        john['token'], john_channel['channel_id'], old_message)
 
-    test_setup.message_react(john['token'], message_sent_john['message_id'], 1, url)
+    assert message.message_react(john['token'], message_sent_john['message_id'], 1) == {}
     
-    error_response = test_setup.message_react(john['token'], message_sent_john['message_id'], 1, url)
+    with pytest.raises(InputError) as e:
+        message.message_react(john['token'], message_sent_john['message_id'], 1)
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Message already contains an active react with react_id</p>'
+    assert str(e.value) == '400 Bad Request: Message already contains an active react with react_id'
 
-    test_setup.message_unreact(john['token'], message_sent_john['message_id'], 1, url)
+    assert message.message_unreact(john['token'], message_sent_john['message_id'], 1) == {}
     
-    error_response = test_setup.message_unreact(john['token'], message_sent_john['message_id'], 1, url)
+    with pytest.raises(InputError) as e:
+        message.message_unreact(john['token'], message_sent_john['message_id'], 1)
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Message already does not contain an active react with react_id</p>'
+    assert str(e.value) == '400 Bad Request: Message already does not contain an active react with react_id'
 
-    test_setup.clear(url)
 
-def test_pin_invalid_message(url):
+def test_pin_invalid_message():
     '''
     Tests that error is thrown then message_id is not within channel
     BOTH FOR PIN AND UNPIN
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    other.clear()
 
-    test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
 
-    error_response = test_setup.message_pin(john['token'], 9999999, url)
+    channels.channels_create(
+        john['token'], 'john_channel', True)
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Message_id is not a valid message</p>'
+    with pytest.raises(InputError) as e:
+        message.message_pin(john['token'], 9999999)
+
+    assert str(e.value) == '400 Bad Request: Message_id is not a valid message'
+    
+    with pytest.raises(InputError) as e:
+        message.message_unpin(john['token'], 9999999)
+
+    assert str(e.value) == '400 Bad Request: Message_id is not a valid message'
 
 
-    error_response = test_setup.message_unpin(john['token'], 9999999, url)
-
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Message_id is not a valid message</p>'
-
-    test_setup.clear(url)
-
-def test_pin_invalid_user(url):
+def test_pin_invalid_user():
     '''
     Tests that error is thrown then user is not within channel
     BOTH FOR PIN AND UNPIN
     '''
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    other.clear()
 
-    john_channel = test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
 
-    bob = test_setup.auth_register(
-        'bob@gmail.com', 'qwe123!@#', 'Bob', 'Brown', url)
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
 
-    message = "Try to pin this bob ;)"
-    message_sent_john = test_setup.message_send(
-        john['token'], john_channel['channel_id'], message, url)
+    bob = auth.auth_register(
+        'bob@gmail.com', 'qwe123!@#', 'Bob', 'Brown')
 
-    error_response = test_setup.message_pin(bob['token'], message_sent_john['message_id'], url)
+    msg = "Try to pin this bob"
+    message_sent_john = message.message_send(
+        john['token'], john_channel['channel_id'], msg)
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>The authorised user is not a member/owner of the channel</p>'
+    with pytest.raises(AccessError) as e:
+        message.message_pin(bob['token'], message_sent_john['message_id'])
+
+    assert str(e.value) == '400 Bad Request: The authorised user is not a member/owner of the channel'
+    
+    with pytest.raises(AccessError) as e:
+        message.message_unpin(bob['token'], message_sent_john['message_id'])
+
+    assert str(e.value) == '400 Bad Request: The authorised user is not a member/owner of the channel'
 
 
-    error_response = test_setup.message_unpin(bob['token'], message_sent_john['message_id'], url)
-
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>The authorised user is not a member/owner of the channel</p>'
-
-    test_setup.clear(url)
-
-
-def test_pin(url):
+def test_pin():
     '''
     Integration test that will test whether pin is working correctly
     '''
+    other.clear()
 
-    john = test_setup.auth_register(
-        'john@gmail.com', 'qwe123!@#', 'John', 'Smith', url)
+    john = auth.auth_register(
+        'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
 
-    john_channel = test_setup.channels_create(
-        john['token'], 'john_channel', True, url)
+    john_channel = channels.channels_create(
+        john['token'], 'john_channel', True)
     
-    message = "Pin this message"
-    message_sent_john = test_setup.message_send(
-        john['token'], john_channel['channel_id'], message, url)
+    msg = "Pin this message"
+    message_sent_john = message.message_send(
+        john['token'], john_channel['channel_id'], msg)
 
-    test_setup.message_pin(john['token'], message_sent_john['message_id'], url)
+    assert message.message_pin(john['token'], message_sent_john['message_id']) == {}
 
-    error_response = test_setup.message_pin(john['token'], message_sent_john['message_id'], url)
+    with pytest.raises(InputError) as e:
+        message.message_pin(john['token'], message_sent_john['message_id'])
+    
+    assert str(e.value) == '400 Bad Request: Message is already pinned'
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Message is already pinned</p>'
+    assert message.message_unpin(john['token'], message_sent_john['message_id']) == {}
 
-    test_setup.message_unpin(john['token'], message_sent_john['message_id'], url)
+    with pytest.raises(InputError) as e:
+        message.message_unpin(john['token'], message_sent_john['message_id'])
 
-    error_response = test_setup.message_unpin(john['token'], message_sent_john['message_id'], url)
+    assert str(e.value) == '400 Bad Request: Message is already unpinned'
 
-    assert error_response['code'] == 400
-    assert error_response['message'] == '<p>Message is already unpinned</p>'
-
-    test_setup.clear(url)

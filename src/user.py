@@ -29,12 +29,13 @@ def user_profile(token, u_id):
     if users_checked == len(users):
         raise InputError('No users with the entered u_id was found')
         
-    return {
+    return { 'user' : {
         'u_id': profile['u_id'],
         'email': profile['email'],
         'name_first': profile['name_first'],
         'name_last': profile['name_last'],
         'handle_str': profile['handle_str'],
+        } 
     }
 
 def user_profile_sethandle(token, handle_str):
