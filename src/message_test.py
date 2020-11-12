@@ -16,7 +16,6 @@ def test_message_send_length():
     '''
     Throws an InputError if they message is longer than 1000 characters
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -50,12 +49,13 @@ def test_message_send_length():
 
     assert str(e.value) == '400 Bad Request: Message is more than 1000 characters'    
 
+    other.clear()
+
 
 def test_message_uninvited_user():
     '''
     Throws an access error if a user that has not joined the channel tries to post a message
     '''
-    other.clear()
     
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -71,14 +71,15 @@ def test_message_uninvited_user():
         message.message_send(
             john['token'], bob_channel['channel_id'], impossible_message)
 
-    assert str(e.value) == '400 Bad Request: Authorised user has not joined this channel yet'    
+    assert str(e.value) == '400 Bad Request: Authorised user has not joined this channel yet'   
+
+    other.clear()
 
 
 def test_message_send_and_remove():
     '''
     Tests whether a valid message is stored correctly and can be removed
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -93,12 +94,13 @@ def test_message_send_and_remove():
 
     assert response == {}
 
+    other.clear()
+
 
 def test_message_remove_invalid_id():
     '''
     Throws an Input error if the message based on ID no longer exists
     '''
-    other.clear()
     
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -112,6 +114,8 @@ def test_message_remove_invalid_id():
         message.message_edit(john['token'], 9999, "Goodbye")
 
     assert str(e.value) == '400 Bad Request: Message does not exist'
+
+    other.clear()
     
 
 def test_message_unauthorised_user():
@@ -119,7 +123,6 @@ def test_message_unauthorised_user():
     Throws an AccessError if the message id does not map to a message 
     sent by the authorised user
     '''
-    other.clear()
 
     bob = auth.auth_register(
         'bob@gmail.com', 'abc123!@#', 'Bob', 'Lime')
@@ -144,13 +147,15 @@ def test_message_unauthorised_user():
 
     assert str(e.value) == '400 Bad Request: Message to remove was not sent by authorised user. Authorised user is not an owner of the channel'
 
+    other.clear()
+
+
 
 def test_message_user_permissions():
     '''
     Test that John as an owner of Flockr cannot delete/edit messages even though he has global
     permissions because he is not in the channel Bob set up
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -175,12 +180,13 @@ def test_message_user_permissions():
 
     assert str(e.value) == '400 Bad Request: Message to remove was not sent by authorised user. Authorised user is not an owner of the channel'
 
+    other.clear()
+
 
 def test_message_edit_edited():
     '''
     Test that a message sent can be edited successfully and correctly
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -204,11 +210,13 @@ def test_message_edit_edited():
 
     assert message_in_data['messages'][0]['message'] == new_message
 
+    other.clear()
+
+
 def test_message_edit_delete():
     '''
     Test that a message sent can be deleted successfully if nothing is passed
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -231,11 +239,13 @@ def test_message_edit_delete():
 
     assert len(message_in_data['messages']) == 0
 
+    other.clear()
+
+
 def test_message_sendlater_invalid_time():
     '''
     Test that a message sent with past timestamp throws error
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -251,12 +261,14 @@ def test_message_sendlater_invalid_time():
 
     assert str(e.value) == '400 Bad Request: Time sent is a time in the past'
 
+    other.clear()
+
+
 
 def test_message_sendlater_invalid_user():
     '''
     Test that a message sent from unauthorised user throws error
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -273,13 +285,14 @@ def test_message_sendlater_invalid_user():
         message.message_sendlater(bob['token'], john_channel['channel_id'], future_message, future_date)
     
     assert str(e.value) == '400 Bad Request: Authorised user has not joined the channel'
+
+    other.clear()
     
 
 def test_message_sendlater():
     '''
     Test that a message sent with past timestamp throws error
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -295,13 +308,14 @@ def test_message_sendlater():
 
     assert response['message_id'] == 0
 
+    other.clear()
+
 
 def test_react_invalid_message():
     '''
     Tests that error is thrown then message_id is not within channel
     BOTH FOR REACT AND UNREACT
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -319,6 +333,9 @@ def test_react_invalid_message():
 
     assert str(e.value) == '400 Bad Request: Message_id is not a valid message within a channel that the authorised user has joined'
 
+    other.clear()
+
+
     
 
 def test_react_invalid_react_id():
@@ -326,7 +343,6 @@ def test_react_invalid_react_id():
     Tests that error is thrown when react_id is not correct
     BOTH FOR REACT AND UNREACT
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -341,13 +357,15 @@ def test_react_invalid_react_id():
 
     assert str(e.value) == '400 Bad Request: React_id is not a valid React ID'
 
+    other.clear()
+
+
     
 
 def test_react():
     '''
     Integration test that will test whether reacts are working correctly
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -372,6 +390,9 @@ def test_react():
         message.message_unreact(john['token'], message_sent_john['message_id'], 1)
 
     assert str(e.value) == '400 Bad Request: Message already does not contain an active react with react_id'
+    
+    other.clear()
+
 
 
 def test_pin_invalid_message():
@@ -379,7 +400,6 @@ def test_pin_invalid_message():
     Tests that error is thrown then message_id is not within channel
     BOTH FOR PIN AND UNPIN
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -397,13 +417,14 @@ def test_pin_invalid_message():
 
     assert str(e.value) == '400 Bad Request: Message_id is not a valid message'
 
+    other.clear()
+
 
 def test_pin_invalid_user():
     '''
     Tests that error is thrown then user is not within channel
     BOTH FOR PIN AND UNPIN
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -428,12 +449,14 @@ def test_pin_invalid_user():
 
     assert str(e.value) == '400 Bad Request: The authorised user is not a member/owner of the channel'
 
+    other.clear()
+
+
 
 def test_pin():
     '''
     Integration test that will test whether pin is working correctly
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -459,13 +482,15 @@ def test_pin():
 
     assert str(e.value) == '400 Bad Request: Message is already unpinned'
 
+    other.clear()
+
+
 
 def test_token_auth():
     '''
     Tests that Access error is throw back for all message functions if incorrect
     token passed
     '''
-    other.clear()
 
     with pytest.raises(AccessError) as e:
         message.message_send(333, 555, "message")
@@ -507,11 +532,13 @@ def test_token_auth():
     
     assert str(e.value) == '400 Bad Request: Invalid token'
 
+    other.clear()
+
+
 def test_message_send_multiple():
     '''
     Test that messages are being sent and assigned m_id's correctly
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -527,11 +554,13 @@ def test_message_send_multiple():
 
     assert message_2['message_id'] == message_1['message_id'] + 1
 
+    other.clear()
+
+
 def test_message_send_later_inputerrors():
     '''
     Check errors are thrown correctly for message_sendlater
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -570,12 +599,14 @@ def test_message_send_later_inputerrors():
         message.message_sendlater(john['token'], john_channel['channel_id'], long_message, timestamp)
     
     assert str(e.value) == '400 Bad Request: Message is more than 1000 characters'
+    
+    other.clear()
+
 
 def test_message_sendlater_multiple():
     '''
     Test that messages are being sent and assigned m_id's correctly
     '''
-    other.clear()
 
     john = auth.auth_register(
         'john@gmail.com', 'qwe123!@#', 'John', 'Smith')
@@ -590,3 +621,5 @@ def test_message_sendlater_multiple():
     message_2 = message.message_sendlater(john['token'], john_channel['channel_id'], "hello", timestamp)
 
     assert message_2['message_id'] == message_1['message_id'] + 1
+
+    other.clear()
