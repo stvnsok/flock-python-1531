@@ -83,8 +83,8 @@ def get_timestamp():
     '''
     Returns a unix timestamp
     '''
-    d = datetime.utcnow()
-    return calendar.timegm(d.utctimetuple())
+    return datetime.now().timestamp()
+ 
 
 def check(email):
     '''

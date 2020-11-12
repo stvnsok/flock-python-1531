@@ -6,7 +6,7 @@ Purpose to test functions in channel.py
 import helper_test_functions
 from fixture import url
 
-######################## Tests for channel/invite #############################
+####################### Tests for channel/invite #############################
 def test_channel_invite_token_incorrect(url):
     '''
     This test uses the feature channel/invite with an invalid token. The

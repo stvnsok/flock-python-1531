@@ -177,6 +177,51 @@ def message_edit(token, message_id, message, url):
 
     return response.json()
 
+def message_sendlater(token, channel_id, message, time_sent, url):
+    response = requests.post(f'{url}message/sendlater', json={
+        "token" : token,
+        "channel_id" : channel_id,
+        "message" : message,
+        "time_sent" : time_sent
+    })
+
+    return response.json()
+
+def message_react(token, message_id, react_id, url):
+    response = requests.post(f'{url}message/react', json={
+        "token": token,
+        "message_id": message_id,
+        "react_id" : react_id
+    })
+
+    return response.json()
+
+def message_unreact(token, message_id, react_id, url):
+    response = requests.post(f'{url}message/unreact', json={
+        "token": token,
+        "message_id": message_id,
+        "react_id" : react_id
+    })
+
+    return response.json()
+
+def message_pin(token, message_id, url):
+    response = requests.post(f'{url}message/pin', json={
+        "token": token,
+        "message_id": message_id,
+    })
+
+    return response.json()
+
+def message_unpin(token, message_id, url):
+    response = requests.post(f'{url}message/unpin', json={
+        "token": token,
+        "message_id": message_id,
+    })
+
+    return response.json()
+
+
 
 '''
 ---------------------User Functions---------------------
@@ -229,6 +274,8 @@ def user_profile_sethandle(token, handle_str, url):
     })
 
     return response.json()
+
+
 
 
 '''

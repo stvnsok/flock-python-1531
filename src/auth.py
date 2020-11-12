@@ -14,7 +14,6 @@ def create_token(email):
     return str(hash(email))
 
 
-#@APP.route("/auth/login", methods=['POST'])
 def auth_login(email, password):
     '''
     Login and authenticate existing user
@@ -42,7 +41,7 @@ def auth_login(email, password):
         }
 
     raise InputError('Incorrect password')
-#@APP.route("/auth/logout", methods=['POST'])
+
 def auth_logout(token):
     '''
     Logout authenticated user
@@ -56,7 +55,6 @@ def auth_logout(token):
 
     return {'is_success': False}
 
-#@APP.route("/auth/register", methods=['POST'])
 def auth_register(email, password, name_first, name_last):
     '''
     Register a new user

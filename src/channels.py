@@ -1,11 +1,13 @@
 '''
 import data dictionary from data.py
 '''
-from data import data
 from error import InputError, AccessError
 from flask import request
-from auth import *
-from other import *
+from data import (
+                    data, get_channel, channel_member, get_all_messages, 
+                    get_authorised_user, get_channel_with_message, 
+                    update_message, get_message, get_user)
+
 
 def channels_list(token):
     '''
@@ -17,16 +19,12 @@ def channels_list(token):
     Exceptions: N/A
     '''
 
-    # Get users from data
-    users = data['users']
 
     # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
+    authorised_user = get_authorised_user(token)
 
     # Check if user exists/ token is correct
     if authorised_user is None:
-        # Need to fix this later
         raise AccessError('Token is incorrect/user does not exist')
 
     # Find all the channels where the authorised user is a member
@@ -46,16 +44,12 @@ def channels_listall(token):
     Exceptions: N/A
     '''
 
-    # Get users from data
-    users = data['users']
 
     # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
+    authorised_user = get_authorised_user(token)
 
     # Check if user exists/ token is correct
     if authorised_user is None:
-        # Need to fix this later
         raise AccessError('Token is incorrect/user does not exist')
 
     # Return channels
@@ -71,19 +65,15 @@ def channels_create(token, name, is_public):
     Exceptions: InputError when the name of the channel exceeds 20 characters
     '''
 
-    # Get users from data
-    users = data['users']
     channels = data['channels']
 
     # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
+    authorised_user = get_authorised_user(token)
 
     # Check if user exists/ token is correct
     if authorised_user is None:
-        # Need to fix this later
         raise AccessError('Token is incorrect/user does not exist')
-
+    
     # raise error for name being too long
     if len(name) > 20:
         raise InputError('Input Channel Name too long')
