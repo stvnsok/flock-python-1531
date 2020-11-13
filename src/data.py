@@ -1,3 +1,14 @@
+import hashlib
+import random
+import jwt
+from error import AccessError, InputError
+import re
+from datetime import datetime, timedelta
+
+INVALID_UID = 99999
+JWT_SECRET = 'WAKAFLOCKRFLAME'
+JWT_ALGORITHM = 'HS256'
+
 '''
 This acts as a 'database'. It will be initialised whenever a test is run (does not persist).
 
@@ -53,6 +64,7 @@ Channel Object : {
 data = {
     'users': [],
     'channels': [],
+    'invalid_tokens':[]
 }
 
 '''
@@ -114,9 +126,7 @@ def channel_member(user, channel):
     '''
     See if a user is part of a channel
     '''
-    
     return any(user['u_id'] == member['u_id'] for member in channel['members'])
-
 
 
 def get_all_messages():
@@ -130,3 +140,78 @@ def get_all_messages():
         messages += channel['messages']
     
     return messages
+
+
+
+'''
+Other helper functions used to perform tasks not directly with dictionary data
+'''
+
+
+def get_timestamp():
+    '''
+    Returns a unix timestamp
+    '''
+    return datetime.now().timestamp()
+ 
+
+def check(email):
+    '''
+    Checks that the entered email is valid based on regex expression
+    '''
+    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+
+    # Make a regular expression for validating an Email
+    if re.search(regex, email):
+        return True
+
+    return False
+
+def create_token(u_id):
+    '''
+    Create a login token based on its login time & u_id
+    the token expires after 12 hours
+    '''
+    payload = {
+        'u_id': u_id,
+        'iat': datetime.utcnow(),
+        'exp': datetime.utcnow() + timedelta(hours=12)
+    }
+
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM).decode('utf-8')
+    return token
+
+def hash_password(password):
+    '''
+    get the password and hash it using md5 hashing
+    and return data in hexadecimal format
+    '''
+    password = hashlib.md5(password.encode())
+    return password.hexdigest()
+
+def load_token(token):
+    '''
+    Decodes and returns the u_id
+    '''
+    # jwt.decode checks if the token has expired or not
+    try:
+        payload = jwt.decode(token.encode(), JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        raise AccessError(description='Token has expired')
+    return payload
+
+def is_valid_token(token):
+    '''
+    Check if the token has a corresponding u_id
+    also check if the token is already inside invalid_token
+    '''
+
+    payload = load_token(token)
+    if payload['u_id'] == INVALID_UID:
+        return False
+    if get_user(payload['u_id']) is None:
+        return False
+    if token in data['invalid_tokens']:
+        return False
+
+    return True

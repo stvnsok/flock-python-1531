@@ -5,6 +5,7 @@ import calendar
 from error import InputError, AccessError
 import re
 
+
 def clear():
     '''
     Resets the internal data of the application to it's initial state
@@ -97,3 +98,4 @@ def check(email):
         return True
 
     return False
+
