@@ -88,8 +88,6 @@ def auth_register(email, password, name_first, name_last):
     if len(handle) > 20:  # keeping the handle under 20 chars
         handle = handle[0:20]
 
-    # Grabs the current url
-    curr_url = request.host
 
     # Creating a new dictionary for new user
     new_user = {
