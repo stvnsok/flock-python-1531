@@ -23,18 +23,17 @@ def test_standup_start_token_incorrect():
 
     
     user_1 = auth.auth_register(
-        "123@hotmail.com",
+        "1234@hotmail.com",
         "password",
         "Bobby",
         "McBob"
     )
     new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
     channel_id = new_channel['channel_id']
-    
-   
+
     with pytest.raises(AccessError) as e:
         standup.standup_start("invalid_token", channel_id, 10)
-    assert 'Token is incorrect/user does not exist' == str(e.value)
+    assert '400 Bad Request: Token is incorrect' == str(e.value)
     clear()
 
 
@@ -51,8 +50,8 @@ def test_standup_start_invalid_channel_id():
     )
 
     with pytest.raises(AccessError) as e:
-        standup.standup_start(user_1['token'], 1, 10)
-    assert 'Channel_id does not exist' == str(e.value)
+        standup.standup_start(user_1['token'], 909, 10)
+    assert '400 Bad Request: Channel_id does not exist' == str(e.value)
     clear()
 
 
@@ -101,7 +100,7 @@ def test_standup_active_token_incorrect():
     
     with pytest.raises(AccessError) as e:
         standup.standup_active("invalid_token", channel_id)
-    assert 'Token is incorrect' == str(e.value)
+    assert '400 Bad Request: Token is incorrect' == str(e.value)
     clear()
 
 
@@ -111,7 +110,7 @@ def test_standup_active_invalid_channel_id():
     Throws an error code if the channel_id is incorrect
     '''
 
-    user_1 = auth_functions.auth_register(
+    user_1 = auth.auth_register(
         "123@hotmail.com",
         "password",
         "Bobby",
@@ -119,8 +118,8 @@ def test_standup_active_invalid_channel_id():
     )
     
     with pytest.raises(AccessError) as e:
-        standup.standup_active(user['token'], 1)
-    assert 'Channel_id does not exist'
+        standup.standup_active(user['token'], 909)
+    assert '400 Bad Request: Channel_id does not exist'
     
     clear()
 
@@ -170,7 +169,7 @@ def test_standup_send_token_incorrect():
     message = "Hello"
     with pytest.raises(AccessError) as e:
         standup.standup_send("invalid_token", channel_id, message)
-    assert 'Token is incorrect/user does not exist' == str(e.value)
+    assert '400 Bad Request: Token is incorrect/user does not exist' == str(e.value)
     clear()
 
 def test_standup_send_invalid_channel_id():
@@ -190,8 +189,8 @@ def test_standup_send_invalid_channel_id():
   
     message = "Hello"
     with pytest.raises(AccessError) as e:
-        standup.standup_send(user_1['token'], 0, message)
-    assert 'Channel_id does not exist' == str(e.value)
+        standup.standup_send(user_1['token'], 909, message)
+    assert '400 Bad Request: Channel_id does not exist' == str(e.value)
     
     clear()
 
@@ -221,7 +220,7 @@ def test_standup_send_unauthorised_user():
     
     with pytest.raises(AccessError) as e:
         standup.standup_send(user_2['token'], channel_id, message)
-    assert 'Authorised user is not a member of the channel' == str(e.value)
+    assert '400 Bad Request: Authorised user is not a member of the channel' == str(e.value)
     clear()
 
 #def test_standup_send_standup_isactive(): 
@@ -267,7 +266,7 @@ def test_standup_send_invalid_length():
     
     with pytest.raises(AccessError) as e:
         standup.standup_send(user_1['token'], channel_id, long_message)
-    assert 'Message is more than 1000 characters' == str(e.value)
+    assert '400 Bad Request: Message is more than 1000 characters' == str(e.value)
     clear()
 
 def test_standup_send_working(): 

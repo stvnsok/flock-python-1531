@@ -29,6 +29,7 @@ def standup_start(token, channel_id, length):
     #Check if user exists/ token is correct
     if authorised_user is None:
         raise AccessError('Token is incorrect')
+        
 
     # Get channel from data
     channels = data['channels']
@@ -119,7 +120,14 @@ def standup_send(token, channel_id, message):
     Sending a message to get buffered in the standup queue, 
     assuming a standup is currently active
     '''
+    
+    # - messages send into here will be converted to the format of " 'handle': 'message' "
+    #where the handle will the be user who called this function. 
+    # - This formmated message will be passed into the channel['standup'] where
+    #it will be appended to the end of the list within channel['standup']. 
+    
     # Get users from data
+    
     users = data['users']
 
     # Get the user that is sending the request
@@ -149,28 +157,14 @@ def standup_send(token, channel_id, message):
     #Check if authorised user is a member of the channel that the message is within
     if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
         raise AccessError('Authorised user is not a member of the channel')
-    
-    #Get the message 
-    '''
-    for message in channel['messages']:
-        if message['message_id'] == message_id:
-            if message['u_id'] == authorised_user['u_id']:
-                standup = {authorised_used['u_id']: message['message'] }
-    '''
-    
+
     # Check if message is more than 1000 characters 
     if len(message) > 1000:   
         raise InputError('Message is more than 1000 characters')
-        
+    # get the standup    
     standup = {authorised_used['handle_str']: message['message'] }
     
     # Append the message to the end of list
     channel['standup'].append(standup)
-    
-    # Note to steven, I except the following things from this function:
-    # - messages send into here will be converted to the format of " 'handle': 'message' "
-    #where the handle will the be user who called this function. 
-    # - This formmated message will be passed into the channel['standup'] where
-    #it will be appended to the end of the list within channel['standup']. 
-    # (see the data.py for example)
+
     return {}
