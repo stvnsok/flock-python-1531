@@ -38,9 +38,10 @@ Channel Object : {
                                         'time_created' : integer (unix timestamp),
                                         'reacts': [
                                             {
-                                                'u_id': int,
-                                                'react_id':[ int],              0 -> n will act like an enum     
-                                            }                                   any number will represent a possible react
+                                                'react_id': integer,
+                                                'u_ids': [u_id, u_id...],                  
+                                            }                                 
+
                                         ] 
                                         'is_pinned': bool
                                     }

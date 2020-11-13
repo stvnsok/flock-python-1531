@@ -34,7 +34,11 @@ def message_send(token, channel_id, message):
         'message' : message,
         'u_id': authorised_user['u_id'],
         'time_created': get_timestamp(),
-        'reacts': [],
+        'reacts': [
+                {
+                    'react_id' : 1,
+                    'u_ids' : []                }
+        ],
         'is_pinned': False
     }   
     
@@ -149,7 +153,12 @@ def message_sendlater(token, channel_id, message, time_sent):
         'message' : message,
         'u_id': authorised_user['u_id'],
         'time_created': time_now,
-        'reacts': [],
+        'reacts': [
+                {
+                    'react_id' : 1,
+                    'u_ids' : []
+                }
+        ],
         'is_pinned': False
     }   
     
@@ -172,15 +181,15 @@ def message_react(token, message_id, react_id):
     Given a message with channel the authorised user is part of,
     add a "react" to that particular message
     '''
-    
+    react_id = int(react_id)
     # Get the user that is sending the request
     authorised_user = get_authorised_user(token)
 
     if authorised_user is None:
         raise AccessError(description="Invalid token")
 
-    reacts = [0,1]
-    # For now there are only two possible reacts
+    reacts = [1]
+    # For now there are only one possible reacts
     if react_id not in reacts:
         raise InputError(description="React_id is not a valid React ID")
 
@@ -194,30 +203,16 @@ def message_react(token, message_id, react_id):
     # Get message from helper function
     message = get_message(message_id, channel)
 
-    react = None
+    react = next((react for react in message['reacts'] if react['react_id'] == react_id))
 
-    if len(message['reacts']) > 0:
-        react = next((react for react in message['reacts'] if react['u_id'] == authorised_user['u_id']), None)
-
-    # Create new react
-    if react is None:
-        new_react = {
-            'u_id' : authorised_user['u_id'],
-            'react_id' : [react_id]
-        }
-        message['reacts'].append(new_react)
-        update_message(message_id, message, channel)
-        return {}
-
-    # Check if the react is already active
-    if react_id in react['react_id']:
+    if authorised_user['u_id'] in react['u_ids']:
         raise InputError(description="Message already contains an active react with react_id")
-
-    # Update react 
-    react['react_id'].append(react_id)
-    update_message(message_id, message, channel)
-    return {}
     
+    # Update react
+    react['u_ids'].append(authorised_user['u_id'])
+    update_message(message_id, message, channel)
+    
+    return {}
     
 
 def message_unreact(token, message_id, react_id):
@@ -225,14 +220,14 @@ def message_unreact(token, message_id, react_id):
     Given a message with channel the authorised user is part of,
     remove "react" to that particular message
     '''
-    
+    react_id = int(react_id)
     # Get the user that is sending the request
     authorised_user = get_authorised_user(token)
 
     if authorised_user is None:
         raise AccessError(description="Invalid token")    
     
-    reacts = [0,1]
+    reacts = [1]
     # For now there are only two possible reacts
     if react_id not in reacts:
         raise InputError(description="React_id is not a valid React ID")
@@ -247,20 +242,18 @@ def message_unreact(token, message_id, react_id):
     # Get message from helper function
     message = get_message(message_id, channel)
 
-    react = None
+    # Get the corresponding react
+    react = next((react for react in message['reacts'] if react['react_id'] == react_id))
 
-    if len(message['reacts']) > 0:
-        react = next((react for react in message['reacts'] if react['u_id'] == authorised_user['u_id']), None)
-
-    # Cannot react to something that has no react
-    if react is None or react_id not in react['react_id']:
+    if not authorised_user['u_id'] in react['u_ids']:
         raise InputError(description="Message already does not contain an active react with react_id")
     
-
     # Update react
-    react['react_id'].remove(react_id)
+    react['u_ids'].remove(authorised_user['u_id'])
     update_message(message_id, message, channel)
-    return {}
+    
+    return {}   
+
     
     
 def message_pin(token, message_id):
