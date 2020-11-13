@@ -122,7 +122,7 @@ def user_profile(token, u_id):
     if users_checked == len(users):
         raise InputError('No users with the entered u_id was found')
 
-    return {
+    target_user = {
         'u_id': profile['u_id'],
         'email': profile['email'],
         'name_first': profile['name_first'],
@@ -130,6 +130,9 @@ def user_profile(token, u_id):
         'handle_str': profile['handle_str'],
         'profile_img_url': profile['profile_img_url'],
     }
+
+    return {'user': target_user }
+    
 
 def user_profile_sethandle(token, handle_str):
     '''
