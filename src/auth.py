@@ -1,11 +1,15 @@
 '''
 Auth function
 '''
-import re
+import smtplib
+import jwt
 from flask import request
 from data import data
 from error import InputError
 from other import check
+
+
+
 
 def create_token(email):
     '''
@@ -14,6 +18,7 @@ def create_token(email):
     return str(hash(email))
 
 
+#@APP.route("/auth/login", methods=['POST'])
 def auth_login(email, password):
     '''
     Login and authenticate existing user
@@ -41,7 +46,7 @@ def auth_login(email, password):
         }
 
     raise InputError('Incorrect password')
-
+#@APP.route("/auth/logout", methods=['POST'])
 def auth_logout(token):
     '''
     Logout authenticated user
@@ -55,6 +60,7 @@ def auth_logout(token):
 
     return {'is_success': False}
 
+#@APP.route("/auth/register", methods=['POST'])
 def auth_register(email, password, name_first, name_last):
     '''
     Register a new user
@@ -88,6 +94,7 @@ def auth_register(email, password, name_first, name_last):
     if len(handle) > 20:  # keeping the handle under 20 chars
         handle = handle[0:20]
 
+
     # Creating a new dictionary for new user
     new_user = {
         'u_id': len(users),
@@ -99,6 +106,7 @@ def auth_register(email, password, name_first, name_last):
         'token': create_token(email),
         'permission_id' : 1 if len(users) == 0 else 2,
         'profile_img_url': '',
+        'reset_code': None,
     }
 
     # Auto Increment the next user
@@ -115,3 +123,60 @@ def auth_register(email, password, name_first, name_last):
         'u_id': new_user['u_id'],
         'token': new_user['token']
     }
+
+
+#@APP.route("/auth/passwordreset/request", methods=['POST'])
+def auth_passwordreset_request(email):
+    # Get users from data
+    users = data['users']
+
+    # Check that email is valid
+    user = next((user for user in users if user['email'] == email), None)
+
+    if user is not None:
+        password = user['password']
+        token = user['token']
+
+        encoded = jwt.encode({'reset': password}, token)
+
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+
+        email_address = "noreplyflockr@gmail.com"
+        email_password = "Hatsunemiku"
+
+        server.login(email_address, email_password)
+
+        user_name = user['name_first'] + ' ' + user['name_last'] 
+
+        message_subject = "Your Flockr password reset request"
+        message_body = "Hello" + ' ' + user_name + ' ' + "your password reset code is:"
+
+        message = f'Subject: {message_subject}\n\n{message_body}\n\n{encoded}'
+        server.sendmail('noreplyflockr@gmail.com', email, message)
+        server.close()
+
+        user['reset_code'] = encoded
+
+    return {}
+
+#@APP.route("/auth/passwordreset/reset, methods=['POST'])
+def auth_passwordreset_reset(reset_code, new_password):   
+    users = data['users']
+    user = user = next((user for user in users if user['reset_code'] == reset_code), None)
+
+    if user is None:
+        raise InputError('Invalid reset code')
+
+    # Check password is greater than 6 characters
+    if len(new_password) < 6:
+        raise InputError('Password too short')
+              
+    if user is not None:
+        if user['reset_code'] == reset_code:
+            user['password'] = new_password
+            user['reset_code'] = None
+
+    return {}

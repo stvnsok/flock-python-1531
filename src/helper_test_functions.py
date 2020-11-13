@@ -38,6 +38,23 @@ def auth_logout(token, url):
 
     return response.json()
 
+def passwordreset_request(email, url):
+    response = requests.post(f'{url}auth/passwordreset/request', json={
+        "email": email,
+    })
+    
+    return response.json()
+
+def passwordreset_reset(reset_code, new_password, url):
+    response = requests.post(f'{url}auth/passwordreset/reset', json={
+        "reset_code": reset_code,
+        "new_password": new_password,
+    })
+
+    return response.json()
+
+
+
 
 '''
 ---------------------Channel Functions---------------------
