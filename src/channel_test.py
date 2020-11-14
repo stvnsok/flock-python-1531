@@ -25,19 +25,19 @@ def test_channel():
 
     with pytest.raises(InputError) as e:
         channel.channel_join(alfred['token'], 909)
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
 
     with pytest.raises(AccessError) as e:
         channel.channel_join(alfred['token'], manor_channel['channel_id'])
-    assert str(e.value) == 'Channel_id refers to a channel that is private'
+    assert str(e.value) == '400 Bad Request: Channel_id refers to a channel that is private'
 
     with pytest.raises(InputError) as e:
         channel.channel_addowner(wayne['token'], 909, alfred['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
     
     with pytest.raises(AccessError) as e:
         channel.channel_addowner(wayne['token'], batcave_channel['channel_id'], alfred['u_id'])
-    assert str(e.value) == 'Authorised user is not an owner of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not an owner of the channel'
 
     # Test if owners are added correctly
     channel.channel_addowner(bruce['token'], batcave_channel['channel_id'], alfred['u_id'])
@@ -46,15 +46,15 @@ def test_channel():
 
     with pytest.raises(InputError) as e:
         channel.channel_addowner(bruce['token'], batcave_channel['channel_id'], alfred['u_id'])
-    assert str(e.value) == 'User is already an owner of the channel'
+    assert str(e.value) == '400 Bad Request: User is already an owner of the channel'
 
     with pytest.raises(InputError) as e:
         channel.channel_addowner(bruce['token'], 909, alfred['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
 
     with pytest.raises(AccessError) as e:
         channel.channel_addowner(wayne['token'], batcave_channel['channel_id'], alfred['u_id'])
-    assert str(e.value) == 'Authorised user is not an owner of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not an owner of the channel'
 
     channel.channel_join(jack['token'], batcave_channel['channel_id'])
     ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'])
@@ -64,11 +64,11 @@ def test_channel():
     # Test channel_leave is implemented correctly 
     with pytest.raises(InputError) as e:
         channel.channel_leave(alfred['token'], 909)
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
 
     with pytest.raises(AccessError) as e:
         channel.channel_leave(alfred['token'], manor_channel['channel_id'])
-    assert str(e.value) == 'Authorised user is not a member of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not a member of the channel'
 
     channel.channel_leave(alfred['token'], batcave_channel['channel_id'])
     ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'])
@@ -82,15 +82,15 @@ def test_channel():
 
     with pytest.raises(InputError) as e:
         channel.channel_removeowner(bruce['token'], batcave_channel['channel_id'], alfred['u_id'])
-    assert str(e.value) == 'User with u_id is not an owner of the channel'
+    assert str(e.value) == '400 Bad Request: User with u_id is not an owner of the channel'
 
     with pytest.raises(AccessError) as e:
         channel.channel_removeowner(alfred['token'], batcave_channel['channel_id'], bruce['u_id'])
-    assert str(e.value) == 'Authorised user is not an owner of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not an owner of the channel'
 
     with pytest.raises(InputError) as e:
         channel.channel_removeowner(alfred['token'], 909, bruce['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
 
     channel.channel_removeowner(bruce['token'], batcave_channel['channel_id'], jack['u_id'])
     ch_details = channel.channel_details(bruce['token'], batcave_channel['channel_id'])
@@ -145,12 +145,12 @@ def test_channel_private():
     # Joining a private channel should throw an error
     with pytest.raises(AccessError) as e:
         channel.channel_join(chicken['token'], private_cool_channel['channel_id'])
-    assert 'Channel_id refers to a channel that is private' == str(e.value)
+    assert '400 Bad Request: Channel_id refers to a channel that is private' == str(e.value)
 
     # John adds an Chicken as an owner of the private channel
     with pytest.raises(AccessError) as e:
         channel.channel_addowner(bob['token'], private_cool_channel['channel_id'], chicken['u_id'])
-    assert 'Authorised user is not an owner of the channel' == str(e.value)
+    assert '400 Bad Request: Authorised user is not an owner of the channel' == str(e.value)
 
     # Add chicken correctly
     channel.channel_addowner(john['token'], private_cool_channel['channel_id'], chicken['u_id'])
@@ -158,12 +158,12 @@ def test_channel_private():
     # Inputting the incorrect channel id
     with pytest.raises(InputError) as e:
         channel.channel_addowner(chicken['token'], 'incorrect_channel', bob['u_id'])
-    assert 'Channel_id does not exist' == str(e.value)
+    assert '400 Bad Request: Channel_id does not exist' == str(e.value)
 
     # Trying to invite a user that is already an owner 
     with pytest.raises(InputError) as e:
         channel.channel_addowner(chicken['token'], private_cool_channel['channel_id'], john['u_id'])
-    assert 'User is already an owner of the channel' == str(e.value)
+    assert '400 Bad Request: User is already an owner of the channel' == str(e.value)
     
     # Allows user to invite people to private channel
     channel.channel_invite(chicken['token'], private_cool_channel['channel_id'], bob['u_id'])
@@ -178,7 +178,7 @@ def test_channel_private():
     # Check that remove owner throw's correct exception
     with pytest.raises(InputError) as e:
         channel.channel_removeowner(john['token'], private_cool_channel['channel_id'], bob['u_id'])
-    assert str(e.value) == 'User with u_id is not an owner of the channel'
+    assert str(e.value) == '400 Bad Request: User with u_id is not an owner of the channel'
 
     clear()
 
@@ -190,15 +190,15 @@ def test_channel_invite_exceptions():
 
     with pytest.raises(InputError) as e:
         channel.channel_invite(john['token'], 9999, bob['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
 
     with pytest.raises(InputError) as e:
         channel.channel_invite(john['token'], cool_channel['channel_id'], 9999)
-    assert str(e.value) == 'U_id does not exist'
+    assert str(e.value) == '400 Bad Request: U_id does not exist'
 
     with pytest.raises(AccessError) as e:
         channel.channel_invite(bob['token'], cool_channel['channel_id'], john['u_id'])
-    assert str(e.value) == 'Authorised user is not a member of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not a member of the channel'
     
     clear()
 
@@ -210,11 +210,11 @@ def test_channel_detail_exceptions():
 
     with pytest.raises(InputError) as e:
         channel.channel_details(john['token'], 9999)
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
 
     with pytest.raises(AccessError) as e:
         channel.channel_details(bob['token'], cool_channel['channel_id'])
-    assert str(e.value) == 'Authorised user is not a member of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not a member of the channel'
     
     clear()
 
@@ -226,11 +226,11 @@ def test_channel_leave_exceptions():
 
     with pytest.raises(InputError) as e:
         channel.channel_leave(john['token'], 9999)
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
 
     with pytest.raises(AccessError) as e:
         channel.channel_leave(bob['token'], cool_channel['channel_id'])
-    assert str(e.value) == 'Authorised user is not a member of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not a member of the channel'
     
     clear()
 
@@ -242,11 +242,11 @@ def test_channel_join_exceptions():
 
     with pytest.raises(InputError) as e:
         channel.channel_join(john['token'], 9999)
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
 
     with pytest.raises(AccessError) as e:
         channel.channel_join(bob['token'], cool_channel['channel_id'])
-    assert str(e.value) == 'Channel_id refers to a channel that is private'
+    assert str(e.value) == '400 Bad Request: Channel_id refers to a channel that is private'
     
     clear()
 
@@ -259,17 +259,17 @@ def test_channel_addowner_exceptions():
 
     with pytest.raises(InputError) as e:
         channel.channel_addowner(john['token'], 9999 , bob['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
    
     channel.channel_addowner(john['token'], cool_channel['channel_id'], bob['u_id'])
     
     with pytest.raises(InputError) as e:
         channel.channel_addowner(john['token'], cool_channel['channel_id'], bob['u_id'])
-    assert str(e.value) == 'User is already an owner of the channel'
+    assert str(e.value) == '400 Bad Request: User is already an owner of the channel'
     
     with pytest.raises(AccessError) as e:
         channel.channel_addowner(lucy['token'], cool_channel['channel_id'], bob['u_id'])
-    assert str(e.value) == 'Authorised user is not an owner of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not an owner of the channel'
 
     clear()
 # Check channel_removeowner exceptions are working
@@ -281,15 +281,15 @@ def test_channel_removeowner_exceptions():
 
     with pytest.raises(InputError) as e:
         channel.channel_removeowner(john['token'], 9999 , bob['u_id'])
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
        
     with pytest.raises(InputError) as e:
         channel.channel_removeowner(john['token'], cool_channel['channel_id'], bob['u_id'])
-    assert str(e.value) == 'User with u_id is not an owner of the channel'
+    assert str(e.value) == '400 Bad Request: User with u_id is not an owner of the channel'
     
     with pytest.raises(AccessError) as e:
         channel.channel_removeowner(lucy['token'], cool_channel['channel_id'], john['u_id'])
-    assert str(e.value) == 'Authorised user is not an owner of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not an owner of the channel'
 
     clear()
     
@@ -302,11 +302,11 @@ def test_channel_messages():
     # Check exceptions
     with pytest.raises(InputError) as e:
         channel.channel_messages(john['token'], 9999, 0)
-    assert str(e.value) == 'Channel_id does not exist'
+    assert str(e.value) == '400 Bad Request: Channel_id does not exist'
 
     with pytest.raises(AccessError) as e:
         channel.channel_messages(bob['token'], cool_channel['channel_id'], 999)
-    assert str(e.value) == 'Authorised user is not a member of the channel'
+    assert str(e.value) == '400 Bad Request: Authorised user is not a member of the channel'
     
     # Check that there are no messages
     messages = channel.channel_messages(john['token'], cool_channel['channel_id'], 0)
@@ -325,7 +325,7 @@ def test_channel_messages_start_greater():
     new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
     with pytest.raises(AccessError) as e:
         channel.channel_messages(user_1['token'], new_channel['channel_id'], 100)
-    assert str(e.value) == 'Start is greater than total number of messages'
+    assert str(e.value) == '400 Bad Request: Start is greater than total number of messages'
     
     clear()
 def test_channel_messages_invalid_token():
@@ -337,7 +337,7 @@ def test_channel_messages_invalid_token():
     new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
     with pytest.raises(AccessError) as e:
         channel.channel_messages("incorrect_token", new_channel['channel_id'], 0)
-    assert str(e.value) == 'Token is incorrect'
+    assert str(e.value) == '400 Bad Request: Token is incorrect'
     
     clear()
     

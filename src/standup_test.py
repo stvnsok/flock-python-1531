@@ -31,7 +31,7 @@ def test_standup_start_token_incorrect():
     new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
     channel_id = new_channel['channel_id']
 
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(InputError) as e:
         standup.standup_start("invalid_token", channel_id, 10)
     assert '400 Bad Request: Token is incorrect' == str(e.value)
     clear()
@@ -49,7 +49,7 @@ def test_standup_start_invalid_channel_id():
         "McBob"
     )
 
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(InputError) as e:
         standup.standup_start(user_1['token'], 909, 10)
     assert '400 Bad Request: Channel_id does not exist' == str(e.value)
     clear()
@@ -98,7 +98,7 @@ def test_standup_active_token_incorrect():
     new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
     channel_id = new_channel['channel_id']
     
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(InputError) as e:
         standup.standup_active("invalid_token", channel_id)
     assert '400 Bad Request: Token is incorrect' == str(e.value)
     clear()
@@ -117,7 +117,7 @@ def test_standup_active_invalid_channel_id():
         "McBob"    
     )
     
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(InputError) as e:
         standup.standup_active(user['token'], 909)
     assert '400 Bad Request: Channel_id does not exist'
     
@@ -167,7 +167,7 @@ def test_standup_send_token_incorrect():
     channel_id = new_channel['channel_id']
     
     message = "Hello"
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(InputError) as e:
         standup.standup_send("invalid_token", channel_id, message)
     assert '400 Bad Request: Token is incorrect/user does not exist' == str(e.value)
     clear()
@@ -188,7 +188,7 @@ def test_standup_send_invalid_channel_id():
     channel_id = new_channel['channel_id']
   
     message = "Hello"
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(InputError) as e:
         standup.standup_send(user_1['token'], 909, message)
     assert '400 Bad Request: Channel_id does not exist' == str(e.value)
     
@@ -218,7 +218,7 @@ def test_standup_send_unauthorised_user():
     
     message = "Hello"
     
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(InputError) as e:
         standup.standup_send(user_2['token'], channel_id, message)
     assert '400 Bad Request: Authorised user is not a member of the channel' == str(e.value)
     clear()
@@ -264,7 +264,7 @@ def test_standup_send_invalid_length():
     long_message = "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find faultwith a man who chooses to enjoy a pleasure that has no annoying consequences,or one who avoids a pain that produces no resultant pleasure? On the other hand, we denounce"
     
     
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(InputError) as e:
         standup.standup_send(user_1['token'], channel_id, long_message)
     assert '400 Bad Request: Message is more than 1000 characters' == str(e.value)
     clear()
