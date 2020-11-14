@@ -7,9 +7,11 @@ import shutil # to save it locally
 from PIL import Image
 import requests
 from flask import request
-from data import data
 from error import InputError, AccessError
 from other import check
+from data import (
+                    data,is_valid_token,
+                    load_token, get_user)
 
 def is_url_image(image_url):
     '''
@@ -28,16 +30,12 @@ def user_profile_photo(token, img_url, x_start, y_start, x_end, y_end):
     Given a URL of an image on the internet, crops the image within bounds
     (x_start, y_start) and (x_end, y_end). Position (0,0) is the top left.
     '''
-    # Get users from data
-    users = data['users']
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    #Check if user exists/ token is correct
-    if authorised_user is None:
+    # Check if valid token
+    if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
+    
+    # Get the user that is sending the request
+    authorised_user = get_user((load_token(token)['u_id']))
 
     # fetch image via url
     u_id = authorised_user['u_id']
@@ -69,7 +67,7 @@ def user_profile_photo(token, img_url, x_start, y_start, x_end, y_end):
     image_object = Image.open(image_name)
     image_size = image_object.size
     if (
-            int(x_start) > image_size[0] or
+            x_start > image_size[0] or
             int(x_start) < 0 or
             int(x_end) > image_size[0] or
             int(x_end) < 0 or
@@ -99,16 +97,15 @@ def user_profile(token, u_id):
     For a valid user, returns information about their user_id, email, first name,
     last name, and handle
     '''
-    # Get users from data
+    # Grabs all users from data
     users = data['users']
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    #Check if user exists/ token is correct
-    if authorised_user is None:
+    
+    # Check if valid token
+    if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
+    
+    # # Get the user that is sending the request
+    # authorised_user = get_user((load_token(token)['u_id']))
 
     # Searches for the user with the u_id
     users_checked = 0
@@ -122,7 +119,7 @@ def user_profile(token, u_id):
     if users_checked == len(users):
         raise InputError('No users with the entered u_id was found')
 
-    return {
+    target_user = {
         'u_id': profile['u_id'],
         'email': profile['email'],
         'name_first': profile['name_first'],
@@ -131,20 +128,22 @@ def user_profile(token, u_id):
         'profile_img_url': profile['profile_img_url'],
     }
 
+    return {'user': target_user }
+    
+
 def user_profile_sethandle(token, handle_str):
     '''
     Update the authorised user's handle (i.e. display name)
     '''
     # Grabs all users from data
     users = data['users']
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    # Check if user exists/ token is correct
-    if authorised_user is None:
+    
+    # Check if valid token
+    if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
+    
+    # Get the user that is sending the request
+    authorised_user = get_user((load_token(token)['u_id']))
 
     # checking if length of handle_str is between 3 and 20 inclusive
     if len(handle_str) < 3 or len(handle_str) > 20:
@@ -164,16 +163,15 @@ def user_profile_setname(token, name_first, name_last):
     '''
     Update the authorised user's first and last name
     '''
-    # Grabs all users from data
-    users = data['users']
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    # Check if user exists/ token is correct
-    if authorised_user is None:
+    # # Grabs all users from data
+    # users = data['users']
+    
+    # Check if valid token
+    if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
+    
+    # Get the user that is sending the request
+    authorised_user = get_user((load_token(token)['u_id']))
 
     # Raise errors for invalid name lengths
     if (len(name_first) > 50) or (len(name_first) < 1):
@@ -194,13 +192,12 @@ def user_profile_setemail(token, email):
     # Grabs all users from data
     users = data['users']
 
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    # Check if user exists/ token is correct
-    if authorised_user is None:
+    # Check if valid token
+    if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
+    
+    # Get the user that is sending the request
+    authorised_user = get_user((load_token(token)['u_id']))
 
     # Check email is valid format
     if check(email) is not True:

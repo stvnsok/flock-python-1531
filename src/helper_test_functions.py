@@ -38,6 +38,23 @@ def auth_logout(token, url):
 
     return response.json()
 
+def passwordreset_request(email, url):
+    response = requests.post(f'{url}auth/passwordreset/request', json={
+        "email": email,
+    })
+    
+    return response.json()
+
+def passwordreset_reset(reset_code, new_password, url):
+    response = requests.post(f'{url}auth/passwordreset/reset', json={
+        "reset_code": reset_code,
+        "new_password": new_password,
+    })
+
+    return response.json()
+
+
+
 
 '''
 ---------------------Channel Functions---------------------
@@ -177,22 +194,56 @@ def message_edit(token, message_id, message, url):
 
     return response.json()
 
+def message_sendlater(token, channel_id, message, time_sent, url):
+    response = requests.post(f'{url}message/sendlater', json={
+        "token" : token,
+        "channel_id" : channel_id,
+        "message" : message,
+        "time_sent" : time_sent
+    })
+
+    return response.json()
+
+def message_react(token, message_id, react_id, url):
+    response = requests.post(f'{url}message/react', json={
+        "token": token,
+        "message_id": message_id,
+        "react_id" : react_id
+    })
+
+    return response.json()
+
+def message_unreact(token, message_id, react_id, url):
+    response = requests.post(f'{url}message/unreact', json={
+        "token": token,
+        "message_id": message_id,
+        "react_id" : react_id
+    })
+
+    return response.json()
+
+def message_pin(token, message_id, url):
+    response = requests.post(f'{url}message/pin', json={
+        "token": token,
+        "message_id": message_id,
+    })
+
+    return response.json()
+
+def message_unpin(token, message_id, url):
+    response = requests.post(f'{url}message/unpin', json={
+        "token": token,
+        "message_id": message_id,
+    })
+
+    return response.json()
+
+
 
 '''
 ---------------------User Functions---------------------
 '''
 
-def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end, url):
-    response = requests.post(f'{url}user/profile/uploadphoto', json={
-        "token": token,
-        "img_url": img_url,
-        "x_start": x_start,
-        "y_start": y_start,
-        "x_end": x_end,
-        "y_end": y_end,
-    })
-
-    return response.json()
 
 def user_profile(token, u_id, url):
     response = requests.get(f'{url}user/profile', params={
@@ -229,6 +280,8 @@ def user_profile_sethandle(token, handle_str, url):
     })
 
     return response.json()
+
+
 
 
 '''

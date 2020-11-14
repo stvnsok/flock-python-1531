@@ -3,7 +3,7 @@ imports
 '''
 import sys
 from json import dumps
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from error import InputError
 import auth
@@ -12,6 +12,7 @@ import channel
 import user
 import other
 import message
+import standup
 
 def defaultHandler(err):
     response = err.get_response()
@@ -70,6 +71,21 @@ def register():
         data['email'], data['password'], data['name_first'], data['name_last'])
     return dumps(result)
 
+@APP.route('/auth/passwordreset/request', methods=['POST'])
+def passwordreset_request_route():
+    data = request.get_json()
+    email = data['email']
+    result = auth.auth_passwordreset_request(email)
+    return dumps(result)
+
+
+@APP.route('/auth/passwordreset/reset', methods=['POST'])
+def passwordreset_reset_route():
+    data = request.get_json()
+    reset_code = data['reset_code']
+    new_password = data['new_password']
+    result = auth.auth_passwordreset_reset(reset_code, new_password)
+    return dumps(result)
 
 '''
 Channels Endpoints
@@ -164,11 +180,6 @@ def removeowner():
 '''
 User Endpoints
 '''
-# For view images in static folder
-# @APP.route('/static/<path:path>')
-# def send_js(path):
-#     return send_from_directory('', path)
-
 @APP.route("/user/profile/uploadphoto", methods=['POST'])
 def uploadphoto():
     data = request.get_json()
@@ -181,6 +192,8 @@ def uploadphoto():
         data['y_end'],
     )
     return dumps(result)
+
+
 
 @APP.route("/user/profile", methods=['GET'])
 def profile():
@@ -238,6 +251,66 @@ def edit():
     result = message.message_edit(
         data['token'], data['message_id'], data['message'])
     return dumps(result)
+
+@APP.route("/message/sendlater", methods=['POST'])
+def sendlater():
+    data = request.get_json()
+    result = message.message_sendlater(
+        data['token'], data['channel_id'], data['message'], data['time_sent']
+    )
+    return dumps(result)
+
+@APP.route("/message/react", methods=['POST'])
+def react():
+    data = request.get_json()
+    result = message.message_react(
+        data['token'], data['message_id'], data['react_id'])
+    return dumps(result)
+
+@APP.route("/message/unreact", methods=['POST'])
+def unreact():
+    data = request.get_json()
+    result = message.message_unreact(
+        data['token'], data['message_id'], data['react_id'])
+    return dumps(result)
+
+@APP.route("/message/pin", methods=['POST'])
+def pin():
+    data = request.get_json()
+    result = message.message_pin(
+        data['token'], data['message_id'])
+    return dumps(result)
+
+@APP.route("/message/unpin", methods=['POST'])
+def unpin():
+    data = request.get_json()
+    result = message.message_unpin(
+        data['token'], data['message_id'])
+    return dumps(result)
+
+'''
+Standup Endpoints
+'''
+
+@APP.route("/standup/start", methods=['POST'])
+def standup_start():
+    data = request.get_json()
+    result = standup.standup_start(data['token'], data['channel_id'], data['length'])
+    return dumps(result)
+    
+@APP.route("/standup/active", methods=['GET'])
+def standup_active():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    result = standup.standup_active(token, channel_id)
+    return dumps(result)
+
+@APP.route("/standup/send", methods=['POST'])
+def standup_send():
+    data = request.get_json()
+    result = standup.standup_start(data['token'], data['channel_id'], data['message'])
+    return dumps(result)
+
 
 
 '''
