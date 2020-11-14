@@ -1,9 +1,11 @@
 from error import InputError, AccessError
 from other import get_timestamp
 import uuid
-from data import ( data, get_channel, channel_member, get_all_messages, 
+from data import (
+                    data, get_channel, channel_member, get_all_messages, 
                     get_authorised_user, get_channel_with_message, 
-                    update_message, get_message)
+                    update_message, get_message, get_user, is_valid_token,
+                    load_token)
 
 
 
@@ -11,13 +13,16 @@ def message_send(token, channel_id, message):
     '''
     Send a message from the authorised_user to the channel specified by channel_id 
     '''
-
-    # Get the user that is sending the request
-    authorised_user = get_authorised_user(token)
-
-    if authorised_user is None:
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
         raise AccessError(description="Invalid token")
     
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
+    # Get the user that is sending the request
+    authorised_user = get_user(token_uid)
+   
     # Get the selected channel
     channel = get_channel(channel_id)
     
@@ -61,11 +66,13 @@ def message_remove(token, message_id):
     '''
     Given a message_id for a message, this message is removed from the channel
     '''
-    # Get the user that is sending the request
-    authorised_user = get_authorised_user(token)
-
-    if authorised_user is None:
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
         raise AccessError(description="Invalid token")
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    # Get the user that is sending the request
+    authorised_user = get_user(token_uid)
 
     # Get the channel where the message exists
     channel = get_channel_with_message(message_id)
@@ -92,11 +99,15 @@ def message_edit(token, message_id, message):
     Given a message, update it's text with new text. If the new message is an empty string, the message is deleted
     '''    
     
-    # Get the user that is sending the request
-    authorised_user = get_authorised_user(token)
-
-    if authorised_user is None:
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
         raise AccessError(description="Invalid token")
+    
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
+    # Get the user that is sending the request
+    authorised_user = get_user(token_uid)
 
     # Get the channel where the message exists
     channel = get_channel_with_message(message_id)
@@ -126,11 +137,15 @@ def message_sendlater(token, channel_id, message, time_sent):
     Send a message by an authenticated user to the channel with channel_id at 
     a specified time 
     '''
-    # Get the user that is sending the request
-    authorised_user = get_authorised_user(token)
-
-    if authorised_user is None:
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
         raise AccessError(description="Invalid token")
+    
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
+    # Get the user that is sending the request
+    authorised_user = get_user(token_uid)
 
     channel = get_channel(channel_id)
 
@@ -183,11 +198,15 @@ def message_react(token, message_id, react_id):
     add a "react" to that particular message
     '''
     react_id = int(react_id)
-    # Get the user that is sending the request
-    authorised_user = get_authorised_user(token)
-
-    if authorised_user is None:
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
         raise AccessError(description="Invalid token")
+    
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
+    # Get the user that is sending the request
+    authorised_user = get_user(token_uid)
 
     reacts = [1]
     # For now there are only one possible reacts
@@ -222,11 +241,15 @@ def message_unreact(token, message_id, react_id):
     remove "react" to that particular message
     '''
     react_id = int(react_id)
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
+        raise AccessError(description="Invalid token")
+    
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
     # Get the user that is sending the request
-    authorised_user = get_authorised_user(token)
-
-    if authorised_user is None:
-        raise AccessError(description="Invalid token")    
+    authorised_user = get_user(token_uid)
     
     reacts = [1]
     # For now there are only two possible reacts
@@ -263,11 +286,15 @@ def message_pin(token, message_id):
     display treatment by the frontend
     '''  
 
-    # Get the user that is sending the request
-    authorised_user = get_authorised_user(token)
-
-    if authorised_user is None:
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
         raise AccessError(description="Invalid token")
+    
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
+    # Get the user that is sending the request
+    authorised_user = get_user(token_uid)
 
     # Get the channel where the message is from a helper function
     channel = get_channel_with_message(message_id)
@@ -296,12 +323,15 @@ def message_unpin(token, message_id):
     '''
     Given a message within a channel, mark it as unpinned
     '''  
-
-    # Get the user that is sending the request
-    authorised_user = get_authorised_user(token)
-
-    if authorised_user is None:
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
         raise AccessError(description="Invalid token")
+    
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
+    # Get the user that is sending the request
+    authorised_user = get_user(token_uid)
 
     # Get the channel where the message is from a helper function
     channel = get_channel_with_message(message_id)

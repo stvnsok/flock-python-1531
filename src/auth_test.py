@@ -123,16 +123,6 @@ def test_incorrect_password_login():
     clear()
 
 
-def test_logout_fail():
-    '''
-    Test failed logouts
-    '''
-
-    auth.auth_register('john@gmail.com', 'qwe123!@#', 'John', 'Smith')
-    login = auth.auth_login('john@gmail.com', 'qwe123!@#')
-    logout = auth.auth_logout(login['token'] + 'avc')
-    assert logout['is_success'] == False
-    clear()
 
 
 def test_handle_too_long():

@@ -4,18 +4,9 @@ Auth function
 import smtplib
 import jwt
 from flask import request
-from data import data
 from error import InputError
-from other import check
-
-
-
-
-def create_token(email):
-    '''
-    Creates a token for each user
-    '''
-    return str(hash(email))
+from other import check, clear
+from data import (data, check, create_token, hash_password, is_valid_token)
 
 
 #@APP.route("/auth/login", methods=['POST'])
@@ -39,10 +30,10 @@ def auth_login(email, password):
 
     # If password matches send back id and token
     # Else throw exception
-    if user['password'] == password:
+    if user['password'] == hash_password(password):
         return {
             'u_id': user['u_id'],
-            'token': user['token']
+            'token': create_token(user['u_id'])
         }
 
     raise InputError('Incorrect password')
@@ -55,8 +46,11 @@ def auth_logout(token):
     users = data['users']
 
     # Check that token exists
-    if any(user['token'] == token for user in users):
+    if is_valid_token(token):
         return {'is_success': True}
+    # if any(user['token'] == token for user in users):
+    #     return {'is_success': True}
+    data['invalid_tokens'].append(token)
 
     return {'is_success': False}
 
@@ -94,7 +88,9 @@ def auth_register(email, password, name_first, name_last):
     if len(handle) > 20:  # keeping the handle under 20 chars
         handle = handle[0:20]
 
-
+    # Hash the password
+    password = hash_password(password)
+    
     # Creating a new dictionary for new user
     new_user = {
         'u_id': len(users),
@@ -103,7 +99,6 @@ def auth_register(email, password, name_first, name_last):
         'name_first': name_first,
         'name_last': name_last,
         'handle_str': handle,
-        'token': create_token(email),
         'permission_id' : 1 if len(users) == 0 else 2,
         'profile_img_url': '',
         'reset_code': None,
@@ -121,7 +116,7 @@ def auth_register(email, password, name_first, name_last):
     # Return new user id and token
     return {
         'u_id': new_user['u_id'],
-        'token': new_user['token']
+        'token': create_token(new_user['u_id'])
     }
 
 

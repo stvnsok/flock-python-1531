@@ -5,8 +5,7 @@ from error import AccessError, InputError
 import re
 from datetime import datetime, timedelta
 
-INVALID_UID = 99999
-JWT_SECRET = 'WAKAFLOCKRFLAME'
+JWT_SECRET = 'secret'
 JWT_ALGORITHM = 'HS256'
 
 '''
@@ -199,6 +198,7 @@ def load_token(token):
     Decodes and returns the u_id
     '''
     # jwt.decode checks if the token has expired or not
+
     try:
         payload = jwt.decode(token.encode(), JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except jwt.ExpiredSignatureError:
@@ -212,8 +212,6 @@ def is_valid_token(token):
     '''
 
     payload = load_token(token)
-    if payload['u_id'] == INVALID_UID:
-        return False
     if get_user(payload['u_id']) is None:
         return False
     if token in data['invalid_tokens']:

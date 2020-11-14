@@ -5,23 +5,6 @@ import helper_test_functions
 from fixture import url as url
 
 
-#---------------------Testing channels_list function with:---------------------#
-def test_channels_list_invalid_token(url):
-    '''
-    Invalid token sent
-    '''
-  
-    response = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', url)
-        
-    response = helper_test_functions.channels_create(response['token'], 'channel_1', True, url)
-    
-    error_response = helper_test_functions.channels_list("incorrect token", url)
-
-    assert error_response["code"] == 400
-    assert error_response["message"] == "<p>Token is incorrect/user does not exist</p>"
-
-    helper_test_functions.clear(url)
-
 
 def test_channels_list_no_channels(url):
     '''
@@ -121,22 +104,6 @@ def test_channels_list_user_in_no_channels(url):
 
 
 #---------------------Testing channels_listall function with:------------------#
-def test_channels_listall_invalid_token(url):
-    '''
-    Incorrect token
-    '''
-
-    response = helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', url)
-        
-    response = helper_test_functions.channels_create(response['token'], 'channel_1', True, url)
-    
-    error_response = helper_test_functions.channels_listall("incorrect token", url)
-
-    assert error_response["code"] == 400
-    assert error_response["message"] == "<p>Token is incorrect/user does not exist</p>"
-
-    helper_test_functions.clear(url)
-
 
 def test_channels_listall_no_channels(url):
     '''
@@ -234,18 +201,6 @@ def test_channels_listall_user_in_no_channels(url):
     helper_test_functions.clear(url)
 
 #--------------------Testing channels_create function for:---------------------#
-def test_channels_create_invalid_token(url):
-    '''
-    Incorrect token
-    '''
-    helper_test_functions.auth_register('john@hotmail.com', 'qwe123!@#', 'John', 'Smith', url)
-    
-    error = helper_test_functions.channels_create("incorrect_token","channel_1", True, url)
-    
-    assert error['code'] == 400
-    assert error['message'] == '<p>Token is incorrect/user does not exist</p>'
-    helper_test_functions.clear(url)
-
 def test_channels_create_invalid_name(url):
     '''
     Invalid name
