@@ -20,6 +20,10 @@
 
 ## Related to user.py
     *   handle_str must be between 3 and 20 characters is INCLUSIVE of 3 and 20
+    *   profile_img_url will be the default_profile_pic if /user/profile/uploadphoto was never called
+    by the user
+    *   The profile pics stored in the static folder will never be deleted but will be
+    overwitten, as the naming convention allows only have one pic per user.
 
 ## Related to message.py and messages
     *   For message/edit an empty string is a string that has no white space at all, therefore will have a length of zero without performing any stripping

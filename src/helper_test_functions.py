@@ -244,6 +244,17 @@ def message_unpin(token, message_id, url):
 ---------------------User Functions---------------------
 '''
 
+def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end, url):
+    response = requests.post(f'{url}user/profile/uploadphoto', json={
+        "token": token,
+        "img_url": img_url,
+        "x_start": x_start,
+        "y_start": y_start,
+        "x_end": x_end,
+        "y_end": y_end,
+    })
+
+    return response.json()
 
 def user_profile(token, u_id, url):
     response = requests.get(f'{url}user/profile', params={

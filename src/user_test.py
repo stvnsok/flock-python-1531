@@ -29,6 +29,176 @@ def test_profile_upload_invalid_token():
 
 # The rest of the profile photo tests are in user_test_http.py
 
+#################### Tests for user/profile/uploadphoto ########################
+
+def test_profile_upload_invalid_token(url):
+    '''
+    This test uses the feature user/profile/uploadphoto with an invalid token.
+    The expected outcome is giving an error of 400 saying 'Token is incorrect'.
+    '''
+
+    # input invalid token into user/profile/uploadphoto
+    response = helper_test_functions.user_profile_uploadphoto(
+        "token",
+        "https://cdn.hipwallpaper.com/i/83/61/uTbGH2.jpg",
+        0,
+        0,
+        1000,
+        1000,
+        url
+    )
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>Token is incorrect</p>'
+
+    # clears data
+    helper_test_functions.clear(url)
+
+
+def test_profile_upload_invalid_img_url(url):
+    '''
+    This test uses the feature user/profile/uploadphoto with an invalid img_url.
+    The expected outcome is giving an error of 400 saying 'Provided url is not a
+    valid jpg image url'.
+    '''
+    # register first user
+    response = helper_test_functions.auth_register(
+        "markowong@hotmail.com",
+        "markowong",
+        "marko",
+        "wong",
+        url
+    )
+    new_user = response
+    token = new_user["token"]
+
+    # input invalid img_url into user/profile/uploadphoto
+    response = helper_test_functions.user_profile_uploadphoto(
+        token,
+        "https://steamuserimages-a.akamaihd.net/ugc/794258384795697139/C32444A60986B8EE67E9CAEFD434F9EBB48BDB",
+        0,
+        0,
+        1000,
+        1000,
+        url
+    )
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>img_url returned an HTTP status other than 200</p>'
+
+    # clears data
+    helper_test_functions.clear(url)
+
+def test_profile_upload_png_img_url(url):
+    '''
+    This test uses the feature user/profile/uploadphoto with an valid png img_url.
+    The expected outcome is giving an error of 400 saying 'Provided url is not a
+    valid jpg image url'.
+    '''
+    # register first user
+    response = helper_test_functions.auth_register(
+        "markowong@hotmail.com",
+        "markowong",
+        "marko",
+        "wong",
+        url
+    )
+    new_user = response
+    token = new_user["token"]
+
+    # input an png_img_url into user/profile/uploadphoto
+    response = helper_test_functions.user_profile_uploadphoto(
+        token,
+        "https://static.wikia.nocookie.net/projectsekai/images/6/6a/Miku.png/revision/latest?cb=20200213214056",
+        0,
+        0,
+        1000,
+        1000,
+        url
+    )
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>Provided url is not a valid jpg image url</p>'
+
+    # clears data
+    helper_test_functions.clear(url)
+
+def test_profile_upload_invalid_crop_size(url):
+    '''
+    This test uses the feature user/profile/uploadphoto with an invalid crop size.
+    The expected outcome is giving an error of 400 saying 'Invalid crop size, the
+    image has dimensions 'x' x 'y''.
+    '''
+    # register first user
+    response = helper_test_functions.auth_register(
+        "markowong@hotmail.com",
+        "markowong",
+        "marko",
+        "wong",
+        url
+    )
+    new_user = response
+    token = new_user["token"]
+
+    # input invalid crop_size into user/profile/uploadphoto
+    response = helper_test_functions.user_profile_uploadphoto(
+        token,
+        "https://i.pinimg.com/736x/3f/b3/f7/3fb3f7a82af56d4cb917e95a69af8d28.jpg",
+        0,
+        0,
+        1000,
+        1000,
+        url
+    )
+    error = response
+    assert error['code'] == 400
+    assert error['message'] == '<p>Invalid crop size, the image has dimensions 600 x 338</p>'
+
+    # clears data
+    helper_test_functions.clear(url)
+
+def test_profile_upload_correct_crop_size(url):
+    '''
+    This test uses the feature user/profile/uploadphoto with an valid crop size.
+    The expected outcome is an image url with the correct crop size in the user's
+    profile_img_url.
+    '''
+    # register first user
+    response = helper_test_functions.auth_register(
+        "markowong@hotmail.com",
+        "markowong",
+        "marko",
+        "wong",
+        url
+    )
+    new_user = response
+    token = new_user["token"]
+
+    # input valid info into user/profile/uploadphoto
+    helper_test_functions.user_profile_uploadphoto(
+        token,
+        "https://i.pinimg.com/736x/3f/b3/f7/3fb3f7a82af56d4cb917e95a69af8d28.jpg",
+        5,
+        20,
+        200,
+        220,
+        url
+    )
+
+    image_object = Image.open("src/static/user_profile_pic_1.jpg")
+    image_size = image_object.size
+    assert image_size[0] == 195
+    assert image_size[1] == 200
+
+    response = helper_test_functions.user_profile(token, 1, url)
+    profile = response
+    profile_img_url = profile['profile_img_url']
+    # omit the url as it will be different everytime
+    assert profile_img_url.split('/',3)[3] == 'static/user_profile_pic_1.jpg'
+
+    # clears data
+    helper_test_functions.clear(url)
+
 ########################### Tests for user/profile #############################
 
 def test_profile_invalid_user_token():
