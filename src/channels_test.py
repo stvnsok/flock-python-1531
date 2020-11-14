@@ -16,7 +16,7 @@ def test_channels_list_invalid_token():
     token = user['token']
     with pytest.raises(AccessError) as e:
         channels.channels_list("invalid_token")
-    assert 'Token is incorrect/user does not exist' == str(e.value)
+    assert '400 Bad Request: Token is incorrect/user does not exist' == str(e.value)
     clear()
 
 # no existing channels
@@ -122,7 +122,7 @@ def test_channels_listall_invalid_token():
     token = user['token']
     with pytest.raises(AccessError) as e:
         channels.channels_listall("invalid_token")
-    assert 'Token is incorrect/user does not exist' == str(e.value)
+    assert '400 Bad Request: Token is incorrect/user does not exist' == str(e.value)
     clear()
 
 # no existing channels
@@ -262,7 +262,7 @@ def test_channels_create_invalid_token():
     token = user['token']
     with pytest.raises(AccessError) as e:
         channels.channels_create("invalid_token", "name", True)
-    assert 'Token is incorrect/user does not exist' == str(e.value)
+    assert '400 Bad Request: Token is incorrect/user does not exist' == str(e.value)
     clear()
 
 # invalid name
@@ -271,7 +271,7 @@ def test_channels_create_invalid_name():
     token = user['token']
     with pytest.raises(InputError) as e:
         channels.channels_create(token, "Hatsune Miku is best Waifu, FIGHT ME!", True)
-    assert 'Input Channel Name too long' == str(e.value)
+    assert '400 Bad Request: Input Channel Name too long' == str(e.value)
     clear()
 
 # 1000 channel creation
