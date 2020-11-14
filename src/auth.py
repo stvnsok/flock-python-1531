@@ -1,17 +1,12 @@
 '''
 Auth function
 '''
-import re
+import smtplib
+import jwt
 from flask import request
-from data import data
 from error import InputError
-from other import check
-
-def create_token(email):
-    '''
-    Creates a token for each user
-    '''
-    return str(hash(email))
+from other import check, clear
+from data import (data, check, create_token, hash_password, is_valid_token)
 
 
 #@APP.route("/auth/login", methods=['POST'])
@@ -35,10 +30,10 @@ def auth_login(email, password):
 
     # If password matches send back id and token
     # Else throw exception
-    if user['password'] == password:
+    if user['password'] == hash_password(password):
         return {
             'u_id': user['u_id'],
-            'token': user['token']
+            'token': create_token(user['u_id'])
         }
 
     raise InputError('Incorrect password')
@@ -47,12 +42,13 @@ def auth_logout(token):
     '''
     Logout authenticated user
     '''
-    # Get users from data
-    users = data['users']
 
     # Check that token exists
-    if any(user['token'] == token for user in users):
+    if is_valid_token(token):
+        data['invalid_tokens'].append(token)
         return {'is_success': True}
+    # if any(user['token'] == token for user in users):
+    #     return {'is_success': True}
 
     return {'is_success': False}
 
@@ -90,9 +86,9 @@ def auth_register(email, password, name_first, name_last):
     if len(handle) > 20:  # keeping the handle under 20 chars
         handle = handle[0:20]
 
-    # Grabs the current url
-    curr_url = request.host
-
+    # Hash the password
+    password = hash_password(password)
+    
     # Creating a new dictionary for new user
     new_user = {
         'u_id': len(users),
@@ -101,9 +97,9 @@ def auth_register(email, password, name_first, name_last):
         'name_first': name_first,
         'name_last': name_last,
         'handle_str': handle,
-        'token': create_token(email),
         'permission_id' : 1 if len(users) == 0 else 2,
-        'profile_img_url': f'http://localhost:{curr_url[10:]}/static/default_profile_pic.jpg',
+        'profile_img_url': '',
+        'reset_code': None,
     }
 
     # Auto Increment the next user
@@ -118,5 +114,62 @@ def auth_register(email, password, name_first, name_last):
     # Return new user id and token
     return {
         'u_id': new_user['u_id'],
-        'token': new_user['token']
+        'token': create_token(new_user['u_id'])
     }
+
+
+#@APP.route("/auth/passwordreset/request", methods=['POST'])
+def auth_passwordreset_request(email):
+    # Get users from data
+    users = data['users']
+
+    # Check that email is valid
+    user = next((user for user in users if user['email'] == email), None)
+
+    if user is not None:
+        password = user['password']
+        token = user['token']
+
+        encoded = jwt.encode({'reset': password}, token)
+
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+
+        email_address = "noreplyflockr@gmail.com"
+        email_password = "Hatsunemiku"
+
+        server.login(email_address, email_password)
+
+        user_name = user['name_first'] + ' ' + user['name_last'] 
+
+        message_subject = "Your Flockr password reset request"
+        message_body = "Hello" + ' ' + user_name + ' ' + "your password reset code is:"
+
+        message = f'Subject: {message_subject}\n\n{message_body}\n\n{encoded}'
+        server.sendmail('noreplyflockr@gmail.com', email, message)
+        server.close()
+
+        user['reset_code'] = encoded
+
+    return {}
+
+#@APP.route("/auth/passwordreset/reset, methods=['POST'])
+def auth_passwordreset_reset(reset_code, new_password):   
+    users = data['users']
+    user = user = next((user for user in users if user['reset_code'] == reset_code), None)
+
+    if user is None:
+        raise InputError('Invalid reset code')
+
+    # Check password is greater than 6 characters
+    if len(new_password) < 6:
+        raise InputError('Password too short')
+              
+    if user is not None:
+        if user['reset_code'] == reset_code:
+            user['password'] = new_password
+            user['reset_code'] = None
+
+    return {}
