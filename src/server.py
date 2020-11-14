@@ -70,6 +70,21 @@ def register():
         data['email'], data['password'], data['name_first'], data['name_last'])
     return dumps(result)
 
+@APP.route('/auth/passwordreset/request', methods=['POST'])
+def passwordreset_request_route():
+    data = request.get_json()
+    email = data['email']
+    result = passwordreset_request(email)
+    return dumps(result)
+
+
+@APP.route('/auth/passwordreset/reset', methods=['POST'])
+def passwordreset_reset_route():
+    data = request.get_json()
+    reset_code = data['reset_code']
+    new_password = data['new_password']
+    result = passwordreset_reset(reset_code, new_password)
+    return dumps(result)
 
 '''
 Channels Endpoints
@@ -164,6 +179,19 @@ def removeowner():
 '''
 User Endpoints
 '''
+@APP.route("/user/profile/uploadphoto", methods=['POST'])
+def uploadphoto():
+    data = request.get_json()
+    result = user.user_profile_photo(
+        data['token'],
+        data['img_url'],
+        data['x_start'],
+        data['y_start'],
+        data['x_end'],
+        data['y_end'],
+    )
+    return dumps(result)
+
 
 
 @APP.route("/user/profile", methods=['GET'])
@@ -257,6 +285,29 @@ def unpin():
     data = request.get_json()
     result = message.message_unpin(
         data['token'], data['message_id'])
+    return dumps(result)
+
+'''
+Standup Endpoints
+'''
+
+@APP.route("/standup/start", methods=['POST'])
+def standup_start():
+    data = request.get_json()
+    result = standup.standup_start(data['token'], data['channel_id'], data['length'])
+    return dumps(result)
+    
+@APP.route("/standup/active", methods=['GET'])
+def standup_active():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    result = standup.standup_active(token, channel_id)
+    return dumps(result)
+
+@APP.route("/standup/send", methods=['POST'])
+def standup_send():
+    data = request.get_json()
+    result = standup.standup_start(data['token'], data['channel_id'], data['message'])
     return dumps(result)
 
 
