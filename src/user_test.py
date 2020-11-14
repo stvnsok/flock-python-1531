@@ -7,10 +7,11 @@ import channel
 import channels
 import auth
 import user
-from data import data
+from data import data, create_token
 from error import InputError, AccessError
 from other import clear
 
+invalid_token = create_token(999999)
 
 #################### Tests for user/profile/uploadphoto ########################
 
@@ -21,7 +22,7 @@ def test_profile_upload_invalid_token():
     '''
 
     with pytest.raises(AccessError) as e:
-        user.user_profile_photo("token", "https://cdn.hipwallpaper.com/i/83/61/uTbGH2.jpg", 0, 0, 1000, 1000)
+        user.user_profile_photo(invalid_token, "https://cdn.hipwallpaper.com/i/83/61/uTbGH2.jpg", 0, 0, 1000, 1000)
     assert str(e.value) == '400 Bad Request: Token is incorrect'
 
     clear()
@@ -40,7 +41,7 @@ def test_profile_invalid_user_token():
 
     # input invalid token into user/profile
     with pytest.raises(AccessError) as e:
-        user.user_profile("token", 1)
+        user.user_profile(invalid_token, 1)
     assert str(e.value) == '400 Bad Request: Token is incorrect'
 
     # clears data
@@ -106,7 +107,7 @@ def test_profile_handle_invalid_user_token():
     '''
     # input invalid token into user/profile/sethandle
     with pytest.raises(AccessError) as e:
-        user.user_profile_sethandle("token", 1)
+        user.user_profile_sethandle(invalid_token, 1)
     assert str(e.value) == '400 Bad Request: Token is incorrect'
 
     # clears data
@@ -292,7 +293,7 @@ def test_profile_setname_token_incorrect():
     '''
     # input invalid token into user/profile
     with pytest.raises(AccessError) as e:
-        user.user_profile_setname("token", "soko", "yoko")
+        user.user_profile_setname(invalid_token, "soko", "yoko")
     assert str(e.value) == '400 Bad Request: Token is incorrect'
 
     # clears data
@@ -346,7 +347,7 @@ def test_profile_setemail_token_incorrect():
     '''
      # input invalid token into user/profile/setemail
     with pytest.raises(AccessError) as e:
-        user.user_profile_setemail("token", "validemail@email.com")
+        user.user_profile_setemail(invalid_token, "validemail@email.com")
     assert str(e.value) == '400 Bad Request: Token is incorrect'
 
     # clears data

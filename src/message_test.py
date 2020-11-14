@@ -10,7 +10,9 @@ import channels
 import message
 from error import InputError, AccessError
 import other
+from data import create_token
 
+invalid_token = create_token(999999)
 
 def test_message_send_length():
     '''
@@ -485,56 +487,6 @@ def test_pin():
     other.clear()
 
 
-
-def test_token_auth():
-    '''
-    Tests that Access error is throw back for all message functions if incorrect
-    token passed
-    '''
-
-    with pytest.raises(AccessError) as e:
-        message.message_send(333, 555, "message")
-    
-    assert str(e.value) == '400 Bad Request: Invalid token'
-
-    with pytest.raises(AccessError) as e:
-        message.message_remove(333, 555)
-    
-    assert str(e.value) == '400 Bad Request: Invalid token'
-
-    with pytest.raises(AccessError) as e:
-        message.message_edit(333, 555, "message")
-    
-    assert str(e.value) == '400 Bad Request: Invalid token'
-
-    with pytest.raises(AccessError) as e:
-        message.message_sendlater(333, 555, "message", datetime.now())
-    
-    assert str(e.value) == '400 Bad Request: Invalid token'
-
-    with pytest.raises(AccessError) as e:
-        message.message_react(333, 555, 999)
-    
-    assert str(e.value) == '400 Bad Request: Invalid token'
-
-    with pytest.raises(AccessError) as e:
-        message.message_unreact(333, 555, 999)
-    
-    assert str(e.value) == '400 Bad Request: Invalid token'
-
-    with pytest.raises(AccessError) as e:
-        message.message_pin(333, 555)
-    
-    assert str(e.value) == '400 Bad Request: Invalid token'
-
-    with pytest.raises(AccessError) as e:
-        message.message_unpin(333, 555)
-    
-    assert str(e.value) == '400 Bad Request: Invalid token'
-
-    other.clear()
-
-
 def test_message_send_multiple():
     '''
     Test that messages are being sent and assigned m_id's correctly
@@ -623,3 +575,53 @@ def test_message_sendlater_multiple():
     assert message_2['message_id'] == message_1['message_id'] + 1
 
     other.clear()
+
+
+def test_token_auth():
+    '''
+    Tests that Access error is throw back for all message functions if incorrect
+    token passed
+    '''
+
+    with pytest.raises(AccessError) as e:
+        message.message_send(invalid_token, 555, "message")
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_remove(invalid_token, 555)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_edit(invalid_token, 555, "message")
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_sendlater(invalid_token, 555, "message", datetime.now())
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_react(invalid_token, 555, 999)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_unreact(invalid_token, 555, 999)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_pin(invalid_token, 555)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    with pytest.raises(AccessError) as e:
+        message.message_unpin(invalid_token, 555)
+    
+    assert str(e.value) == '400 Bad Request: Invalid token'
+
+    other.clear()
+

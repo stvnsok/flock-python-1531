@@ -19,28 +19,6 @@ from datetime import datetime, timedelta
 
 ######################## Tests for standup/start #############################
 
-def test_standup_start_token_incorrect():
-    '''
-    Test for incorrect token
-    '''
-
-    
-    user_1 = auth.auth_register(
-        "1234@hotmail.com",
-        "password",
-        "Bobby",
-        "McBob"
-    )
-    new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
-    channel_id = new_channel['channel_id']
-
-    with pytest.raises(AccessError) as e:
-        standup.standup_start("invalid_token", channel_id, 10)
-    assert '400 Bad Request: Token is incorrect' == str(e.value)
-    clear()
-
-
-
 def test_standup_start_invalid_channel_id():
     '''
     Test for incorrect channel_id
@@ -54,7 +32,7 @@ def test_standup_start_invalid_channel_id():
 
     with pytest.raises(InputError) as e:
         standup.standup_start(user_1['token'], 909, 10)
-    # assert '400 Bad Request: Channel_id does not exist' == str(e.value)
+    assert '400 Bad Request: Channel_id does not exist' == str(e.value)
     clear()
 
 
@@ -85,27 +63,6 @@ def test_standup_start_invalid_channel_id():
 
 
 ######################## Tests for standup/active #############################
-def test_standup_active_token_incorrect():
-
-    '''
-    Throws an error code if the token is incorrect
-    '''
-    
-    user_1 = auth.auth_register(
-        "123@hotmail.com",
-        "password",
-        "Bobby",
-        "McBob"
-    )
-    
-    new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
-    channel_id = new_channel['channel_id']
-    
-    with pytest.raises(AccessError) as e:
-        standup.standup_active("invalid_token", channel_id)
-    assert '400 Bad Request: Token is incorrect' == str(e.value)
-    clear()
-
 
 def test_standup_active_invalid_channel_id():
 
@@ -122,7 +79,7 @@ def test_standup_active_invalid_channel_id():
     
     with pytest.raises(InputError) as e:
         standup.standup_active(user['token'], 909)
-    assert '400 Bad Request: Channel_id does not exist'
+    assert '400 Bad Request: Channel_id does not exist' == str(e.value)
     
     clear()
 
@@ -152,28 +109,6 @@ def test_standup_active_working():
 
 ######################## Tests for standup/send #############################
 
-def test_standup_send_token_incorrect(): 
-
-    '''
-    Throws an error code if the token is incorrect
-    '''
-        
-    user_1 = auth.auth_register(
-        "123@hotmail.com",
-        "password",
-        "Bobby",
-        "McBob"
-    )
-    
-    new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
-    channel_id = new_channel['channel_id']
-    
-    message = "Hello"
-    with pytest.raises(AccessError) as e:
-        standup.standup_send("invalid_token", channel_id, message)
-    assert '400 Bad Request: Token is incorrect' == str(e.value)
-    clear()
-
 def test_standup_send_invalid_channel_id():
 
     '''
@@ -186,8 +121,7 @@ def test_standup_send_invalid_channel_id():
         "McBob"
     )
     
-    new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
-    channel_id = new_channel['channel_id']
+    channels.channels_create(user_1['token'], 'channel_1', True)
   
     message = "Hello"
     with pytest.raises(InputError) as e:
@@ -278,26 +212,26 @@ def test_standup_send_working():
     '''
     Test to check if standup_send is working
     '''
-    user = auth.auth_register(
+    user_1 = auth.auth_register(
         "123@hotmail.com",
         "password",
         "Bobby",
         "McBob"
     )
-
-    user_1 = get_user(user['u_id']) 
     
     new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
     
-    new_standup = standup.standup_start(user_1['token'], new_channel['channel_id'], 10)
+    standup.standup_start(user_1['token'], new_channel['channel_id'], 10)
     
     msg = "hello"
 
     standup.standup_send(user_1['token'], new_channel['channel_id'], msg)
     
-    channel = get_channel(new_channel['channel_id'])
+    # channel = get_channel(new_channel['channel_id'])
 
-    standup_message = user_1['handle_str'] + ' : ' + msg
+    handle_str = get_user(user_1['u_id'])['handle_str']
+
+    standup_message = handle_str + ' : ' + msg
 
     message_sent = search(user_1['token'], standup_message)
 

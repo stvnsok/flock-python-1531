@@ -1,4 +1,4 @@
-from data import data
+from data import data, is_valid_token, load_token, get_user
 import copy
 from datetime import datetime
 import calendar
@@ -34,8 +34,15 @@ def admin_userpermission_change(token, u_id, permission_id):
     if permission_id < 1 or permission_id > 2:
         raise InputError('Permission_id does not refer to a value permission')
     
-    # Get Authorised user
-    authorised_user = next((user for user in users if user['token'] == token), None)
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
+        raise AccessError(description="Invalid token")
+    
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
+    # Get the user that is sending the request
+    authorised_user = get_user(token_uid)
     
     # Check authorised user permission is 1
     if authorised_user['permission_id'] != 1:
@@ -60,11 +67,17 @@ def search(token, query_str):
     '''
     all_messages = []
 
-    users = data['users']
     channels = data['channels']
 
-    # Verify authorised user
-    authorised_user = next((user for user in users if user['token'] == token), None)
+    # Check whether token is valid
+    if is_valid_token(token) is not True:
+        raise AccessError(description="Invalid token")
+    
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
+    # Get the user that is sending the request
+    authorised_user = get_user(token_uid)
     
     # Get each batch of messages from each channel where the user is a member
     for channel in channels:

@@ -42,15 +42,13 @@ def auth_logout(token):
     '''
     Logout authenticated user
     '''
-    # Get users from data
-    users = data['users']
 
     # Check that token exists
     if is_valid_token(token):
+        data['invalid_tokens'].append(token)
         return {'is_success': True}
     # if any(user['token'] == token for user in users):
     #     return {'is_success': True}
-    data['invalid_tokens'].append(token)
 
     return {'is_success': False}
 

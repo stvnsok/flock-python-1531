@@ -3,7 +3,9 @@
 
 import helper_test_functions
 from fixture import url as url
+from data import create_token
 
+invalid_token = create_token(999999)
 
 
 def test_channels_list_no_channels(url):

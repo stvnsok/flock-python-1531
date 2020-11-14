@@ -7,7 +7,25 @@ from message import message_send
 import auth
 from error import InputError, AccessError
 from other import clear
+# from data import create_token
 
+# invalid_token = create_token(999999)
+
+# def test_channel_messages_invalid_token():
+#     '''
+#     This test uses the feature channel/messages with an invalid token. The
+#     expected outcome is an error of 400 saying 'Token is incorrect'
+#     '''
+#     user_1 = auth.auth_register("123@hotmail.com", "password", "Bobby", "McBob")
+#     new_channel = channels.channels_create(user_1['token'], 'channel_1', True)
+
+#     with pytest.raises(AccessError) as e:
+#         channel.channel_messages(invalid_token, 333, 0)
+#     assert str(e.value) == '400 Bad Request: Token is incorrect'
+    
+#     clear()
+
+clear()
 
 
 # Test that public channel operates as expected

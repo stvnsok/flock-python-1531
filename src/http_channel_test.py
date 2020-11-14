@@ -1,6 +1,9 @@
 
 import helper_test_functions
 from fixture import url
+from data import create_token
+
+invalid_token = create_token(999999)
 
 ####################### Tests for channel/invite #############################
 def test_channel_invite_token_incorrect(url):
@@ -24,7 +27,7 @@ def test_channel_invite_token_incorrect(url):
     channel_id = new_channel['channel_id']
 
     assert channel_id == 1
-    response = helper_test_functions.channel_invite("0", channel_id, u_id_1, url)
+    response = helper_test_functions.channel_invite(invalid_token, channel_id, u_id_1, url)
 
     error = response
     assert error['code'] == 400
@@ -206,7 +209,7 @@ def test_channel_details_invalid_token(url):
     new_channel = response
     channel_id = new_channel['channel_id']
 
-    response = helper_test_functions.channel_details("0", channel_id, url)
+    response = helper_test_functions.channel_details(invalid_token, channel_id, url)
 
     error = response
     assert error['code'] == 400
@@ -317,7 +320,7 @@ def test_channel_messages_invalid_token(url):
     new_channel = response
     channel_id = new_channel['channel_id']
 
-    error = helper_test_functions.channel_messages("incorrect_token", channel_id, 0, url)
+    error = helper_test_functions.channel_messages(invalid_token, channel_id, 0, url)
 
     assert error['code'] == 400
     assert error['message'] == '<p>Token is incorrect</p>'
@@ -462,7 +465,7 @@ def test_channel_leave_invalid_token(url):
     new_channel = response
     channel_id = new_channel['channel_id']
 
-    response = helper_test_functions.channel_leave("0", channel_id, url)
+    response = helper_test_functions.channel_leave(invalid_token, channel_id, url)
 
     error = response
     assert error['code'] == 400
@@ -579,7 +582,7 @@ def test_channel_join_invalid_token(url):
     new_channel = response
     channel_id = new_channel['channel_id']
 
-    response = helper_test_functions.channel_join("0", channel_id, url)
+    response = helper_test_functions.channel_join(invalid_token, channel_id, url)
 
     error = response
     assert error['code'] == 400
@@ -699,7 +702,7 @@ def test_channel_addowner_invalid_token(url):
     new_channel = response
     channel_id = new_channel['channel_id']
 
-    response = helper_test_functions.channel_addowner("0", channel_id, u_id_1, url)
+    response = helper_test_functions.channel_addowner(invalid_token, channel_id, u_id_1, url)
 
     error = response
     assert error['code'] == 400
@@ -823,7 +826,7 @@ def test_channel_removeowner_invalid_token(url):
     new_channel = response
     channel_id = new_channel['channel_id']
 
-    response = helper_test_functions.channel_removeowner("0", channel_id, u_id_1, url)
+    response = helper_test_functions.channel_removeowner(invalid_token, channel_id, u_id_1, url)
 
     error = response
     assert error['code'] == 400

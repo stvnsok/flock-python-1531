@@ -7,17 +7,6 @@ from data import data
 import helper_test_functions
 from fixture import url as _url
 
-def test_clear(_url):
-    # Create new user
-    user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)
-    helper_test_functions.channels_create(user['token'],"channel", True, _url)
-    
-    helper_test_functions.clear(_url)
-
-    # Check if data structure is empty
-    assert len(data['users']) == 0
-    assert len(data['channels']) == 0
-
 def test_users_all(_url):   
     # Register new user
     user = helper_test_functions.auth_register('brucewayne@hotmail.com', 'b4tman', 'Bruce', 'Wayne', _url)

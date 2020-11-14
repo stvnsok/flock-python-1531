@@ -8,30 +8,6 @@ from fixture import url
 
 ########################### Tests for user/profile #############################
 
-def test_profile_invalid_user_token(url):
-    '''
-    This test uses the feature user/profile with an invalid token. The expected
-    outcome is giving an error of 400 saying 'Token is incorrect'.
-    '''
-    # register first user
-    response = helper_test_functions.auth_register(
-        "markowong@hotmail.com",
-        "markowong",
-        "marko",
-        "wong",
-        url
-    )
-    new_user = response
-    u_id = new_user["u_id"]
-
-    # input invalid token into user/profile
-    response = helper_test_functions.user_profile("token", u_id, url)
-    error = response
-    assert error['code'] == 400
-    assert error['message'] == '<p>Token is incorrect</p>'
-
-    # clears data
-    helper_test_functions.clear(url)
 
 def test_profile_u_id_not_found(url):
     '''
@@ -61,20 +37,6 @@ def test_profile_u_id_not_found(url):
 
 ###################### Tests for user/profile/sethandle ########################
 
-def test_profile_handle_invalid_user_token(url):
-    '''
-    This test uses the feature user/profile/sethandle with an invalid token. The
-    expected outcome is an error of 400 saying 'Token is incorrect'
-    '''
-    # input invalid token into user/profile/sethandle
-    response = helper_test_functions.user_profile_sethandle('token', "Mr.cool", url)
-
-    error = response
-    assert error['code'] == 400
-    assert error['message'] == '<p>Token is incorrect</p>'
-
-    # clears data
-    helper_test_functions.clear(url)
 
 def test_profile_handle_too_short(url):
     '''
@@ -363,18 +325,6 @@ def test_profile_setname_first_name_too_long(url):
     helper_test_functions.clear(url)
 
 
-def test_profile_setname_token_incorrect(url):
-    '''
-    This test uses the feature user/profile/setname with an invalid token. The
-    expected outcome is an error of 400 saying 'Token is incorrect'
-    '''
-    response = helper_test_functions.user_profile_setname("0", "Jack", "N", url)
-
-    error = response
-    assert error['code'] == 400
-    assert error['message'] == '<p>Token is incorrect</p>'
-
-    helper_test_functions.clear(url)
 
 ###################### Tests for user/profile/setemail #########################
 
@@ -436,18 +386,6 @@ def test_set_email_used(url):
 
     helper_test_functions.clear(url)
 
-def test_profile_setemail_token_incorrect(url):
-    '''
-    This test uses the feature user/profile/setemail with an invalid token. The
-    expected outcome is an error of 400 saying 'Token is incorrect'
-    '''
-    response = helper_test_functions.user_profile_setemail('0', "j@hotmail.com", url)
-
-    error = response
-    assert error['code'] == 400
-    assert error['message'] == '<p>Token is incorrect</p>'
-
-    helper_test_functions.clear(url)
 
 def test_profile_setemail_correct_update(url):
     '''

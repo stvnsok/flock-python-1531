@@ -49,17 +49,6 @@ def channels_listall(token):
     if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect/user does not exist')
 
-    token_uid = load_token(token)['u_id']
-    # Get the user that is sending the request
-    authorised_user = get_user(token_uid)
-
-    # # Get the user that is sending the request
-    # authorised_user = get_authorised_user(token)
-
-    # # Check if user exists/ token is correct
-    # if authorised_user is None:
-    #     raise AccessError('Token is incorrect/user does not exist')
-
     # Return channels
     return {'channels': data['channels']}
 
@@ -75,7 +64,7 @@ def channels_create(token, name, is_public):
 
     channels = data['channels']
 
-    if is_valid_token(token) is not True:
+    if not is_valid_token(token):
         raise AccessError('Token is incorrect/user does not exist')
 
     token_uid = load_token(token)['u_id']

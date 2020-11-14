@@ -12,6 +12,7 @@ import channel
 import user
 import other
 import message
+import standup
 
 def defaultHandler(err):
     response = err.get_response()
@@ -74,7 +75,7 @@ def register():
 def passwordreset_request_route():
     data = request.get_json()
     email = data['email']
-    result = passwordreset_request(email)
+    result = auth.auth_passwordreset_request(email)
     return dumps(result)
 
 
@@ -83,7 +84,7 @@ def passwordreset_reset_route():
     data = request.get_json()
     reset_code = data['reset_code']
     new_password = data['new_password']
-    result = passwordreset_reset(reset_code, new_password)
+    result = auth.auth_passwordreset_reset(reset_code, new_password)
     return dumps(result)
 
 '''

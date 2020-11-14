@@ -18,6 +18,7 @@ def channel_invite(token, channel_id, u_id):
     Once invited the user is added to the channel immediately
     '''
     
+    # Check if valid token
     if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
 
@@ -29,10 +30,6 @@ def channel_invite(token, channel_id, u_id):
 
     # Get the user that is sending the request
     authorised_user = get_user((load_token(token)['u_id']))
-    
-    # #Check if user exists/ token is correct
-    # if authorised_user is None:
-    #     raise AccessError('Token is incorrect')
 
     # Check if channel exists
     if channel is None:
@@ -64,17 +61,13 @@ def channel_details(token, channel_id):
     Given a Channel with ID channel_id that the authorised user is part of,
     provide basic details about the channel
     '''
-
+    # Check if valid token
     if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
     
     # Get the user that is sending the request
     authorised_user = get_user((load_token(token)['u_id']))
     
-    # #Check if user exists/ token is correct
-    # if authorised_user is None:
-    #     raise AccessError('Token is incorrect')
-
     # Finds the Channel, if it doesn't exists assigns None
     channel = get_channel(channel_id)
 
@@ -110,16 +103,13 @@ def channel_messages(token, channel_id, start):
 
     start = int(start)
 
+    # Check if valid token
     if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
     
     # Get the user that is sending the request
     authorised_user = get_user((load_token(token)['u_id']))
-    
-    # #Check if user exists/ token is correct
-    # if authorised_user is None:
-    #     raise AccessError('Token is incorrect')
-    
+
     # Finds the Channel, if it doesn't exists assigns None
     channel = get_channel(channel_id)
 
@@ -165,6 +155,7 @@ def channel_leave(token, channel_id):
     Given a channel ID, the user removed as a member of this channel
     '''
 
+    # Check if valid token
     if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
     
@@ -200,7 +191,7 @@ def channel_join(token, channel_id):
     adds them to that channel
     '''
 
-
+    # Check if valid token
     if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
     
@@ -237,7 +228,7 @@ def channel_addowner(token, channel_id, u_id):
     Make user with user id u_id an owner of this channel
     '''
 
-
+    # Check if valid token
     if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
     
@@ -288,7 +279,7 @@ def channel_removeowner(token, channel_id, u_id):
     Remove user with user id u_id an owner of this channel
     '''
 
-
+    # Check if valid token
     if is_valid_token(token) is not True:
         raise AccessError('Token is incorrect')
     

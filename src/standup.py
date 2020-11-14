@@ -8,6 +8,11 @@ from datetime import datetime, timedelta, timezone
 from data import data
 from message import message_send, message_sendlater
 from error import InputError, AccessError
+from data import (
+                    data, get_channel, channel_member, get_all_messages, 
+                    get_authorised_user, get_channel_with_message, 
+                    update_message, get_message, get_user, is_valid_token,
+                    load_token)
 
 def standup_start(token, channel_id, length):
     '''
@@ -19,24 +24,11 @@ def standup_start(token, channel_id, length):
     '''
     length = int(length)
 
-    # Get users from data
-    users = data['users']
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    #Check if user exists/ token is correct
-    if authorised_user is None:
-        raise AccessError('Token is incorrect')
-        
-
-    # Get channel from data
-    channels = data['channels']
+    if is_valid_token(token) is not True:
+        raise AccessError(description="Invalid token")
 
     # Finds the Channel, if it doesn't exists assigns None
-    channel = next(
-        (channel for channel in channels if channel['channel_id'] == channel_id), None)
+    channel = get_channel(channel_id)
     
     # Check if channel exists
     if channel is None:
@@ -88,23 +80,12 @@ def standup_active(token, channel_id):
     and what time the standup finishes. If no standup is active,
     then time_finish returns None
     '''
-    # Get users from data
-    users = data['users']
-
-    # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    #Check if user exists/ token is correct
-    if authorised_user is None:
-        raise AccessError('Token is incorrect')
-
-    # Get channel from data
-    channels = data['channels']
-
+    if is_valid_token(token) is not True:
+        raise AccessError(description="Invalid token")
+    
+    
     # Finds the Channel, if it doesn't exists assigns None
-    channel = next(
-        (channel for channel in channels if channel['channel_id'] == channel_id), None)
+    channel = get_channel(channel_id)
     
     # Check if channel exists
     if channel is None:
@@ -133,24 +114,18 @@ def standup_send(token, channel_id, message):
     # - This formmated message will be passed into the channel['standup'] where
     #it will be appended to the end of the list within channel['standup']. 
     
-    # Get users from data
+
+    if is_valid_token(token) is not True:
+        raise AccessError(description="Invalid token")
     
-    users = data['users']
-
+    # Get ui_d from jwt
+    token_uid = load_token(token)['u_id']
+    
     # Get the user that is sending the request
-    authorised_user = next(
-        (user for user in users if user['token'] == token), None)
-
-    #Check if user exists/ token is correct
-    if authorised_user is None:
-        raise AccessError('Token is incorrect')
-
-    # Get channel from data
-    channels = data['channels']
+    authorised_user = get_user(token_uid)
     
     # Finds the Channel, if it doesn't exists assigns None
-    channel = next(
-        (channel for channel in channels if channel['channel_id'] == channel_id), None)
+    channel = get_channel(channel_id)
     
     # Check if channel exists
     if channel is None:
@@ -162,7 +137,7 @@ def standup_send(token, channel_id, message):
         raise InputError('An active standup is currently not running in this channel')
     
     #Check if authorised user is a member of the channel that the message is within
-    if not any(authorised_user['u_id'] == member['u_id'] for member in channel['members']):
+    if not channel_member(authorised_user, channel):
         raise AccessError('Authorised user is not a member of the channel')
 
     # Check if message is more than 1000 characters 

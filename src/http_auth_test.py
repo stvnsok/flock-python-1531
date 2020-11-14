@@ -1,6 +1,8 @@
-
 import helper_test_functions as test_setup
 from fixture import url
+from data import create_token
+
+invalid_token = create_token(999999)
 
 def test_successful_registration(url):
     '''
@@ -156,7 +158,7 @@ def test_logout_fail(url):
 
     test_setup.auth_login("john@gmail.com", "qwe123!@#", url)
 
-    logout_response = test_setup.auth_logout("WrongToken", url)
+    logout_response = test_setup.auth_logout(invalid_token, url)
 
     assert not logout_response["is_success"]
 
