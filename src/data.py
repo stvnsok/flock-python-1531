@@ -32,6 +32,11 @@ Channel Object : {
                     'channel_id' : integer,
                     'name' : string,
                     'is_public' : boolean,
+                    'standup' : {
+                        'time_finish' : integer (unix timestamp),
+                        ''
+
+                    }
                     'members' : [
                                     {
                                         'u_id': integer,

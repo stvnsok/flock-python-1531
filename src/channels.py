@@ -82,6 +82,9 @@ def channels_create(token, name, is_public):
     new_channel['name'] = name
     new_channel['members'] = []
     new_channel['messages'] = []
+    new_channel['standup'] = {
+        'is_active': False
+    }
     # Method for assigning the channel id.
     # Will auto-increment from the last element id
     if len(channels) == 0:
