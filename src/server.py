@@ -87,21 +87,6 @@ def passwordreset_reset_route():
     result = auth.auth_passwordreset_reset(reset_code, new_password)
     return dumps(result)
 
-@APP.route("auth/passwordreset/request", methods=['POST'])
-def passwordreset_request():
-    data = request.get_json()
-    result = auth.auth_passwordreset_request(data['email'])
-    return dumps(result)
-
-
-@APP.route("auth/passwordreset/reset", methods=['POST'])
-def passwordreset_reset():
-    reset_code = request.args.get('reset_code')
-    new_password = request.args.get('new_password')
-    result = auth.auth_passwordreset_reset(reset_code, new_password)
-    return dumps(result)
-
-
 '''
 Channels Endpoints
 '''

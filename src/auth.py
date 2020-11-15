@@ -8,6 +8,7 @@ from error import InputError
 from other import check, clear
 from data import (data, check, create_token, hash_password, is_valid_token)
 
+
 #@APP.route("/auth/login", methods=['POST'])
 def auth_login(email, password):
     '''
@@ -98,7 +99,7 @@ def auth_register(email, password, name_first, name_last):
         'handle_str': handle,
         'permission_id' : 1 if len(users) == 0 else 2,
         'profile_img_url': '',
-        'reset': None,
+        'reset_code': None,
     }
 
     # Auto Increment the next user
@@ -126,7 +127,10 @@ def auth_passwordreset_request(email):
     user = next((user for user in users if user['email'] == email), None)
 
     if user is not None:
-        encoded = user['password']
+        password = user['password']
+        token = user['token']
+
+        encoded = jwt.encode({'reset': password}, token)
 
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()
@@ -147,12 +151,14 @@ def auth_passwordreset_request(email):
         server.sendmail('noreplyflockr@gmail.com', email, message)
         server.close()
 
+        user['reset_code'] = encoded
+
     return {}
 
 #@APP.route("/auth/passwordreset/reset, methods=['POST'])
 def auth_passwordreset_reset(reset_code, new_password):   
     users = data['users']
-    user = user = next((user for user in users if user['password'] == reset_code), None)
+    user = user = next((user for user in users if user['reset_code'] == reset_code), None)
 
     if user is None:
         raise InputError('Invalid reset code')
@@ -161,6 +167,9 @@ def auth_passwordreset_reset(reset_code, new_password):
     if len(new_password) < 6:
         raise InputError('Password too short')
               
-    user['password'] = hash_password(new_password)
-  
+    if user is not None:
+        if user['reset_code'] == reset_code:
+            user['password'] = new_password
+            user['reset_code'] = None
+
     return {}
