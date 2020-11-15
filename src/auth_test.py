@@ -148,5 +148,4 @@ def test_invalid_code():
     with pytest.raises(InputError) as e:
         auth.auth_passwordreset_reset("123", "hjdashdads")
     assert '400 Bad Request: Invalid reset code' == str(e.value)
-   
     clear()
