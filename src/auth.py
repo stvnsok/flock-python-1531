@@ -2,7 +2,6 @@
 Auth function
 '''
 import smtplib
-import jwt
 from flask import request
 from error import InputError
 from other import check, clear
